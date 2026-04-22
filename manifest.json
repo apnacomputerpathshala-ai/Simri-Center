@@ -1,0 +1,23 @@
+{
+  "short_name": "KYP Simri",
+  "name": "Kushal Yuva Program - SDC Simri",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "./index.html", 
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#2563eb",
+  "background_color": "#f8fafc"
+}
