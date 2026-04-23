@@ -178,6 +178,9 @@
         <div class="nav-item active" id="btn-stats" onclick="handleNavClick('stats')"><i class="fas fa-th-large"></i> Dashboard</div>
 <div class="nav-item" id="btn-reg" onclick="handleNavClick('reg')"><i class="fas fa-user-plus"></i> New Registration</div>
 <div class="nav-item" id="btn-records" onclick="handleNavClick('records')"><i class="fas fa-file-invoice"></i> Student Records</div>
+<div class="nav-item" id="btn-active" onclick="handleNavClick('active')">
+    <i class="fas fa-user-check"></i> <span>Active Students</span>
+</div>
 <div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')"><i class="fas fa-database"></i> Backup & Data</div>
 <div class="nav-item text-warning" onclick="new bootstrap.Modal(document.getElementById('changePassModal')).show()">
     <i class="fas fa-key"></i> <span>Change Password</span>
@@ -315,7 +318,26 @@
             </table>
         </div>
     </div>
-
+<div id="activeTab" class="tab-content">
+    <div class="card border-0 shadow-sm p-3 mb-3 bg-primary text-white">
+        <h6 class="m-0 fw-bold"><i class="fas fa-users me-2"></i> Admitted Students List</h6>
+        <small></small>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered bg-white m-0">
+            <thead>
+    <tr>
+        <th>SI.No</th>
+        <th>Candidate Name</th>
+        <th>Father's Name</th> <th>Mobile</th>
+        <th>Admission</th>
+        <th>Action</th>
+    </tr>
+</thead>
+            <tbody id="activeStudentsTbody"></tbody>
+        </table>
+    </div>
+</div>
     <div id="settingsTab" class="tab-content">
         <div class="row g-4">
             <div class="col-md-6"><div class="card p-4 border-0 shadow-sm text-center"><i class="fas fa-cloud-download-alt fa-3x text-primary mb-3"></i><button class="btn btn-primary" onclick="backupJSON()">DOWNLOAD BACKUP</button></div></div>
@@ -430,7 +452,7 @@ function switchTab(tab) {
 
     if(tab === 'reg') setNextSI();
     if(tab === 'records') renderTable(learners);
-
+    if(tab === 'active') renderActiveStudents();
     updateStats();
 }
 // --- ADMIN AUTH LOGIC ---
@@ -502,16 +524,15 @@ function setNextSI() {
 document.getElementById('dataEntryForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    // UI mein loader dikhane ke liye button disable karein
     const submitBtn = e.target.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
     submitBtn.innerText = "Syncing to Cloud...";
 
     const data = {
         siNo: parseInt(document.getElementById('siNo').value) || 0,
-        name: document.getElementById('name').value.toUpperCase(), // Ye 'Not Null' hai, bharna zaroori hai
+        name: document.getElementById('name').value.toUpperCase(),
         father: document.getElementById('father').value.toUpperCase() || "-",
-        dob: document.getElementById('dob').value || null, // Khali hone par error nahi dega
+        dob: document.getElementById('dob').value || null,
         gender: document.getElementById('gender').value,
         category: document.getElementById('category').value,
         aadhar: document.getElementById('aadhar').value || "-",
@@ -537,23 +558,33 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
         remark: document.getElementById('remark').value || "-"
     };
 
-    // Edit case ke liye ID
-    if(document.getElementById('editId').value) {
-        data.id = parseInt(document.getElementById('editId').value);
+    const editIdVal = document.getElementById('editId').value;
+    let result;
+
+    if (editIdVal) {
+        // --- EDIT LOGIC (UPDATE) ---
+        const updateId = parseInt(editIdVal);
+        result = await _supabase
+            .from('students')
+            .update(data)
+            .eq('id', updateId);
+    } else {
+        // --- NEW ENTRY LOGIC (INSERT) ---
+        result = await _supabase
+            .from('students')
+            .insert([data]);
     }
 
-    // Supabase Upsert (Insert or Update)
-    const { error } = await _supabase.from('students').upsert([data]);
-
-    if (error) {
-        showToast("Error: " + error.message, "bg-danger");
+    if (result.error) {
+        showToast("Error: " + result.error.message, "bg-danger");
     } else {
-        showToast("Cloud Par Save Ho Gaya!", "bg-success");
+        showToast(editIdVal ? "Record Updated!" : "Cloud Par Save Ho Gaya!", "bg-success");
         this.reset();
         document.getElementById('editId').value = '';
         await loadDataFromSupabase();
         switchTab('records');
     }
+    
     submitBtn.disabled = false;
     submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
 });
@@ -721,7 +752,14 @@ function printL(id) {
 }
 function editL(id) {
     const l = learners.find(x => x.id === id);
-    Object.keys(l).forEach(key => { if(document.getElementById(key)) document.getElementById(key).value = l[key]; });
+    if(!l) return;
+    
+    // सभी इनपुट फील्ड्स को डेटा से भरें
+    Object.keys(l).forEach(key => { 
+        if(document.getElementById(key)) document.getElementById(key).value = l[key]; 
+    });
+    
+    // छिपे हुए editId फील्ड में ID सेट करें
     document.getElementById('editId').value = l.id;
     switchTab('reg');
 }
@@ -871,6 +909,46 @@ function showInstallPopUp() {
   } else {
     alert("App pehle se installed hai ya Browser support nahi kar raha. Chrome menu mein 'Install App' check karein.");
   }
+}
+// केवल Admitted छात्रों को दिखाने के लिए
+function renderActiveStudents() {
+    const tbody = document.getElementById('activeStudentsTbody');
+    const activeList = learners.filter(l => l.admis === 'Yes');
+
+    if (activeList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4">No Admitted Students Found</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = activeList.map(l => `
+        <tr>
+            <td>${l.siNo}</td>
+            <td class="fw-bold text-primary">${l.name}</td>
+            <td>${l.father}</td> <td>${l.mobile}</td>
+            <td><span class="badge bg-success">${l.admis}</span></td>
+            <td>
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm" onclick="removeAdmission(${l.id})">
+                    <i class="fas fa-trash-alt me-1"></i> Remove
+                </button>
+            </td>
+        </tr>`).join('');
+}
+// एडमिशन 'No' करने के लिए फंक्शन
+async function removeAdmission(id) {
+    if(confirm("क्या आप इस छात्र का एडमिशन रद्द (No) करना चाहते हैं?")) {
+        const { error } = await _supabase
+            .from('students')
+            .update({ admis: 'No' })
+            .eq('id', id);
+
+        if (error) {
+            showToast("Error updating status", "bg-danger");
+        } else {
+            showToast("Admission Status Updated!", "bg-warning");
+            await loadDataFromSupabase(); // फ्रेश डेटा लाएं
+            renderActiveStudents(); // टेबल रिफ्रेश करें
+        }
+    }
 }
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
