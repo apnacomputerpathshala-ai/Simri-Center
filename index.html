@@ -244,8 +244,17 @@
                     <div class="col-md-2"><label class="small fw-bold">Date of Birth</label><input type="date" id="dob" class="form-control"></div>
                     <div class="col-md-2"><label class="small fw-bold">Gender</label><select id="gender" class="form-select"><option value="Male">Male</option><option value="Female">Female</option></select></div>
                     <div class="col-md-1"><label class="small fw-bold">Category</label><select id="category" class="form-select"><option value="GEN">GEN</option><option value="BC">BC</option><option value="EBC">EBC</option><option value="SC">SC</option><option value="ST">ST</option></select></div>
-                    <div class="col-md-3"><label class="small fw-bold">Aadhar No</label><input type="text" id="aadhar" class="form-control" maxlength="12"></div>
-                    <div class="col-md-3"><label class="small fw-bold">Mobile No</label><input type="text" id="mobile" class="form-control" maxlength="10"></div>
+                    <div class="col-md-3">
+    <label class="small fw-bold">Aadhar No</label>
+    <input type="text" id="aadhar" class="form-control" maxlength="12" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
+
+<div class="col-md-3">
+    <label class="small fw-bold">Mobile No</label>
+    <input type="text" id="mobile" class="form-control" maxlength="10" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
 <div class="col-md-3">
     <label class="small fw-bold">Candidate Photo</label>
     <input type="file" id="candidatePhoto" class="form-control" accept="image/*" onchange="previewImage(this)">
@@ -258,19 +267,42 @@
                     <div class="col-md-3"><label class="small fw-bold">Panchayat</label><input type="text" id="panchayat" class="form-control"></div>
                     <div class="col-md-3"><label class="small fw-bold">Block</label><input type="text" id="block" class="form-control"></div>
                     <div class="col-md-3"><label class="small fw-bold">School Name</label><input type="text" id="school" class="form-control"></div>
-                    <div class="col-md-2"><label class="small fw-bold">Board</label><input type="text" id="board" class="form-control" placeholder="e.g. BSEB"></div>
+                    <div class="col-md-2"><label class="small fw-bold">Board</label><input type="text" id="board" class="form-control" placeholder=""></div>
                     <div class="col-md-2"><label class="small fw-bold">Class</label><input type="text" id="learnerClass" class="form-control"></div>
-                    <div class="col-md-2"><label class="small fw-bold">Roll Code</label><input type="text" id="rollCode" class="form-control"></div>
-                    <div class="col-md-2"><label class="small fw-bold">Roll No</label><input type="text" id="rollNo" class="form-control"></div>
-                    <div class="col-md-2"><label class="small fw-bold">Pass Year</label><input type="number" id="passYear" class="form-control"></div>
-                </div>
-
+                    <div class="col-md-2">
+    <label class="small fw-bold">Roll Code</label>
+    <input type="text" id="rollCode" class="form-control" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
+                    <div class="col-md-2">
+    <label class="small fw-bold">Roll No</label>
+    <input type="text" id="rollNo" class="form-control" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
+                    <div class="col-md-2">
+    <label class="small fw-bold">Pass Year</label>
+    <input type="text" id="passYear" class="form-control" maxlength="4" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
+</div>
                 <div class="section-title">Bank & KYP Status</div>
                 <div class="row g-3">
                     <div class="col-md-3"><label class="small fw-bold">Bank Name</label><input type="text" id="bankName" class="form-control"></div>
-                    <div class="col-md-3"><label class="small fw-bold">Account No</label><input type="text" id="accNo" class="form-control"></div>
+<div class="col-md-3">
+    <label class="small fw-bold">Branch Name</label>
+    <input type="text" id="branchName" class="form-control" style="text-transform: uppercase;">
+</div>
+                    <div class="col-md-3">
+    <label class="small fw-bold">Account No</label>
+    <input type="text" id="accNo" class="form-control" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
                     <div class="col-md-2"><label class="small fw-bold">IFSC Code</label><input type="text" id="ifsc" class="form-control" style="text-transform: uppercase;"></div>
-                    <div class="col-md-2"><label class="small fw-bold">Receipt No</label><input type="text" id="receipt" class="form-control"></div>
+                    <div class="col-md-2">
+    <label class="small fw-bold">Receipt No</label>
+    <input type="text" id="receipt" class="form-control" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="">
+</div>
                     <div class="col-md-2"><label class="small fw-bold">Verification</label><select id="verify" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
                     <div class="col-md-3"><label class="small fw-bold">Allocation</label><select id="alloc" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
                     <div class="col-md-3"><label class="small fw-bold">Admission</label><select id="admis" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
@@ -448,7 +480,7 @@
 
         <h4 style="background: #f0f0f0; border: 1px solid #000; padding: 5px; font-size: 15px; margin-top: 25px;">Bank Details</h4>
         <div style="font-size: 14px; line-height: 1.8;">
-            <p><b>Bank Name:</b> <span id="pBank" style="border-bottom: 1px dotted #000;"></span></p>
+            <p><b>Bank Name:</b> <span id="pBank" ...></span> &nbsp; <b>Branch:</b> <span id="pBranch" style="border-bottom: 1px dotted #000;"></span></p>
             <p><b>Account No:</b> <span id="pAcc" style="border-bottom: 1px dotted #000;"></span> &nbsp;&nbsp; <b>IFSC Code:</b> <span id="pIfsc" style="border-bottom: 1px dotted #000;"></span></p>
         </div>
 
@@ -592,6 +624,7 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
         rollNo: document.getElementById('rollNo').value || "-",
         passYear: parseInt(document.getElementById('passYear').value) || null,
         bankName: document.getElementById('bankName').value || "-",
+        branchName: document.getElementById('branchName').value.toUpperCase() || "-",
         accNo: document.getElementById('accNo').value || "-",
         ifsc: document.getElementById('ifsc').value.toUpperCase() || "-",
         receipt: document.getElementById('receipt').value || "-",
@@ -634,12 +667,18 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
     submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
 });
 // --- DATA OPERATIONS ---
-async function loadDataFromSupabase() {
-    const { data, error } = await _supabase.from('students').select('*').order('siNo', { ascending: false });
-    if (!error) {
-        learners = data;
-        renderTable(learners);
-        updateStats();
+async function loadData() {
+    // यहाँ 'true' होने पर ही 1 नंबर ऊपर आएगा और नया डेटा नीचे जुड़ेगा
+    const { data, error } = await _supabase
+        .from('students')
+        .select('*')
+        .order('siNo', { ascending: true }); 
+
+    if (!error) { 
+        learners = data; 
+        renderTable(); 
+        renderActiveStudents(); 
+        updateStats(); 
     }
 }
 function applyFilters() {
@@ -740,7 +779,7 @@ function showFullReport(id) {
                 <p><b>Roll Code:</b> ${l.rollCode} | <b>Roll No:</b> ${l.rollNo} | <b>Year:</b> ${l.passYear}</p>
                 
                 <h6 style="color: #2563eb; background: #f0f4ff; padding: 5px; margin-top: 15px;">BANK & KYP STATUS</h6>
-                <p><b>Bank:</b> ${l.bankName} | <b>A/C:</b> ${l.accNo} | <b>IFSC:</b> ${l.ifsc}</p>
+                <p><b>Bank:</b> ${l.bankName} | <b>Branch:</b> ${l.branchName} | <b>A/C:</b> ${l.accNo} | <b>IFSC:</b> ${l.ifsc}</p>
                 <p><b>Receipt No:</b> ${l.receipt} | <b>Verified:</b> ${l.verify}</p>
                 <p><b>Allocation:</b> ${l.alloc} | <b>Admission:</b> ${l.admis} | <b>Payment:</b> ${l.pay}</p>
                 <p><b>Remark:</b> ${l.remark}</p>
@@ -776,6 +815,7 @@ function printL(id) {
     document.getElementById('pRollNo').innerText = l.rollNo;
     document.getElementById('pPassYear').innerText = l.passYear;
     document.getElementById('pBank').innerText = l.bankName;
+    document.getElementById('pBranch').innerText = l.branchName;
     document.getElementById('pAcc').innerText = l.accNo;
     document.getElementById('pIfsc').innerText = l.ifsc;
 
@@ -852,7 +892,7 @@ function restoreJSON(e) {
 
 function exportFullCSV() { 
     // Excel Header - सभी कॉलम्स
-    let csv = "SI.No,Candidate Name,Father's Name,DOB,Gender,Category,Aadhar No,Mobile No,Village,Panchayat,Block,School,Board,Class,Roll Code,Roll No,Pass Year,Bank Name,Account No,IFSC Code,Receipt No,Verified,Allocated,Admission,Payment,Remark\n";
+    let csv = "SI.No,Candidate Name,Father's Name,DOB,Gender,Category,Aadhar No,Mobile No,Village,Panchayat,Block,School,Board,Class,Roll Code,Roll No,Pass Year,Bank Name,Branch Name,Account No,IFSC Code,Receipt No,Verified,Allocated,Admission,Payment,Remark\n";
 
     learners.forEach(l => {
         // डेटा को CSV लाइन में बदलना
@@ -874,7 +914,8 @@ function exportFullCSV() {
                `"${l.rollNo || ''}",` +
                `"${l.passYear || ''}",` +
                `"${l.bankName || ''}",` +
-               `"${l.accNo || ''}",` +
+               `"${l.branchName || ''}",` +
+               `"'${l.accNo || ''}",` +
                `"${l.ifsc || ''}",` +
                `"${l.receipt || ''}",` +
                `"${l.verify || ''}",` +
@@ -983,10 +1024,10 @@ function renderActiveStudents() {
             <td>${l.mobile}</td>
             <td><span class="badge bg-success">${l.admis}</span></td>
             <td>
-                <button class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm" onclick="removeAdmission(${l.id})">
-                    <i class="fas fa-trash-alt me-1"></i> Remove
-                </button>
-            </td>
+    <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm" onclick="removeAdmission(${l.id})">
+        <i class="fas fa-user-minus me-1"></i> Remove
+    </button>
+</td>
         </tr>`).join('');
 }
 // एडमिशन 'No' करने के लिए फंक्शन
