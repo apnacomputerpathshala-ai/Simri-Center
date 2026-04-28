@@ -238,7 +238,7 @@
                 
                 <div class="section-title">Personal Details</div>
                 <div class="row g-3">
-                    <div class="col-md-1"><label class="small fw-bold">SI.No</label><input type="number" id="siNo" class="form-control" readonly></div>
+                    <div class="col-md-1"><label class="small fw-bold">SI.No</label><input type="number" id="siNo" class="form-control"></div>
                     <div class="col-md-3"><label class="small fw-bold">Candidate Name</label><input type="text" id="name" class="form-control" required style="text-transform: uppercase;"></div>
                     <div class="col-md-3"><label class="small fw-bold">Father's Name</label><input type="text" id="father" class="form-control" style="text-transform: uppercase;"></div>
                     <div class="col-md-2"><label class="small fw-bold">Date of Birth</label><input type="date" id="dob" class="form-control"></div>
@@ -593,7 +593,9 @@ function toggleFilterMenu() {
 
 function setNextSI() {
     if(!document.getElementById('editId').value) {
-        document.getElementById('siNo').value = (learners.length > 0) ? Math.max(...learners.map(l => parseInt(l.siNo || 0))) + 1 : 1;
+        // Sabse bada number dhund kar usme +1 karein
+        const lastNo = learners.length > 0 ? Math.max(...learners.map(l => parseInt(l.siNo || 0))) : 0;
+        document.getElementById('siNo').value = lastNo + 1; 
     }
 }
 
@@ -713,9 +715,9 @@ function renderTable(data) {
         return;
     }
 
-    tbody.innerHTML = data.map(l => `
+    tbody.innerHTML = data.map((l, index) => `
         <tr>
-            <td class="text-center">${l.siNo}</td>
+            <td class="text-center">${index + 1}</td> 
             <td class="fw-bold text-primary text-start">${l.name}</td>
             <td class="text-start">${l.father}</td>
             <td>${l.village}</td>
@@ -894,9 +896,9 @@ function exportFullCSV() {
     // Excel Header - सभी कॉलम्स
     let csv = "SI.No,Candidate Name,Father's Name,DOB,Gender,Category,Aadhar No,Mobile No,Village,Panchayat,Block,School,Board,Class,Roll Code,Roll No,Pass Year,Bank Name,Branch Name,Account No,IFSC Code,Receipt No,Verified,Allocated,Admission,Payment,Remark\n";
 
-    learners.forEach(l => {
+    learners.forEach((l, index) => {
         // डेटा को CSV लाइन में बदलना
-        csv += `"${l.siNo || ''}",` +
+        csv += `"${index + 1}",` +
                `"${l.name || ''}",` +
                `"${l.father || ''}",` +
                `"${l.dob || ''}",` +
@@ -947,7 +949,7 @@ async function loadDataFromSupabase() {
     const { data, error } = await _supabase
         .from('students')
         .select('*')
-        .order('siNo', { ascending: false });
+        .order('name', { ascending: true }); // 'siNo' ki jagah 'name' kiya gaya taaki A-Z dikhe
 
     if (!error) {
         learners = data;
@@ -1016,9 +1018,9 @@ function renderActiveStudents() {
         return;
     }
 
-    tbody.innerHTML = filteredList.map(l => `
+    tbody.innerHTML = filteredList.map((l, index) => `
         <tr>
-            <td>${l.siNo}</td>
+            <td>${index + 1}</td>
             <td class="fw-bold text-primary text-start">${l.name}</td>
             <td class="text-start">${l.father}</td>
             <td>${l.mobile}</td>
