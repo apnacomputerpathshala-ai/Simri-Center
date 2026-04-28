@@ -190,6 +190,13 @@
     animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 @keyframes slideUp { from { bottom: -150px; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+/* Verified Badge Style */
+        .verified-badge {
+    color: #2563eb;
+    font-size: 13px; /* थोड़ा बड़ा और साफ़ दिखेगा */
+    filter: drop-shadow(0 0 1px rgba(37, 99, 235, 0.5));
+    flex-shrink: 0; 
+}
     </style>
 </head>
 <body>
@@ -263,8 +270,9 @@
                     <div class="col-md-1"><label class="small fw-bold">Category</label><select id="category" class="form-select"><option value="GEN">GEN</option><option value="BC">BC</option><option value="EBC">EBC</option><option value="SC">SC</option><option value="ST">ST</option></select></div>
                     <div class="col-md-3">
     <label class="small fw-bold">Aadhar No</label>
-    <input type="text" id="aadhar" class="form-control" maxlength="12" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    <input type="text" id="aadhar" class="form-control" maxlength="14" 
+           placeholder=""
+           oninput="formatAadhar(this)">
 </div>
 
 <div class="col-md-3">
@@ -525,6 +533,12 @@ function previewImage(input) {
     }
 }
 
+function formatAadhar(input) {
+    let value = input.value.replace(/\D/g, ''); // सिर्फ नंबर रखें
+    let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+    input.value = formatted;
+}
+
 function handleNavClick(tabName) {
     switchTab(tabName);
     if (window.innerWidth <= 768) {
@@ -660,17 +674,46 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
     e.preventDefault();
     
     const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    // --- स्मार्ट ऑथेंटिकेशन चेक ---
+    const rawAadhar = document.getElementById('aadhar').value;
+    const cleanAadhar = rawAadhar.replace(/\s/g, ''); 
+    const nameVal = document.getElementById('name').value.toUpperCase();
+    const fatherVal = document.getElementById('father').value.toUpperCase();
+    const dobVal = document.getElementById('dob').value;
+    const editIdVal = document.getElementById('editId').value;
+
+    if (!editIdVal && cleanAadhar) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "🔍 Authenticating...";
+        
+        // Supabase में मिलान करें
+        const { data: existingStudent, error: checkError } = await _supabase
+            .from('students')
+            .select('name, aadhar')
+            .or(`aadhar.eq."${rawAadhar}",aadhar.eq."${cleanAadhar}",and(name.eq."${nameVal}",father.eq."${fatherVal}",dob.eq."${dobVal}")`)
+            .maybeSingle();
+
+        if (existingStudent) {
+            showToast(`रुको! यह छात्र (${existingStudent.name}) पहले से ही रजिस्टर्ड है।`, "bg-danger");
+            submitBtn.disabled = false;
+            submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
+            return; 
+        }
+    }
+
+    // अब सेव प्रोसेस शुरू होगी
     submitBtn.disabled = true;
     submitBtn.innerText = "Syncing to Cloud...";
 
     const data = {
         siNo: parseInt(document.getElementById('siNo').value) || 0,
-        name: document.getElementById('name').value.toUpperCase(),
-        father: document.getElementById('father').value.toUpperCase() || "-",
-        dob: document.getElementById('dob').value || null,
+        name: nameVal,
+        father: fatherVal || "-",
+        dob: dobVal || null,
         gender: document.getElementById('gender').value,
         category: document.getElementById('category').value,
-        aadhar: document.getElementById('aadhar').value || "-",
+        aadhar: rawAadhar || "-", // यहाँ aadharVal की जगह rawAadhar किया गया है
         mobile: document.getElementById('mobile').value || "-",
         village: document.getElementById('village').value || "-",
         panchayat: document.getElementById('panchayat').value || "-",
@@ -694,35 +737,28 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
         remark: document.getElementById('remark').value || "-"
     };
 
-    const editIdVal = document.getElementById('editId').value;
     let result;
+    try {
+        if (editIdVal) {
+            result = await _supabase.from('students').update(data).eq('id', parseInt(editIdVal));
+        } else {
+            result = await _supabase.from('students').insert([data]);
+        }
 
-    if (editIdVal) {
-        // --- EDIT LOGIC (UPDATE) ---
-        const updateId = parseInt(editIdVal);
-        result = await _supabase
-            .from('students')
-            .update(data)
-            .eq('id', updateId);
-    } else {
-        // --- NEW ENTRY LOGIC (INSERT) ---
-        result = await _supabase
-            .from('students')
-            .insert([data]);
-    }
+        if (result.error) throw result.error;
 
-    if (result.error) {
-        showToast("Error: " + result.error.message, "bg-danger");
-    } else {
         showToast(editIdVal ? "Record Updated!" : "Cloud Par Save Ho Gaya!", "bg-success");
         this.reset();
         document.getElementById('editId').value = '';
         await loadDataFromSupabase();
         switchTab('records');
+
+    } catch (err) {
+        showToast("Error: " + err.message, "bg-danger");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
     }
-    
-    submitBtn.disabled = false;
-    submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
 });
 // --- DATA OPERATIONS ---
 async function loadData() {
@@ -774,7 +810,14 @@ function renderTable(data) {
     tbody.innerHTML = data.map((l, index) => `
         <tr>
             <td class="text-center">${index + 1}</td> 
-            <td class="fw-bold text-primary text-start">${l.name}</td>
+           <td class="text-start">
+    <div class="d-flex align-items-center justify-content-between" style="min-width: 140px;">
+        <span class="fw-bold text-primary">${l.name}</span>
+        ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
+            ? '<i class="fas fa-check-circle verified-badge" title="Verified"></i>' 
+            : '<span></span>'}
+    </div>
+</td>
             <td class="text-start">${l.father}</td>
             <td>${l.village}</td>
             <td>${l.aadhar}</td>
@@ -1077,8 +1120,14 @@ function renderActiveStudents() {
 
     tbody.innerHTML = filteredList.map((l, index) => `
         <tr>
-            <td>${index + 1}</td>
-            <td class="fw-bold text-primary text-start">${l.name}</td>
+            <td class="text-start">
+    <div class="d-flex align-items-center justify-content-between">
+        <span class="fw-bold text-primary">${l.name}</span>
+        ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
+            ? '<i class="fas fa-check-circle verified-badge"></i>' 
+            : '<span></span>'}
+    </div>
+</td>
             <td class="text-start">${l.father}</td>
             <td>${l.mobile}</td>
             <td><span class="badge bg-success">${l.admis}</span></td>
