@@ -549,44 +549,83 @@ function switchTab(tab) {
     if(tab === 'active') renderActiveStudents();
     updateStats();
 }
-// --- ADMIN AUTH LOGIC ---
+// --- ADMIN & STAFF AUTH LOGIC (CLOUD & LOCAL SYNC) ---
 function checkAuth() {
-    const isLogged = sessionStorage.getItem('admin_active');
+    const isLogged = localStorage.getItem('admin_active');
     if (isLogged === 'true') {
         const overlay = document.getElementById('loginOverlay');
         if(overlay) overlay.style.display = 'none';
+        applyPermissions();
     }
 }
 
 function verifyLogin() {
     const input = document.getElementById('adminPassInput').value;
-    const savedPass = localStorage.getItem('kyp_admin_pass') || DEFAULT_PASS;
+    
+    // localStorage से उठाएगा, अगर नहीं मिला तो डिफ़ॉल्ट पासवर्ड इस्तेमाल करेगा
+    const ADMIN_PASS = localStorage.getItem('app_admin_pass') || "suraj@7070"; 
+    const STAFF_PASS = localStorage.getItem('app_staff_pass') || "kyp@123";
 
-    if (input === savedPass) {
-        sessionStorage.setItem('admin_active', 'true');
+    if (input === ADMIN_PASS) {
+        localStorage.setItem('user_role', 'admin');
+        localStorage.setItem('admin_active', 'true');
         document.getElementById('loginOverlay').style.display = 'none';
-        showToast("Access Granted!", "bg-success");
-    } else {
+        applyPermissions();
+        showToast("Welcome SDC!", "bg-success");
+    } 
+    else if (input === STAFF_PASS) {
+        localStorage.setItem('user_role', 'staff');
+        localStorage.setItem('admin_active', 'true');
+        document.getElementById('loginOverlay').style.display = 'none';
+        applyPermissions();
+        showToast("Welcome SDC!", "bg-info");
+    } 
+    else {
         showToast("Wrong Password!", "bg-danger");
     }
 }
 
-function saveNewPassword() {
-    const newPass = document.getElementById('newPassInput').value;
-    if (newPass.length < 4) {
-        alert("Minimum 4 characters required!");
-        return;
+// दोनों पासवर्ड एक साथ सेव करने के लिए फंक्शन
+function saveBothPasswords() {
+    const adminP = document.getElementById('newAdminPass').value;
+    const staffP = document.getElementById('newStaffPass').value;
+
+    if (adminP) localStorage.setItem('app_admin_pass', adminP);
+    if (staffP) localStorage.setItem('app_staff_pass', staffP);
+
+    if (adminP || staffP) {
+        showToast("Passwords Updated Successfully!", "bg-success");
+        bootstrap.Modal.getInstance(document.getElementById('changePassModal')).hide();
+        // इनपुट साफ करें
+        document.getElementById('newAdminPass').value = '';
+        document.getElementById('newStaffPass').value = '';
+    } else {
+        showToast("Please enter a password", "bg-warning");
     }
-    localStorage.setItem('kyp_admin_pass', newPass);
-    showToast("Password Updated!", "bg-success");
-    bootstrap.Modal.getInstance(document.getElementById('changePassModal')).hide();
+}
+
+function applyPermissions() {
+    const role = localStorage.getItem('user_role');
+    const existingStyle = document.getElementById("staffRestrictions");
+    if (existingStyle) existingStyle.remove();
+
+    if (role === 'staff') {
+        const style = document.createElement('style');
+        style.id = "staffRestrictions";
+        style.innerHTML = `
+            .btn-outline-primary, .btn-outline-danger, .btn-warning { display: none !important; }
+            #settingsTab, #btn-settings, [onclick*="changePassModal"] { display: none !important; }
+            .btn-outline-warning.btn-sm { display: none !important; }
+        `;
+        document.head.appendChild(style);
+    }
 }
 
 function adminLogout() {
-    sessionStorage.removeItem('admin_active');
+    localStorage.removeItem('admin_active');
+    localStorage.removeItem('user_role');
     location.reload();
 }
-
 // Page load par auth check karein
 checkAuth();
 function toggleSidebar() {
@@ -979,9 +1018,10 @@ async function loadDataFromSupabase() {
 
 // Window load hote hi call karein
 window.addEventListener('DOMContentLoaded', async () => {
-    checkAuth(); // Sabse pehle login check karein
-    await loadDataFromSupabase(); // Phir cloud se data laayein
-    updateStats(); // Dashboard update karein
+    checkAuth(); 
+    applyPermissions(); // यह लाइन यहाँ जोड़ना जरूरी है
+    await loadDataFromSupabase(); 
+    updateStats(); 
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1141,13 +1181,20 @@ function showUpdatePrompt() {
 <div class="modal fade" id="changePassModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content" style="border-radius: 20px;">
-            <div class="modal-header border-0">
-                <h6 class="modal-title fw-bold">Update Password</h6>
+            <div class="modal-header border-0 pb-0">
+                <h6 class="modal-title fw-bold">Update Passwords</h6>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <input type="password" id="newPassInput" class="form-control mb-3" placeholder="Enter New Password">
-                <button class="btn btn-success w-100" onclick="saveNewPassword()">SAVE NEW PASSWORD</button>
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">New Admin Pass</label>
+                    <input type="password" id="newAdminPass" class="form-control" placeholder="Admin Password" style="border-radius: 10px;">
+                </div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-muted mb-1">New Staff Pass</label>
+                    <input type="password" id="newStaffPass" class="form-control" placeholder="Staff Password" style="border-radius: 10px;">
+                </div>
+                <button class="btn btn-primary w-100 fw-bold" onclick="saveBothPasswords()" style="border-radius: 10px;">SAVE CHANGES</button>
             </div>
         </div>
     </div>
