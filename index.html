@@ -1158,14 +1158,14 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `v2.3.2`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.3.3`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
     el.innerHTML = `V ${currentVersion} | © 2026 Surya`;
 });
 
-// नया फंक्शन जो बिना हिस्ट्री डिलीट किए अपडेट करेगा
+// --- सुधारा गया PWA UPDATE LOGIC ---
 let newWorker;
 
 if ('serviceWorker' in navigator) {
@@ -1174,7 +1174,7 @@ if ('serviceWorker' in navigator) {
       newWorker = reg.installing;
       newWorker.addEventListener('statechange', () => {
         if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-          showUpdatePrompt(); // अब पॉपअप दिखेगा और रुकेगा
+          showUpdatePrompt(); // अब पॉपअप दिखेगा
         }
       });
     });
@@ -1193,8 +1193,9 @@ async function forceUpdateApp() {
             await registration.update();
         }
     }
-    window.location.reload(true); // हार्ड रीलोड
+    window.location.reload(true); // पेज को फ्रेश लोड करें
 }
+
 function showUpdatePrompt() {
     if(document.getElementById('update-notice')) return;
 
@@ -1203,7 +1204,7 @@ function showUpdatePrompt() {
     updateDiv.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 12px;">
             <span style="font-size: 15px; font-weight: 800; color: #ffffff;">
-                🚀 नया अपडेट उपलब्ध है (V ${currentVersion})[cite: 3]
+                🚀 नया अपडेट उपलब्ध है (V ${currentVersion})
             </span>
             <div style="display: flex; gap: 10px; justify-content: center;">
                 <button onclick="forceUpdateApp()" style="background: #ffffff; color: #2563eb; border: none; 
