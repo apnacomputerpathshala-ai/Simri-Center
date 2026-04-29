@@ -1158,7 +1158,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.3.1`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.3.2`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -1166,17 +1166,35 @@ document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
 });
 
 // नया फंक्शन जो बिना हिस्ट्री डिलीट किए अपडेट करेगा
+let newWorker;
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    reg.addEventListener('updatefound', () => {
+      newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          showUpdatePrompt(); // अब पॉपअप दिखेगा और रुकेगा
+        }
+      });
+    });
+  });
+}
+
+// अपडेट बटन दबाने पर चलने वाला फंक्शन
 async function forceUpdateApp() {
+    if (newWorker) {
+        newWorker.postMessage({ action: 'skipWaiting' }); // sw.js को सिग्नल भेजें
+    }
+    
     if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
         for (let registration of registrations) {
-            await registration.update(); // जबरदस्ती अपडेट चेक करो
+            await registration.update();
         }
     }
-    // 'true' डालने से ब्राउज़र सर्वर से नई फाइलें मंगवाता है
-    window.location.reload(true); 
+    window.location.reload(true); // हार्ड रीलोड
 }
-
 function showUpdatePrompt() {
     if(document.getElementById('update-notice')) return;
 
