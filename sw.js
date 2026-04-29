@@ -1,8 +1,11 @@
-const CACHE_NAME = 'kyp-simri-v' + Date.now(); 
+// --- VERSION CONTROL ---
+// जब भी आप ऐप में बदलाव करें, बस यहाँ वर्जन बदल दें (जैसे v2.3.1 से v2.3.2)
+const CACHE_NAME = 'kyp-simri-v2.3.1';
 
+// उन फाइलों की लिस्ट जिन्हें ऑफलाइन एक्सेस के लिए सेव करना है
 const assets = [
   './',
-  './index.html', // यहाँ सुनिश्चित करें कि आपकी फाइल का नाम index3.html ही है
+  './index.html', // आपकी फाइल का नाम यहाँ index7.html है
   './manifest.json',
   './logo.png', 
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
@@ -12,21 +15,40 @@ const assets = [
   'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'
 ];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(assets)));
-  self.skipWaiting();
+// 1. Install Event: फाइलों को कैश में डालना
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('PWA: Caching assets');
+      return cache.addAll(assets);
+    })
+  );
+  // नया वर्जन मिलते ही तुरंत पुराने को "Skip" करना
+  self.skipWaiting(); 
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
+// 2. Activate Event: पुराने और बेकार कैश को डिलीट करना
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys.filter((key) => key !== CACHE_NAME).map((key) => {
+          console.log('PWA: Clearing old cache', key);
+          return caches.delete(key);
+        })
       );
     })
   );
+  // तुरंत क्लाइंट्स पर कंट्रोल लेना
+  return self.clients.claim();
 });
 
-self.addEventListener('fetch', (e) => {
-  e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
+// 3. Fetch Event: ऑफलाइन होने पर कैश से डेटा दिखाना
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      // अगर कैश में है तो वहां से दें, वरना नेटवर्क से लें
+      return response || fetch(event.request);
+    })
+  );
 });
