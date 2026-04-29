@@ -1157,52 +1157,39 @@ async function removeAdmission(id) {
 }
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
-// यह सिर्फ V 2.3.तारीख दिखाएगा (जैसे V 2.3.28)
-const currentVersion = `2.3.${today.getDate()}`; 
+
+const currentVersion = `2.3.1`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
     el.innerHTML = `V ${currentVersion} | © 2026 Surya`;
 });
 
-// --- PWA UPDATE LOGIC ---
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').then(reg => {
-        reg.addEventListener('updatefound', () => {
-            let newWorker = reg.installing;
-            newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    showUpdatePrompt();
-                }
-            });
-        });
-    });
-
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-            window.location.reload();
-            refreshing = true;
+// नया फंक्शन जो बिना हिस्ट्री डिलीट किए अपडेट करेगा
+async function forceUpdateApp() {
+    if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (let registration of registrations) {
+            await registration.update(); // जबरदस्ती अपडेट चेक करो
         }
-    });
+    }
+    // 'true' डालने से ब्राउज़र सर्वर से नई फाइलें मंगवाता है
+    window.location.reload(true); 
 }
 
 function showUpdatePrompt() {
-    // Check karein ki popup pehle se to nahi hai
     if(document.getElementById('update-notice')) return;
 
     const updateDiv = document.createElement('div');
     updateDiv.id = 'update-notice';
-    
-    // HTML for Update and Skip buttons
     updateDiv.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 12px;">
             <span style="font-size: 15px; font-weight: 800; color: #ffffff;">
-                🚀 नया अपडेट उपलब्ध है (V ${currentVersion})
+                🚀 नया अपडेट उपलब्ध है (V ${currentVersion})[cite: 3]
             </span>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="location.reload()" style="background: #ffffff; color: #2563eb; border: none; 
-                        padding: 8px 18px; border-radius: 25px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.3s;">
+                <button onclick="forceUpdateApp()" style="background: #ffffff; color: #2563eb; border: none; 
+                        padding: 8px 18px; border-radius: 25px; font-size: 12px; font-weight: 800; cursor: pointer;">
                     UPDATE
                 </button>
                 <button onclick="document.getElementById('update-notice').remove()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; 
