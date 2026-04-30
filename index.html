@@ -703,61 +703,63 @@ if (!editIdVal && cleanAadhar && cleanAadhar.length >= 12) {
             return; 
         }
     }
-
-    // अब सेव प्रोसेस शुरू होगी
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Syncing to Cloud...";
-
+           // --- डेटा सेव करने का प्रोसेस ---
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Syncing to cloud...';
+const nameVal = document.getElementById('name').value.toUpperCase();
+        const fatherVal = document.getElementById('father').value.toUpperCase();
+        const dobVal = document.getElementById('dob').value;
     const data = {
-        siNo: parseInt(document.getElementById('siNo').value) || 0,
-        name: nameVal,
-        father: fatherVal || "-",
-        dob: dobVal || null,
-        gender: document.getElementById('gender').value,
-        category: document.getElementById('category').value,
-        aadhar: rawAadhar || "-", // यहाँ aadharVal की जगह rawAadhar किया गया है
-        mobile: document.getElementById('mobile').value || "-",
-        village: document.getElementById('village').value || "-",
-        panchayat: document.getElementById('panchayat').value || "-",
-        block: document.getElementById('block').value || "-",
-        school: document.getElementById('school').value || "-",
-        board: document.getElementById('board').value || "-",
-        learnerClass: document.getElementById('learnerClass').value || "-",
-        rollCode: document.getElementById('rollCode').value || "-",
-        rollNo: document.getElementById('rollNo').value || "-",
-        passYear: parseInt(document.getElementById('passYear').value) || null,
-        bankName: document.getElementById('bankName').value || "-",
-        branchName: document.getElementById('branchName').value.toUpperCase() || "-",
-        accNo: document.getElementById('accNo').value || "-",
-        ifsc: document.getElementById('ifsc').value.toUpperCase() || "-",
-        receipt: document.getElementById('receipt').value || "-",
-        verify: document.getElementById('verify').value,
-        alloc: document.getElementById('alloc').value,
-        admis: document.getElementById('admis').value,
-        pay: document.getElementById('pay').value,
-        photo: document.getElementById('photoData').value || null,
-        remark: document.getElementById('remark').value || "-"
-    };
+            siNo: parseInt(document.getElementById('siNo').value) || 0,
+            name: nameVal,
+            father: fatherVal || "-",
+            dob: dobVal || null,
+            gender: document.getElementById('gender').value,
+            category: document.getElementById('category').value,
+            aadhar: rawAadhar || "-",
+            mobile: document.getElementById('mobile').value || "-",
+            village: document.getElementById('village').value || "-",
+            panchayat: document.getElementById('panchayat').value || "-",
+            block: document.getElementById('block').value || "-",
+            school: document.getElementById('school').value || "-",
+            board: document.getElementById('board').value || "-",
+            learnerClass: document.getElementById('learnerClass').value || "-",
+            rollCode: document.getElementById('rollCode').value || "-",
+            rollNo: document.getElementById('rollNo').value || "-",
+            passYear: parseInt(document.getElementById('passYear').value) || null,
+            bankName: document.getElementById('bankName').value || "-",
+            branchName: document.getElementById('branchName').value.toUpperCase() || "-",
+            accNo: document.getElementById('accNo').value || "-",
+            ifsc: document.getElementById('ifsc').value.toUpperCase() || "-",
+            receipt: document.getElementById('receipt').value || "-",
+            verify: document.getElementById('verify').value,
+            alloc: document.getElementById('alloc').value,
+            admis: document.getElementById('admis').value,
+            pay: document.getElementById('pay').value,
+            photo: document.getElementById('photoData').value || null,
+            remark: document.getElementById('remark').value || "-"
+        };
 
     let result;
-    try {
         if (editIdVal) {
-            result = await _supabase.from('students').update(data).eq('id', parseInt(editIdVal));
+            result = await _supabase.from('students').update(data).eq('id', editIdVal);
         } else {
             result = await _supabase.from('students').insert([data]);
         }
 
         if (result.error) throw result.error;
 
-        showToast(editIdVal ? "Record Updated!" : "Cloud Par Save Ho Gaya!", "bg-success");
+        showToast(editIdVal ? "Record Updated!" : "Record Saved Successfully!", "bg-success");
         this.reset();
         document.getElementById('editId').value = '';
-        await loadDataFromSupabase();
-        switchTab('records');
+        bootstrap.Modal.getInstance(document.getElementById('entryModal')).hide();
+        fetchData(); // लिस्ट रिफ्रेश करें
 
     } catch (err) {
+        console.error(err);
         showToast("Error: " + err.message, "bg-danger");
     } finally {
+        // यह लाइन सबसे जरूरी है, यह बटन को हमेशा वापस ठीक कर देगी
         submitBtn.disabled = false;
         submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
     }
@@ -1160,7 +1162,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.3.6`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.3.7`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
