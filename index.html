@@ -1180,6 +1180,28 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+    // मैन्युअल अपडेट चेक करने वाला फंक्शन (इसे स्क्रिप्ट के अंत में जोड़ें)
+async function manualUpdateCheck() {
+    showToast("Checking for updates...", "bg-info");
+    
+    if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+            // सर्वर से नई sw.js फाइल के लिए रिक्वेस्ट करेगा
+            await registration.update(); 
+            
+            // अगर कोई नया वर्कर 'waiting' में है, तो पॉपअप दिखाएं
+            if (registration.waiting) {
+                newWorker = registration.waiting;
+                showUpdatePrompt();
+            } else {
+                showToast("App is already up to date!", "bg-success");
+            }
+        }
+    } else {
+        showToast("Updates not supported", "bg-danger");
+    }
+}
 
 // अपडेट बटन दबाने पर चलने वाला फंक्शन
 async function forceUpdateApp() {
