@@ -672,38 +672,36 @@ function setNextSI() {
     }
 }
 
-// IS CODE KO LINE 425 WALE FORM SUBMIT SE BADAL DEIN
+// फॉर्म सबमिट होने पर केवल आधार चेक और सेव का सही तरीका
 document.getElementById('dataEntryForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
     const submitBtn = e.target.querySelector('button[type="submit"]');
     
-    // --- केवल आधार कार्ड से डुप्लीकेट चेक करने का सटीक कोड ---
-const rawAadhar = document.getElementById('aadhar').value;
-const cleanAadhar = rawAadhar.replace(/\s/g, ''); // आधार से स्पेस हटाकर शुद्ध नंबर प्राप्त करें
-const editIdVal = document.getElementById('editId').value;
+    // --- आधार डुप्लीकेट चेक ---
+    const rawAadhar = document.getElementById('aadhar').value;
+    const cleanAadhar = rawAadhar.replace(/\s/g, '');
+    const editIdVal = document.getElementById('editId').value;
 
-// नया रजिस्ट्रेशन होने पर और आधार नंबर 12 अंकों का होने पर ही चेक चलेगा
-if (!editIdVal && cleanAadhar && cleanAadhar.length >= 12) {
-    submitBtn.disabled = true;
-    submitBtn.innerText = "🔍 Checking Duplicate Aadhar...";
+    try {
+        if (!editIdVal && cleanAadhar && cleanAadhar.length >= 12) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "🔍 Checking Aadhar...";
+            
+            const { data: existingStudent, error: checkError } = await _supabase
+                .from('students')
+                .select('name')
+                .or(`aadhar.eq."${rawAadhar}",aadhar.eq."${cleanAadhar}"`)
+                .maybeSingle();
 
-    // Supabase में आधार नंबर का मिलान (बिना स्पेस और स्पेस वाले दोनों रूपों में)
-    const { data: existingStudent, error: checkError } = await _supabase
-        .from('students')
-        .select('name, aadhar')
-        .or(`aadhar.eq."${rawAadhar}",aadhar.eq."${cleanAadhar}"`)
-        .maybeSingle();
-
-    if (existingStudent) {
-        // अगर रिकॉर्ड मिल गया, तो अलर्ट दिखाएं और प्रोसेस को यहीं रोक दें
-        showToast(`रुको! यह आधार कार्ड पहले से छात्र (${existingStudent.name}) के नाम पर रजिस्टर्ड है।`, "bg-danger");
-        submitBtn.disabled = false;
-        submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
-            return; 
+            if (existingStudent) {
+                showToast(`रुको! यह आधार (${existingStudent.name}) के नाम पर पहले से है।`, "bg-danger");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
+                return; 
+            }
         }
-    }
-           // --- डेटा सेव करने का प्रोसेस ---
+
+        // --- डेटा सेव करने का प्रोसेस ---
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Syncing to cloud...';
 const nameVal = document.getElementById('name').value.toUpperCase();
