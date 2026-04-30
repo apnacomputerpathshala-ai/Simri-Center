@@ -672,12 +672,12 @@ function setNextSI() {
     }
 }
 
-// फॉर्म सबमिट होने पर केवल आधार चेक और सेव का सही तरीका
+// --- Sudhara gaya Form Submit Logic ---
 document.getElementById('dataEntryForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const submitBtn = e.target.querySelector('button[type="submit"]');
     
-    // --- आधार डुप्लीकेट चेक ---
+    // --- Aadhar Duplicate Check ---
     const rawAadhar = document.getElementById('aadhar').value;
     const cleanAadhar = rawAadhar.replace(/\s/g, '');
     const editIdVal = document.getElementById('editId').value;
@@ -701,13 +701,15 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
             }
         }
 
-        // --- डेटा सेव करने का प्रोसेस ---
+        // --- Data Save Logic ---
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Syncing to cloud...';
-const nameVal = document.getElementById('name').value.toUpperCase();
+
+        const nameVal = document.getElementById('name').value.toUpperCase();
         const fatherVal = document.getElementById('father').value.toUpperCase();
         const dobVal = document.getElementById('dob').value;
-    const data = {
+
+        const data = {
             siNo: parseInt(document.getElementById('siNo').value) || 0,
             name: nameVal,
             father: fatherVal || "-",
@@ -738,7 +740,7 @@ const nameVal = document.getElementById('name').value.toUpperCase();
             remark: document.getElementById('remark').value || "-"
         };
 
-    let result;
+        let result;
         if (editIdVal) {
             result = await _supabase.from('students').update(data).eq('id', editIdVal);
         } else {
@@ -747,17 +749,19 @@ const nameVal = document.getElementById('name').value.toUpperCase();
 
         if (result.error) throw result.error;
 
+        // --- Safalta ka Sandesh ---
         showToast(editIdVal ? "Record Updated!" : "Record Saved Successfully!", "bg-success");
         this.reset();
         document.getElementById('editId').value = '';
-        bootstrap.Modal.getInstance(document.getElementById('entryModal')).hide();
-        fetchData(); // लिस्ट रिफ्रेश करें
+
+        // Error Fix: 'entryModal' wali line hata di gayi hai
+        await loadDataFromSupabase(); // Sahi function call
+        switchTab('records'); // Save ke baad records tab par bhejein
 
     } catch (err) {
         console.error(err);
         showToast("Error: " + err.message, "bg-danger");
     } finally {
-        // यह लाइन सबसे जरूरी है, यह बटन को हमेशा वापस ठीक कर देगी
         submitBtn.disabled = false;
         submitBtn.innerText = "SAVE COMPLETE STUDENT RECORD";
     }
@@ -1160,7 +1164,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.3.7`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.3.6`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
