@@ -763,20 +763,27 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
 });
 
 // --- DATA OPERATIONS ---
-async function loadData() {
-    // यहाँ 'true' होने पर ही 1 नंबर ऊपर आएगा और नया डेटा नीचे जुड़ेगा
-    const { data, error } = await _supabase
-        .from('students')
-        .select('*')
-        .order('siNo', { ascending: true }); 
+async function loadDataFromSupabase() {
+    try {
+        const { data, error } = await _supabase
+            .from('students')
+            .select('*')
+            .order('name', { ascending: true });
 
-    if (!error) { 
-        learners = data; 
-        renderTable(); 
-        renderActiveStudents(); 
-        updateStats(); 
+        if (error) throw error;
+
+        if (data) {
+            learners = data; // 1. डेटा को ग्लोबल वेरिएबल में भरें
+            renderTable(learners); // 2. टेबल में डेटा दिखाएँ
+            updateStats(); // 3. डैशबोर्ड के नंबर (Total, Verified) अपडेट करें
+            console.log("Data successfully loaded from Cloud.");
+        }
+    } catch (err) {
+        console.error("Fetch Error:", err.message);
+        showToast("Cloud से डेटा लोड नहीं हो पाया!", "bg-danger");
     }
 }
+
 function applyFilters() {
     const fName = (document.getElementById('fName').value || "").toLowerCase();
     const fVillage = (document.getElementById('fVillage').value || "").toLowerCase();
@@ -801,10 +808,12 @@ function applyFilters() {
     });
     renderTable(filtered);
 }
-
-function renderTable(data) {
+function renderTable(dataToRender) {
     const tbody = document.getElementById('learnerTbody');
-    if (data.length === 0) {
+    // अगर डेटा पास नहीं हुआ, तो मुख्य 'learners' लिस्ट का उपयोग करें
+    const data = dataToRender || learners; 
+
+    if (!data || data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="17" class="text-center p-4">No records found</td></tr>`;
         return;
     }
@@ -812,27 +821,27 @@ function renderTable(data) {
     tbody.innerHTML = data.map((l, index) => `
         <tr>
             <td class="text-center">${index + 1}</td> 
-           <td class="text-start">
-    <div class="d-flex align-items-center justify-content-between" style="min-width: 140px;">
-        <span class="fw-bold text-primary">${l.name}</span>
-        ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
-            ? '<i class="fas fa-check-circle verified-badge" title="Verified"></i>' 
-            : '<span></span>'}
-    </div>
-</td>
-            <td class="text-start">${l.father}</td>
-            <td>${l.village}</td>
-            <td>${l.aadhar}</td>
-            <td>${l.mobile}</td>
-            <td>${l.receipt}</td>
-            <td>${l.gender}</td>
-            <td>${l.learnerClass}</td>
-            <td>${l.school}</td>
-            <td><span class="badge ${l.verify==='Yes'?'bg-success':'bg-danger'}">${l.verify}</span></td>
-            <td><span class="badge ${l.alloc==='Yes'?'bg-success':'bg-danger'}">${l.alloc}</span></td>
-            <td><span class="badge ${l.admis==='Yes'?'bg-success':'bg-danger'}">${l.admis}</span></td>
-            <td><span class="badge ${l.pay==='Yes'?'bg-success':'bg-danger'}">${l.pay}</span></td>
-            <td>${l.remark}</td>
+            <td class="text-start">
+                <div class="d-flex align-items-center justify-content-between" style="min-width: 140px;">
+                    <span class="fw-bold text-primary">${l.name}</span>
+                    ${(l.aadhar || "").replace(/\s/g, '').length >= 12 
+                        ? '<i class="fas fa-check-circle verified-badge" title="Verified"></i>' 
+                        : '<span></span>'}
+                </div>
+            </td>
+            <td class="text-start">${l.father || "-"}</td>
+            <td>${l.village || "-"}</td>
+            <td>${l.aadhar || "-"}</td>
+            <td>${l.mobile || "-"}</td>
+            <td>${l.receipt || "-"}</td>
+            <td>${l.gender || "-"}</td>
+            <td>${l.learnerClass || "-"}</td>
+            <td>${l.school || "-"}</td>
+            <td><span class="badge ${l.verify==='Yes'?'bg-success':'bg-danger'}">${l.verify || "No"}</span></td>
+            <td><span class="badge ${l.alloc==='Yes'?'bg-success':'bg-danger'}">${l.alloc || "No"}</span></td>
+            <td><span class="badge ${l.admis==='Yes'?'bg-success':'bg-danger'}">${l.admis || "No"}</span></td>
+            <td><span class="badge ${l.pay==='Yes'?'bg-success':'bg-danger'}">${l.pay || "No"}</span></td>
+            <td>${l.remark || "-"}</td>
             <td class="text-center">
                 <button class="btn btn-sm btn-info text-white py-0 px-2" onclick="showFullReport(${l.id})">
                     <i class="fas fa-eye"></i> View
@@ -853,6 +862,7 @@ function renderTable(data) {
             </td>
         </tr>`).join('');
 }
+
 // FULL REPORT MODAL - Sabhi Data Ke Saath
 function showFullReport(id) {
     const l = learners.find(x => x.id === id);
@@ -1047,26 +1057,31 @@ function showToast(msg, cls) {
     setTimeout(() => div.remove(), 3000);
 }
 async function loadDataFromSupabase() {
-    const { data, error } = await _supabase
-        .from('students')
-        .select('*')
-        .order('name', { ascending: true }); // 'siNo' ki jagah 'name' kiya gaya taaki A-Z dikhe
+    try {
+        const { data, error } = await _supabase
+            .from('students')
+            .select('*')
+            .order('name', { ascending: true });
 
-    if (!error) {
-        learners = data;
-        renderTable(learners);
-        updateStats();
-    } else {
-        console.error("Data load error:", error);
+        if (error) throw error;
+
+        if (data) {
+            learners = data; // ग्लोबल एरे 'learners' में डेटा भरें
+            renderTable(learners); // सबसे जरूरी: टेबल को डेटा भेजें
+            updateStats(); // डैशबोर्ड अपडेट करें
+            console.log("Data loaded:", learners);
+        }
+    } catch (err) {
+        console.error("Error loading data:", err.message);
+        showToast("डेटा लोड नहीं हो पाया!", "bg-danger");
     }
 }
-
-// Window load hote hi call karein
+// पेज लोड होते ही डेटा लाने की प्रक्रिया
 window.addEventListener('DOMContentLoaded', async () => {
     checkAuth(); 
-    applyPermissions(); // यह लाइन यहाँ जोड़ना जरूरी है
+    applyPermissions(); 
+    // सीधे Cloud से डेटा खींचने वाले फंक्शन को कॉल करें
     await loadDataFromSupabase(); 
-    updateStats(); 
 });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1168,7 +1183,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.4.1`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.3.6`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
