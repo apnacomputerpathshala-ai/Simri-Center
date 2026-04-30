@@ -223,9 +223,9 @@
 <div class="nav-item text-danger mt-3" onclick="adminLogout()">
     <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
 </div>
-       <div class="nav-item text-info rounded p-2 m-2" onclick="manualUpdateCheck()" style="cursor: pointer; border: 1px dashed #3b82f6; text-align: center;">
+<div class="nav-item text-info rounded p-2 m-2" onclick="manualUpdateCheck()" style="cursor: pointer; border: 1px dashed #3b82f6; text-align: center;">
     <i class="fas fa-sync-alt me-2"></i> <b>CHECK FOR UPDATE</b>
-</div> 
+</div>
 <div class="nav-item text-warning rounded p-2 m-2" onclick="showInstallPopUp()" style="cursor: pointer; border: 1px dashed #f59e0b; text-align: center;">
     <i class="fas fa-download me-2"></i> <b>INSTALL APP</b>
 </div>
@@ -1160,7 +1160,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.3.7`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.3.6`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -1182,7 +1182,7 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
-    // मैन्युअल अपडेट चेक करने वाला फंक्शन (इसे स्क्रिप्ट के अंत में जोड़ें)
+// मैन्युअल अपडेट चेक करने वाला फंक्शन (इसे स्क्रिप्ट के अंत में जोड़ें)
 async function manualUpdateCheck() {
     showToast("Checking for updates...", "bg-info");
     
