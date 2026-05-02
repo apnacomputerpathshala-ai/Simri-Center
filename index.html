@@ -144,14 +144,39 @@
         -webkit-overflow-scrolling: touch;
     }
 }
-/* Print Logic: Sirf Registration Form dikhega */
+/* --- FINAL BALANCED A4 PRINT DESIGN --- */
 @media print {
     body * { visibility: hidden; }
     #printArea, #printArea * { visibility: visible; display: block !important; }
-    #printArea { position: absolute; left: 0; top: 0; width: 100%; border: none; }
-    @page { size: A4; margin: 10mm; }
+    #printArea { 
+        position: absolute; left: 0; top: 0; width: 210mm; 
+        background: white !important; padding: 10mm !important;
+    }
+    @page { size: A4; margin: 0; }
 }
 
+#printArea { font-family: 'Inter', 'Arial', sans-serif; color: #1e293b; line-height: 1.2; }
+.p-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px;
+    background: #ffffff;
+    margin-bottom: 10px;
+}
+.p-label-sm { font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 1px; }
+.p-value-md { font-size: 11px; color: #1e293b; font-weight: 700; display: block; margin-bottom: 6px; }
+.p-section-head {
+    color: #2563eb;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    border-left: 3px solid #2563eb;
+    padding-left: 8px;
+    -webkit-print-color-adjust: exact;
+}
 /* Modal ke andar A4 jaisa safed page dikhane ke liye */
 #fullReportBody {
     background: white;
@@ -294,6 +319,11 @@
                     <div class="col-md-3"><label class="small fw-bold">Village</label><input type="text" id="village" class="form-control"></div>
                     <div class="col-md-3"><label class="small fw-bold">Panchayat</label><input type="text" id="panchayat" class="form-control"></div>
                     <div class="col-md-3"><label class="small fw-bold">Block</label><input type="text" id="block" class="form-control"></div>
+                    <div class="col-md-2">
+    <label class="small fw-bold">Pin Code</label>
+    <input type="text" id="pincode" class="form-control" maxlength="6" 
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
                     <div class="col-md-3"><label class="small fw-bold">School Name</label><input type="text" id="school" class="form-control"></div>
                     <div class="col-md-2"><label class="small fw-bold">Board</label><input type="text" id="board" class="form-control" placeholder=""></div>
                     <div class="col-md-2"><label class="small fw-bold">Class</label><input type="text" id="learnerClass" class="form-control"></div>
@@ -474,52 +504,92 @@
 </div>
 
 <div id="printArea" style="display: none;">
-    <div style="width: 750px; margin: auto; padding: 25px; font-family: 'Arial', sans-serif; background: white; color: #000; position: relative; border: 2px solid #00aeef;">
-        
-        <div style="text-align: center; border-bottom: 2px solid #00aeef; padding-bottom: 10px; margin-bottom: 20px;">
-            <h2 style="margin: 0; color: #00aeef;">कौशल विकास केंद्र, कुशल युवा कार्यक्रम</h2>
-            <h5 style="margin: 5px 0;">Kriti Edify Pvt. Ltd. KYP06020030</h5>
-            <p style="font-size: 11px; margin: 0;">कारुबीर बाबा मंदिर के नजदीक, बकुलहा पट्टी सिमरी, 802135</p>
-        </div>
+    <div style="background: #2563eb; border-radius: 10px 10px 0 0; padding: 15px; text-align: center; color: white;">
+        <h4 style="margin: 0; font-weight: 800; font-size: 16px;">कौशल विकास केंद्र, कुशल युवा कार्यक्रम</h4>
+        <h5 style="margin: 2px 0; font-weight: 700;">Kriti Edify Pvt. Ltd. (KYP06020030)</h5>
+        <p style="font-size: 10px; margin: 0; opacity: 0.9;">कारुबीर बाबा मंदिर के नजदीक, बकुलहा पट्टी सिमरी, 802135</p>
+    </div>
 
-        <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">Candidate Admission Form</h3>
-
-        <div style="position: absolute; right: 25px; top: 120px; width: 110px; height: 135px; border: 1px solid #000; text-align: center; background: #fafafa; overflow: hidden;">
+    <div class="p-card" style="text-align: center; margin-top: -5px; border-top: none; border-radius: 0 0 10px 10px;">
+        <div style="width: 100px; height: 120px; border: 2px solid #f1f5f9; border-radius: 8px; overflow: hidden; margin: 0 auto 10px auto;">
             <img id="pPhoto" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-            <span id="pPhotoPlaceholder" style="font-size: 11px; line-height: 135px;">PHOTO</span>
         </div>
+        <h4 id="pName" style="margin: 0; font-weight: 800; color: #0f172a; text-transform: uppercase; font-size: 18px;"></h4>
+        <span id="pSiNoBadge" style="background: #eff6ff; color: #2563eb; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; margin-top: 5px; display: inline-block;"></span>
+    </div>
 
-        <h4 style="background: #f0f0f0; border: 1px solid #000; padding: 5px; font-size: 15px; margin-top: 10px;">Personal Details</h4>
-        <div style="font-size: 14px; line-height: 1.8; width: 80%;">
-            <p><b>SI.No:</b> <span id="pSiNo" style="border-bottom: 1px dotted #000;"></span></p>
-            <p><b>Candidate Name:</b> <span id="pName" style="border-bottom: 1px dotted #000; font-weight: bold; text-transform: uppercase;"></span></p>
-            <p><b>Father's Name:</b> <span id="pFather" style="border-bottom: 1px dotted #000;"></span></p>
-            <p><b>Date of Birth:</b> <span id="pDob" style="border-bottom: 1px dotted #000;"></span> &nbsp;&nbsp; <b>Gender:</b> <span id="pGender" style="border-bottom: 1px dotted #000;"></span></p>
-            <p><b>Category:</b> <span id="pCategory" style="border-bottom: 1px dotted #000;"></span></p>
-            <p><b>Aadhar No:</b> <span id="pAadhar" style="border-bottom: 1px dotted #000;"></span> &nbsp;&nbsp; <b>Mobile No:</b> <span id="pMobile" style="border-bottom: 1px dotted #000;"></span></p>
+    <div class="p-card">
+        <div class="p-section-head">Personal Details</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <span class="p-label-sm">Father's Name</span>
+                <span class="p-value-md" id="pFather"></span>
+                <span class="p-label-sm">Date of Birth</span>
+                <span class="p-value-md" id="pDob"></span>
+                <span class="p-label-sm">Mobile No</span>
+                <span class="p-value-md" id="pMobile"></span>
+            </div>
+            <div>
+                <span class="p-label-sm">Gender</span>
+                <span class="p-value-md" id="pGender"></span>
+                <span class="p-label-sm">Category</span>
+                <span class="p-value-md" id="pCategory"></span>
+                <span class="p-label-sm">Aadhar Number</span>
+                <span class="p-value-md" id="pAadhar"></span>
+            </div>
         </div>
+    </div>
 
-        <h4 style="background: #f0f0f0; border: 1px solid #000; padding: 5px; font-size: 15px; margin-top: 25px;">Address & Education</h4>
-        <div style="font-size: 14px; line-height: 1.8;">
-            <p><b>Village:</b> <span id="pVillage" style="border-bottom: 1px dotted #000;"></span> &nbsp; <b>Panchayat:</b> <span id="pPan" style="border-bottom: 1px dotted #000;"></span> &nbsp; <b>Block:</b> <span id="pBlock" style="border-bottom: 1px dotted #000;"></span></p>
-            <p><b>School:</b> <span id="pSchool" style="border-bottom: 1px dotted #000;"></span> &nbsp; <b>Board:</b> <span id="pBoard" style="border-bottom: 1px dotted #000;"></span></p>
-            <p><b>Class:</b> <span id="pClass" style="border-bottom: 1px dotted #000;"></span> &nbsp; <b>Roll Code:</b> <span id="pRollCode" style="border-bottom: 1px dotted #000;"></span> &nbsp; <b>Roll No:</b> <span id="pRollNo" style="border-bottom: 1px dotted #000;"></span> &nbsp; <b>Year:</b> <span id="pPassYear" style="border-bottom: 1px dotted #000;"></span></p>
+    <div class="p-card">
+        <div class="p-section-head">Address & Education</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <span class="p-label-sm">Village / Panchayat</span>
+                <span class="p-value-md" id="pVillagePan"></span>
+                <span class="p-label-sm">Block / Pin Code</span>
+                <span class="p-value-md" id="pBlockPin"></span>
+                <span class="p-label-sm">Roll Code & No</span>
+                <span class="p-value-md" id="pRoll"></span>
+            </div>
+            <div>
+                <span class="p-label-sm">School Name</span>
+                <span class="p-value-md" id="pSchool"></span>
+                <span class="p-label-sm">Board / Class</span>
+                <span class="p-value-md" id="pBoardClass"></span>
+                <span class="p-label-sm">Passing Year</span>
+                <span class="p-value-md" id="pPassYear"></span>
+            </div>
         </div>
+    </div>
 
-        <h4 style="background: #f0f0f0; border: 1px solid #000; padding: 5px; font-size: 15px; margin-top: 25px;">Bank Details</h4>
-        <div style="font-size: 14px; line-height: 1.8;">
-            <p><b>Bank Name:</b> <span id="pBank" style="border-bottom: 1px dotted #000;"></span> &nbsp; <b>Branch:</b> <span id="pBranch" style="border-bottom: 1px dotted #000;"></span></p>
-
-
-            <p><b>Account No:</b> <span id="pAcc" style="border-bottom: 1px dotted #000;"></span> &nbsp;&nbsp; <b>IFSC Code:</b> <span id="pIfsc" style="border-bottom: 1px dotted #000;"></span></p>
+    <div class="p-card">
+        <div class="p-section-head">Bank Details</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+                <span class="p-label-sm">Bank Name</span>
+                <span class="p-value-md" id="pBank"></span>
+                <span class="p-label-sm">Account Number</span>
+                <span class="p-value-md" id="pAcc" style="color: #2563eb;"></span>
+            </div>
+            <div>
+                <span class="p-label-sm">Branch Name</span>
+                <span class="p-value-md" id="pBranch"></span>
+                <span class="p-label-sm">IFSC Code</span>
+                <span class="p-value-md" id="pIfsc" style="color: #2563eb;"></span>
+            </div>
         </div>
+    </div>
 
-        <div style="margin-top: 60px; display: flex; justify-content: space-between; font-size: 13px;">
-            <p><b>Candidate's Signature</b></p>
-            <p><b>Authorized Center Head</b></p>
+    <div style="margin-top: 50px; display: flex; justify-content: space-between; padding: 0 10px;">
+        <div style="text-align: center; border-top: 1.5px solid #0f172a; width: 180px; padding-top: 5px;">
+            <span style="font-size: 11px; font-weight: 800; color: #0f172a;">Candidate's Signature</span>
+        </div>
+        <div style="text-align: center; border-top: 1.5px solid #0f172a; width: 180px; padding-top: 5px;">
+            <span style="font-size: 11px; font-weight: 800; color: #0f172a;">Authorized Center Head</span>
         </div>
     </div>
 </div>
+
 <script>
 // --- SUPABASE CONFIGURATION ---
 const SUPABASE_URL = 'https://fnafxhtwuzavnanlwkbm.supabase.co';
@@ -719,6 +789,7 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
             village: document.getElementById('village').value || "-",
             panchayat: document.getElementById('panchayat').value || "-",
             block: document.getElementById('block').value || "-",
+                pincode: document.getElementById('pincode').value || "-",
             school: document.getElementById('school').value || "-",
             board: document.getElementById('board').value || "-",
             learnerClass: document.getElementById('learnerClass').value || "-",
@@ -863,44 +934,91 @@ function renderTable(dataToRender) {
         </tr>`).join('');
 }
 
-// FULL REPORT MODAL - Sabhi Data Ke Saath
+// --- OPTIMIZED FULL REPORT MODAL ---
 function showFullReport(id) {
     const l = learners.find(x => x.id === id);
     if (!l) return;
 
     const reportHtml = `
-        <div id="fullReportBody" style="background: white; padding: 30px; border: 1px solid #ddd; position: relative;">
-            <div style="text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 20px;">
-                <h4 style="margin:0; color: #1e3a8a;">Kriti Edify Pvt. Ltd. (SDC Simri)</h4>
-                <p style="margin:5px 0; font-weight:bold; color: #4b5563;">Candidate Full Admission Form</p>
+        <div id="fullReportBody" style="background: white; border-radius: 15px; overflow: hidden; font-family: 'Inter', sans-serif; padding: 0; color: #1e293b;">
+            <div style="background: #2563eb; color: white; padding: 20px; text-align: center;">
+                <h5 style="margin:0; font-weight: 800; letter-spacing: 1px; font-size: 16px;">KRITI EDIFY PVT. LTD.</h5>
+                <p style="margin:4px 0 0 0; font-size: 11px; opacity: 0.9; text-transform: uppercase; font-weight: 600;">Candidate Admission Profile</p>
             </div>
             
-            <div style="position: absolute; right: 30px; top: 100px; width: 110px; height: 130px; border: 1px solid #ccc;">
-                ${l.photo ? `<img src="${l.photo}" style="width:100%; height:100%; object-fit:cover;">` : `<p style="text-align:center; padding-top:50px; font-size:10px;">PHOTO</p>`}
-            </div>
+            <div style="padding: 15px;">
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px;">
+                    <div style="width: 110px; height: 130px; border: 3px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #f8fafc; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        ${l.photo ? `<img src="${l.photo}" style="width:100%; height:100%; object-fit:cover;">` : 
+                        `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#cbd5e1; flex-direction:column;"><i class="fas fa-user fa-3x"></i><small style="font-size:9px; margin-top:5px;">NO PHOTO</small></div>`}
+                    </div>
+                    <h4 style="font-weight: 800; color: #0f172a; margin: 0; text-transform: uppercase; font-size: 20px;">${l.name}</h4>
+                    <span style="background: #eff6ff; color: #2563eb; padding: 2px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 5px;">SI.No: ${l.siNo}</span>
+                </div>
 
-            <div style="font-size: 14px; line-height: 2;">
-                <h6 style="color: #2563eb; background: #f0f4ff; padding: 5px;">PERSONAL DETAILS</h6>
-                <p><b>SI.No:</b> ${l.siNo} | <b>Name:</b> <span style="text-transform:uppercase;">${l.name}</span></p>
-                <p><b>Father:</b> ${l.father} | <b>DOB:</b> ${l.dob}</p>
-                <p><b>Gender:</b> ${l.gender} | <b>Category:</b> ${l.category}</p>
-                <p><b>Aadhar:</b> ${l.aadhar} | <b>Mobile:</b> ${l.mobile}</p>
-                
-                <h6 style="color: #2563eb; background: #f0f4ff; padding: 5px; margin-top: 15px;">ADDRESS & EDUCATION</h6>
-                <p><b>Village:</b> ${l.village} | <b>Panchayat:</b> ${l.panchayat} | <b>Block:</b> ${l.block}</p>
-                <p><b>School:</b> ${l.school} | <b>Board:</b> ${l.board} | <b>Class:</b> ${l.learnerClass}</p>
-                <p><b>Roll Code:</b> ${l.rollCode} | <b>Roll No:</b> ${l.rollNo} | <b>Year:</b> ${l.passYear}</p>
-                
-                <h6 style="color: #2563eb; background: #f0f4ff; padding: 5px; margin-top: 15px;">BANK & KYP STATUS</h6>
-                <p><b>Bank:</b> ${l.bankName} | <b>Branch:</b> ${l.branchName} | <b>A/C:</b> ${l.accNo} | <b>IFSC:</b> ${l.ifsc}</p>
-                <p><b>Receipt No:</b> ${l.receipt} | <b>Verified:</b> ${l.verify}</p>
-                <p><b>Allocation:</b> ${l.alloc} | <b>Admission:</b> ${l.admis} | <b>Payment:</b> ${l.pay}</p>
-                <p><b>Remark:</b> ${l.remark}</p>
+                <div style="margin-bottom: 20px;">
+                    <h6 style="color: #2563eb; font-weight: 800; font-size: 12px; text-transform: uppercase; border-left: 4px solid #2563eb; padding-left: 10px; margin-bottom: 10px;">Personal Details</h6>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 10px;">
+                        <div style="grid-column: span 2;"><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Father's Name</label><span style="font-weight:600; font-size:13px; display:block;">${l.father}</span></div>
+                        <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Date of Birth</label><span style="font-weight:600; font-size:13px; display:block;">${l.dob || "N/A"}</span></div>
+                        <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Gender / Category</label><span style="font-weight:600; font-size:13px; display:block;">${l.gender} / ${l.category}</span></div>
+                        <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Mobile No</label><span style="font-weight:600; font-size:13px; display:block;">${l.mobile}</span></div>
+                        <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Aadhar Number</label><span style="font-weight:600; font-size:13px; letter-spacing:0.5px;">${l.aadhar}</span></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h6 style="color: #2563eb; font-weight: 800; font-size: 12px; text-transform: uppercase; border-left: 4px solid #2563eb; padding-left: 10px; margin-bottom: 10px;">Address & Education</h6>
+                    <div style="background: #f8fafc; padding: 12px; border-radius: 10px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Village</label><span style="font-size:13px; font-weight:600;">${l.village}</span></div>
+                            <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Panchayat</label><span style="font-size:13px; font-weight:600;">${l.panchayat}</span></div>
+                            <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Block</label><span style="font-size:13px; font-weight:600;">${l.block}</span></div>
+                            <div><label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Pin Code</label><span style="font-size:13px; font-weight:600;">${l.pincode || "-"}</span></div>
+                        </div>
+                        <div style="border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+                            <label style="display:block; font-size:10px; color:#64748b; font-weight:700;">School & Board</label>
+                            <span style="font-size:13px; font-weight:600;">${l.school} (${l.board})</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                            <div><label style="display:block; font-size:9px; color:#64748b; font-weight:700;">Class</label><span style="font-size:12px; font-weight:600;">${l.learnerClass}</span></div>
+                            <div><label style="display:block; font-size:9px; color:#64748b; font-weight:700;">Roll Code/No</label><span style="font-size:12px; font-weight:600;">${l.rollCode}/${l.rollNo}</span></div>
+                            <div><label style="display:block; font-size:9px; color:#64748b; font-weight:700;">Pass Year</label><span style="font-size:12px; font-weight:600;">${l.passYear}</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h6 style="color: #2563eb; font-weight: 800; font-size: 12px; text-transform: uppercase; border-left: 4px solid #2563eb; padding-left: 10px; margin-bottom: 10px;">Bank & KYP Status</h6>
+                    <div style="background: #fff; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px;">
+                        <div style="margin-bottom: 10px;">
+                            <label style="display:block; font-size:10px; color:#64748b; font-weight:700;">Bank Details</label>
+                            <span style="font-size:13px; font-weight:700; color: #1e293b;">${l.bankName} (${l.branchName})</span>
+                            <div style="font-size:12px; color: #2563eb; font-weight: 700; word-break: break-all;">A/C: ${l.accNo}</div>
+                            <div style="font-size:12px; color: #2563eb; font-weight: 700;">IFSC: ${l.ifsc}</div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                            <div style="font-size:11px;"><b>Receipt:</b> ${l.receipt}</div>
+                            <div style="font-size:11px;"><b>Verified:</b> ${l.verify === 'Yes' ? '✅' : '❌'}</div>
+                            <div style="font-size:11px;"><b>Allocated:</b> ${l.alloc === 'Yes' ? '✅' : '❌'}</div>
+                            <div style="font-size:11px;"><b>Admission:</b> ${l.admis === 'Yes' ? '✅' : '❌'}</div>
+                            <div style="font-size:11px;"><b>Payment:</b> ${l.pay === 'Yes' ? '✅' : '❌'}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="padding: 10px; background: #fffbeb; border-radius: 10px; border-left: 4px solid #f59e0b;">
+                    <label style="display:block; font-size:10px; color:#92400e; font-weight:800; text-transform:uppercase;">Remark / Details</label>
+                    <p style="margin:4px 0 0 0; font-size:12px; color:#b45309; line-height: 1.4;">${l.remark || "-"}</p>
+                </div>
             </div>
         </div>
     `;
     
     document.getElementById('fullReportBody').innerHTML = reportHtml;
+    const modalBody = document.querySelector('#reportModal .modal-body');
+    if(modalBody) modalBody.style.padding = '5px';
+    
     new bootstrap.Modal(document.getElementById('reportModal')).show();
 }
 
@@ -909,36 +1027,31 @@ function printL(id) {
     const l = learners.find(x => x.id === id);
     if(!l) return;
 
-    // Data Map Karo
-    document.getElementById('pSiNo').innerText = l.siNo;
-    document.getElementById('pName').innerText = l.name;
-    document.getElementById('pFather').innerText = l.father;
-    document.getElementById('pDob').innerText = l.dob;
-    document.getElementById('pGender').innerText = l.gender;
-    document.getElementById('pCategory').innerText = l.category;
-    document.getElementById('pAadhar').innerText = l.aadhar;
-    document.getElementById('pMobile').innerText = l.mobile;
-    document.getElementById('pVillage').innerText = l.village;
-    document.getElementById('pPan').innerText = l.panchayat;
-    document.getElementById('pBlock').innerText = l.block;
-    document.getElementById('pSchool').innerText = l.school;
-    document.getElementById('pBoard').innerText = l.board;
-    document.getElementById('pClass').innerText = l.learnerClass;
-    document.getElementById('pRollCode').innerText = l.rollCode;
-    document.getElementById('pRollNo').innerText = l.rollNo;
-    document.getElementById('pPassYear').innerText = l.passYear;
-    document.getElementById('pBank').innerText = l.bankName;
-    document.getElementById('pBranch').innerText = l.branchName;
-    document.getElementById('pAcc').innerText = l.accNo;
-    document.getElementById('pIfsc').innerText = l.ifsc;
+    document.getElementById('pSiNoBadge').innerText = "SI.No: " + (l.siNo || "-");
+    document.getElementById('pName').innerText = l.name || "-";
+    document.getElementById('pFather').innerText = l.father || "-";
+    document.getElementById('pDob').innerText = l.dob || "-";
+    document.getElementById('pGender').innerText = l.gender || "-";
+    document.getElementById('pCategory').innerText = l.category || "-";
+document.getElementById('pAadhar').innerText = l.aadhar || "-";
+    document.getElementById('pMobile').innerText = l.mobile || "-";
+    document.getElementById('pVillagePan').innerText = `${l.village} / ${l.panchayat}`;
+    document.getElementById('pBlockPin').innerText = `${l.block} - ${l.pincode}`;
+    document.getElementById('pSchool').innerText = l.school || "-";
+    document.getElementById('pBoardClass').innerText = `${l.board} / ${l.learnerClass}`;
+    document.getElementById('pRoll').innerText = `${l.rollCode} / ${l.rollNo}`;
+    document.getElementById('pPassYear').innerText = l.passYear || "-";
+    document.getElementById('pBank').innerText = l.bankName || "-";
+    document.getElementById('pBranch').innerText = l.branchName || "-";
+    document.getElementById('pAcc').innerText = l.accNo || "-";
+    document.getElementById('pIfsc').innerText = l.ifsc || "-";
 
-    // Photo Handle
     const imgTag = document.getElementById('pPhoto');
-    const placeholder = document.getElementById('pPhotoPlaceholder');
     if(l.photo) {
-        imgTag.src = l.photo; imgTag.style.display = 'block'; placeholder.style.display = 'none';
+        imgTag.src = l.photo; 
+        imgTag.style.display = 'block'; 
     } else {
-        imgTag.style.display = 'none'; placeholder.style.display = 'block';
+        imgTag.style.display = 'none'; 
     }
 
     const printSection = document.getElementById('printArea');
@@ -1183,7 +1296,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.4.2`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.4.3`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
