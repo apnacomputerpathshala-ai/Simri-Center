@@ -443,18 +443,10 @@
                 </select>
             </div>
             <div class="col-6">
-                <label class="small fw-bold text-muted mb-1">Batch Time</label>
-                <select id="activeBatchFilter" class="form-select form-select-sm" onchange="renderActiveStudents()">
-                    <option value="">All Batches</option>
-                    <option value="08-10 AM">08-10 AM</option>
-                    <option value="10-12 PM">10-12 PM</option>
-                    <option value="12-02 PM">12-02 PM</option>
-                    <option value="02-04 PM">02-04 PM</option>
-                    <option value="04-06 PM">04-06 PM</option>
-                </select>
+                  <label class="small fw-bold text-muted mb-1">Search Batch Time</label>
+                <input type="text" id="activeBatchFilter" class="form-control form-control-sm" placeholder="e.g. 08:30 AM" onkeyup="renderActiveStudents()">
             </div>
         </div>
-        <small class="text-white-50"></small>
     </div>
     
     <div class="table-responsive mt-4">
@@ -464,7 +456,7 @@
                     <th>SI.No</th>
                     <th>Candidate Name</th>
                     <th>Father's Name</th>
-                    <th>Mobile</th>
+                    <th>Village</th> <th>Mobile</th>
                     <th>Admission</th>
                     <th>Action</th>
                 </tr>
@@ -1232,42 +1224,45 @@ function showInstallPopUp() {
 function renderActiveStudents() {
     const tbody = document.getElementById('activeStudentsTbody');
     const selectedMonth = document.getElementById('activeMonthFilter').value;
-    const selectedBatch = document.getElementById('activeBatchFilter').value;
+    const batchSearch = (document.getElementById('activeBatchFilter').value || "").toLowerCase();
 
-    // फ़िल्टर लॉजिक: Admis 'Yes' होना चाहिए + Month और Batch 'Remark' में मौजूद होने चाहिए
+    // Filter Logic: Admis 'Yes' + Month aur Batch match
     const filteredList = learners.filter(l => {
         const matchesAdmis = l.admis === 'Yes';
         const matchesMonth = selectedMonth === "" || (l.remark && l.remark.toLowerCase().includes(selectedMonth.toLowerCase()));
-        const matchesBatch = selectedBatch === "" || (l.remark && l.remark.includes(selectedBatch));
+        const matchesBatch = batchSearch === "" || (l.remark && l.remark.toLowerCase().includes(batchSearch));
         
         return matchesAdmis && matchesMonth && matchesBatch;
     });
 
     if (filteredList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-4 text-muted">No students found for this selection</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted">No students found</td></tr>`;
         return;
     }
 
     tbody.innerHTML = filteredList.map((l, index) => `
         <tr>
+            <td class="text-center">${index + 1}</td> 
             <td class="text-start">
-    <div class="d-flex align-items-center justify-content-between">
-        <span class="fw-bold text-primary">${l.name}</span>
-        ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
-            ? '<i class="fas fa-check-circle verified-badge"></i>' 
-            : '<span></span>'}
-    </div>
-</td>
-            <td class="text-start">${l.father}</td>
-            <td>${l.mobile}</td>
-            <td><span class="badge bg-success">${l.admis}</span></td>
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="fw-bold text-primary">${l.name}</span>
+                    ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
+                        ? '<i class="fas fa-check-circle verified-badge"></i>' 
+                        : ''}
+                </div>
+            </td>
+            <td class="text-start">${l.father || "-"}</td>
+            <td>${l.village || "-"}</td>
+            <td>${l.mobile || "-"}</td>
+            <td><span class="badge bg-success">Admitted</span></td>
             <td>
-    <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm" onclick="removeAdmission(${l.id})">
-        <i class="fas fa-user-minus me-1"></i> Remove
-    </button>
-</td>
+                <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm" onclick="removeAdmission(${l.id})">
+                    <i class="fas fa-user-minus me-1"></i> Remove
+                </button>
+            </td>
         </tr>`).join('');
 }
+
 // एडमिशन 'No' करने के लिए फंक्शन
 async function removeAdmission(id) {
     if(confirm("क्या आप इस छात्र का एडमिशन रद्द (No) करना चाहते हैं?")) {
@@ -1296,7 +1291,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.5.1`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.5.2`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
