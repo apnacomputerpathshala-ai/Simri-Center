@@ -222,6 +222,68 @@
     filter: drop-shadow(0 0 1px rgba(37, 99, 235, 0.5));
     flex-shrink: 0; 
 }
+/* Call Button Styling */
+.btn-call {
+    background: #2563eb;
+    color: white;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.btn-call:hover { background: #1d4ed8; color: white; transform: scale(1.1); }
+
+/* Excel Button Styling */
+
+.btn-excel-batch {
+
+}
+
+background: #10b981;
+
+color: white;
+
+border: none;
+
+padding: 8px 15px;
+
+border-radius: 10px;
+
+font-weight: 700;
+
+font-size: 12px;
+/* Mobile responsive padding fix */
+@media (max-width: 768px) {
+    #attendanceTbody td {
+        padding: 10px 5px !important;
+        vertical-align: middle;
+    }
+}
+/* Mobile par sirf Icon dikhega agar jagah kam ho */
+@media (max-width: 400px) {
+    .btn-excel-batch span { display: none; }
+    .btn-excel-batch { padding: 10px; border-radius: 50%; }
+}
+/* Mobile Table Alignment Fix */
+@media (max-width: 768px) {
+    #attendanceTbody td {
+        padding: 8px 4px !important;
+        font-size: 11px !important;
+        vertical-align: middle;
+    }
+    .learner-info-cell { max-width: 150px; white-space: normal !important; }
+    .batch-text-mobile {
+        display: block;
+        font-size: 9px !important;
+        color: #64748b;
+        margin-top: 2px;
+    }
+    .btn-group-sm > .btn { padding: 2px 6px !important; font-size: 10px !important; }
+}
     </style>
 </head>
 <body>
@@ -240,6 +302,9 @@
 <div class="nav-item" id="btn-records" onclick="handleNavClick('records')"><i class="fas fa-file-invoice"></i> Student Records</div>
 <div class="nav-item" id="btn-active" onclick="handleNavClick('active')">
     <i class="fas fa-user-check"></i> <span>Active Students</span>
+</div>
+<div class="nav-item" id="btn-attendance" onclick="handleNavClick('attendance')">
+    <i class="fas fa-calendar-check text-info"></i> <span>Daily Attendance</span>
 </div>
 <div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')"><i class="fas fa-database"></i> Backup & Data</div>
 <div class="nav-item text-warning" onclick="new bootstrap.Modal(document.getElementById('changePassModal')).show()">
@@ -471,7 +536,84 @@
             <div class="col-md-6"><div class="card p-4 border-0 shadow-sm text-center"><i class="fas fa-cloud-upload-alt fa-3x text-success mb-3"></i><input type="file" id="importFile" hidden onchange="restoreJSON(event)"><button class="btn btn-success" onclick="document.getElementById('importFile').click()">UPLOAD & RESTORE</button></div></div>
         </div>
     </div>
+<div id="attendanceTab" class="tab-content">
+    <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="m-0 fw-bold"><i class="fas fa-clock me-2 text-warning"></i> Mark Attendance</h6>
+            <button class="btn btn-success btn-sm fw-bold px-4 shadow text-white" onclick="saveAllAttendance()" style="border-radius:12px;">
+                <i class="fas fa-save me-2"></i>SAVE NOW
+            </button>
+        </div>
+        <div class="row g-2">
+            <div class="col-md-4 col-6">
+                <label class="small fw-bold opacity-75">Date</label>
+                <input type="date" id="attDate" class="form-control form-control-sm" onchange="loadAttendanceList()">
+            </div>
+            <div class="col-md-4 col-6">
+                <label class="small fw-bold opacity-75">Batch Month</label>
+                <select id="attMonth" class="form-select form-select-sm" onchange="loadAttendanceList()">
+                    <option value="">All Months</option>
+                    <option value="January">January</option><option value="February">February</option>
+                    <option value="March">March</option><option value="April">April</option>
+                    <option value="May">May</option>
+                </select>
+            </div>
+            <div class="col-md-4 col-12">
+                <label class="small fw-bold opacity-75">Search Batch Time</label>
+                <input type="text" id="attTime" class="form-control form-control-sm" placeholder="e.g. 08:30 AM" onkeyup="loadAttendanceList()">
+            </div>
+        </div>
+    </div>
 
+    <div class="table-responsive shadow-sm rounded-4 mb-4">
+        <table class="table table-hover bg-white m-0">
+            <thead class="table-primary text-white">
+                <tr>
+                    <th width="50">#</th>
+                    <th class="text-start">Learner Name</th>
+                    <th class="text-start d-none d-md-table-cell">Batch Details</th>
+                    <th width="120">Status (P/A)</th>
+                </tr>
+            </thead>
+            <tbody id="attendanceTbody"></tbody>
+        </table>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4 bg-white rounded-4 border-top border-4 border-info">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+                <div class="bg-info text-white rounded-circle p-2 me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-users-viewfinder"></i>
+                </div>
+                <div>
+                    <h6 class="fw-bold m-0 text-dark">Batch Performance</h6>
+                    <small class="text-muted">Analyze & Export</small>
+                </div>
+            </div>
+            <button class="btn-excel-batch shadow-sm" onclick="exportBatchExcel()" style="background:#10b981; color:white; border:none; padding:8px 15px; border-radius:10px; font-weight:700; font-size:12px;">
+                <i class="fas fa-file-excel me-1"></i> EXPORT
+            </button>
+        </div>
+
+        <div class="row g-2 mb-4">
+            <div class="col-6 col-md-5">
+                <select id="repMonth" class="form-select border-info shadow-none" style="border-radius: 10px;">
+                    <option value="">Select Month</option>
+                    <option value="January">January</option><option value="February">February</option>
+                    <option value="March">March</option><option value="April">April</option>
+                    <option value="May">May</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-4">
+                <input type="text" id="repTime" class="form-control border-info shadow-none" placeholder="Time (e.g. 08:30)" style="border-radius: 10px;">
+            </div>
+            <div class="col-12 col-md-3">
+                <button class="btn btn-info text-white w-100 fw-bold" onclick="fetchBatchReport()" style="border-radius: 10px;">VIEW BATCH</button>
+            </div>
+        </div>
+        <div id="reportResult"></div>
+    </div>
+</div>
     <footer>
         V 2.2 | © 2026 Surya | सूरज कुमार
     </footer>
@@ -617,17 +759,30 @@ function handleNavClick(tabName) {
 }
 
 function switchTab(tab) {
+    // Mobile par sidebar band karne ke liye
+    if (window.innerWidth <= 768) {
+        const sidebar = document.getElementById('sidebar');
+        const icon = document.getElementById('toggleIcon');
+        if(sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+            if(icon) icon.className = "fas fa-bars";
+        }
+    }
+
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.getElementById(tab + 'Tab').classList.add('active');
+    
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById('btn-' + tab).classList.add('active');
     
     const banner = document.getElementById('addressBanner');
     banner.style.display = (tab === 'stats') ? 'block' : 'none';
 
-    if(tab === 'reg') setNextSI();
     if(tab === 'records') renderTable(learners);
-    if(tab === 'active') renderActiveStudents();
+    if(tab === 'attendance') {
+        loadAttendanceList();
+        updateReportDropdown(); // Dropdown update karne ke liye
+    }
     updateStats();
 }
 // --- ADMIN & STAFF AUTH LOGIC (CLOUD & LOCAL SYNC) ---
@@ -1291,7 +1446,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `2.5.2`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `2.5.3`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -1374,6 +1529,288 @@ function showUpdatePrompt() {
         </div>
     `;
     document.body.appendChild(updateDiv);
+}
+document.getElementById('attDate').valueAsDate = new Date();
+async function saveAllAttendance() {
+    const date = document.getElementById('attDate').value;
+    const records = [];
+    learners.filter(l => l.admis === 'Yes').forEach(l => {
+        const status = document.querySelector(`input[name="att-${l.id}"]:checked`)?.value;
+        if(status) records.push({ student_id: l.id, student_name: l.name, attendance_date: date, status: status });
+    });
+    if(records.length === 0) return showToast("No students to save!", "bg-warning");
+    try {
+        await _supabase.from('attendance_logs').delete().eq('attendance_date', date);
+        const { error } = await _supabase.from('attendance_logs').insert(records);
+        if (error) throw error;
+        showToast("Attendance Saved!", "bg-success");
+    } catch (err) { showToast("Error: Table logs missing!", "bg-danger"); }
+}
+
+function updateReportDropdown() {
+    const select = document.getElementById('reportStudentId');
+    const admitted = learners.filter(l => l.admis === 'Yes');
+    select.innerHTML = '<option value="">Select Student</option>' + 
+        admitted.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+}
+
+async function fetchStudentReport() {
+    const sid = document.getElementById('reportStudentId').value;
+    const resDiv = document.getElementById('reportResult');
+    if(!sid) return;
+
+    resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-primary" role="status"></div></div>`;
+    
+    const { data, error } = await _supabase
+        .from('attendance_logs')
+        .select('*')
+        .eq('student_id', sid)
+        .order('attendance_date', {ascending: false});
+
+    if(data && data.length > 0) {
+        const total = data.length;
+        const pres = data.filter(r => r.status === 'Present').length;
+        const abs = total - pres;
+        const rate = Math.round((pres/total)*100);
+        
+        // Color based on rate
+        let barClass = rate > 75 ? 'bg-success' : (rate > 50 ? 'bg-warning' : 'bg-danger');
+
+        resDiv.innerHTML = `
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="p-3 rounded-4 bg-light text-center">
+                        <h2 class="fw-bold mb-0 ${rate < 50 ? 'text-danger' : 'text-primary'}">${rate}%</h2>
+                        <small class="fw-bold text-muted text-uppercase">Attendance Rate</small>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="small fw-bold">Overall Progress</span>
+                        <span class="small fw-bold">${pres}/${total} Days Present</span>
+                    </div>
+                    <div class="progress rounded-pill mb-3" style="height: 12px; background: #e2e8f0;">
+                        <div class="progress-bar ${barClass} progress-bar-striped progress-bar-animated" role="progressbar" style="width: ${rate}%"></div>
+                    </div>
+                    <div class="d-flex gap-3">
+                        <span class="badge bg-success-subtle text-success p-2 px-3 rounded-pill">✅ Present: ${pres}</span>
+                        <span class="badge bg-danger-subtle text-danger p-2 px-3 rounded-pill">❌ Absent: ${abs}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <h6 class="fw-bold small mb-3">RECENT ATTENDANCE LOGS</h6>
+                <div style="max-height: 250px; overflow-y: auto; border-radius: 12px;" class="border border-light">
+                    <table class="table table-hover m-0">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th class="small py-2 border-0">DATE</th>
+                                <th class="small py-2 border-0 text-end">STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(r => `
+                                <tr>
+                                    <td class="small fw-bold text-muted">${new Date(r.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}</td>
+                                    <td class="text-end">
+                                        <span class="badge ${r.status==='Present' ? 'bg-success' : 'bg-danger'} p-1 px-3 rounded-pill" style="font-size: 9px;">
+                                            ${r.status.toUpperCase()}
+                                        </span>
+                                    </td>
+                                </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    } else {
+        resDiv.innerHTML = `
+            <div class="alert alert-warning border-0 rounded-4 p-4 text-center">
+                <i class="fas fa-exclamation-circle fa-2x mb-2"></i>
+                <p class="m-0 fw-bold">No records found for this student.</p>
+            </div>`;
+    }
+}
+// --- COMPLETE FRESH ATTENDANCE LOGIC ---
+
+function loadAttendanceList() {
+    const tbody = document.getElementById('attendanceTbody');
+    const month = document.getElementById('attMonth').value;
+    const time = (document.getElementById('attTime').value || "").toLowerCase();
+    
+    let filtered = learners.filter(l => l.admis === 'Yes');
+
+    if (month) filtered = filtered.filter(l => l.remark && l.remark.toLowerCase().includes(month.toLowerCase()));
+    if (time) filtered = filtered.filter(l => l.remark && l.remark.toLowerCase().includes(time));
+
+    tbody.innerHTML = filtered.map((l, i) => `
+        <tr>
+            <td class="text-center">${i + 1}</td>
+            <td class="text-start learner-info-cell">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="fw-bold text-dark" style="font-size: 13px;">${l.name}</div>
+                        <div class="batch-text-mobile d-md-none text-muted">${l.remark || "-"}</div>
+                    </div>
+                    <a href="tel:${l.mobile}" class="btn-call shadow-sm ms-2" style="width:26px; height:26px; min-width:26px; border-radius:50%; background:#2563eb; color:white; display:flex; align-items:center; justify-content:center; text-decoration:none;">
+                        <i class="fas fa-phone-alt" style="font-size:10px;"></i>
+                    </a>
+                </div>
+            </td>
+            <td class="text-start d-none d-md-table-cell">
+                <small class="text-muted">${l.remark || "-"}</small>
+            </td>
+            <td class="text-center">
+                <div class="btn-group shadow-sm" style="border-radius: 20px; overflow: hidden; display: inline-flex;">
+                    <input type="radio" class="btn-check" name="att-${l.id}" id="p-${l.id}" value="Present" checked>
+                    <label class="btn btn-outline-success btn-sm px-2" for="p-${l.id}">P</label>
+                    <input type="radio" class="btn-check" name="att-${l.id}" id="a-${l.id}" value="Absent">
+                    <label class="btn btn-outline-danger btn-sm px-2" for="a-${l.id}">A</label>
+                </div>
+            </td>
+        </tr>`).join('') || '<tr><td colspan="4" class="p-4 text-center text-muted">No Students Found.</td></tr>';
+}
+
+async function fetchBatchReport() {
+    const month = document.getElementById('repMonth').value;
+    const time = (document.getElementById('repTime').value || "").toLowerCase();
+    const resDiv = document.getElementById('reportResult');
+
+    if(!month) return showToast("Month select karein!", "bg-warning");
+    resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
+
+    let batchStudents = learners.filter(l => 
+        l.admis === 'Yes' && 
+        l.remark.toLowerCase().includes(month.toLowerCase()) && 
+        l.remark.toLowerCase().includes(time)
+    );
+
+    const { data: logs } = await _supabase.from('attendance_logs').select('*');
+
+    let html = `<div class="table-responsive mt-3"><table class="table table-sm align-middle">
+                <thead class="table-light text-center">
+                    <tr><th class="text-start">Name</th><th>Total</th><th>Present</th><th>Absent</th><th>Rate</th><th>Call</th></tr>
+                </thead><tbody>`;
+
+    batchStudents.forEach(s => {
+        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id) : [];
+        const total = sLogs.length;
+        const pres = sLogs.filter(lg => lg.status === 'Present').length;
+        const absent = total - pres;
+        const rate = total > 0 ? Math.round((pres/total)*100) : 0;
+        const color = rate > 75 ? 'text-success' : (rate > 50 ? 'text-warning' : 'text-danger');
+
+        html += `<tr>
+            <td class="text-start"><div class="fw-bold small">${s.name}</div></td>
+            <td class="text-center small">${total}</td>
+            <td class="text-center fw-bold text-success small">${pres}</td>
+            <td class="text-center fw-bold text-danger small">${absent}</td>
+            <td class="text-center small"><span class="badge bg-light ${color} border">${rate}%</span></td>
+            <td class="text-center"><a href="tel:${s.mobile}" class="btn-call shadow-sm"><i class="fas fa-phone-alt" style="font-size:11px;"></i></a></td>
+        </tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+    resDiv.innerHTML = html;
+}
+
+function exportBatchExcel() {
+    const month = document.getElementById('repMonth').value;
+    const table = document.querySelector("#reportResult table");
+    if(!table) return showToast("Report generate karein!", "bg-danger");
+
+    let csv = "Name,Total,Present,Absent,Rate\n";
+    table.querySelectorAll("tbody tr").forEach(row => {
+        const cols = row.querySelectorAll("td");
+        csv += `"${cols[0].innerText}","${cols[1].innerText}","${cols[2].innerText}","${cols[3].innerText}","${cols[4].innerText}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Batch_Report_${month}.csv`;
+    link.click();
+}
+// 2. Batch Performance mein Call aur Analysis add karna
+async function fetchBatchReport() {
+    const month = document.getElementById('repMonth').value;
+    const time = (document.getElementById('repTime').value || "").toLowerCase();
+    const resDiv = document.getElementById('reportResult');
+
+    if(!month) return showToast("Please select a month", "bg-warning");
+    resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
+
+    let batchStudents = learners.filter(l => 
+        l.admis === 'Yes' && 
+        l.remark.toLowerCase().includes(month.toLowerCase()) && 
+        l.remark.toLowerCase().includes(time)
+    );
+
+    const { data: logs } = await _supabase.from('attendance_logs').select('*');
+
+    let html = `<div class="table-responsive mt-3"><table class="table table-sm align-middle">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th class="text-start">Name</th>
+                        <th>Total</th>
+                        <th>Present</th>
+                        <th>Absent</th> <th>Rate</th>
+                        <th>Call</th>
+                    </tr>
+                </thead><tbody>`;
+
+    batchStudents.forEach(s => {
+        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id) : [];
+        const total = sLogs.length;
+        const pres = sLogs.filter(lg => lg.status === 'Present').length;
+        const absent = total - pres; // Absent calculation
+        const rate = total > 0 ? Math.round((pres/total)*100) : 0;
+        const color = rate > 75 ? 'text-success' : (rate > 50 ? 'text-warning' : 'text-danger');
+
+        html += `<tr>
+            <td class="text-start">
+                <div class="fw-bold text-dark" style="font-size:13px;">${s.name}</div>
+            </td>
+            <td class="text-center small">${total}</td>
+            <td class="text-center fw-bold text-success small">${pres}</td>
+            <td class="text-center fw-bold text-danger small">${absent}</td> <td class="text-center small">
+                <span class="badge bg-light ${color} border">${rate}%</span>
+            </td>
+            <td class="text-center">
+                <a href="tel:${s.mobile}" class="btn-call shadow-sm">
+                    <i class="fas fa-phone-alt" style="font-size:12px;"></i>
+                </a>
+            </td>
+        </tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+    resDiv.innerHTML = html;
+}
+// 3. Batch Excel Export Logic
+function exportBatchExcel() {
+    const month = document.getElementById('repMonth').value;
+    const time = document.getElementById('repTime').value;
+    const table = document.querySelector("#reportResult table");
+    
+    if(!table) return showToast("Pehle View Batch par click karein!", "bg-warning");
+
+    let csv = "Batch Report: " + month + " " + (time || "") + "\n";
+    csv += "Name,Total,Present,Absent,Rate\n"; // Header matching
+
+    table.querySelectorAll("tbody tr").forEach(row => {
+        const cols = row.querySelectorAll("td");
+        if(cols.length >= 5) {
+            csv += `"${cols[0].innerText}","${cols[1].innerText}","${cols[2].innerText}","${cols[3].innerText}","${cols[4].innerText}"\n`;
+        }
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `Batch_Report_${month}.csv`;
+    link.click();
 }
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
