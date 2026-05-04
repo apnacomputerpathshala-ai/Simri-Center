@@ -1,5 +1,5 @@
 // --- VERSION CONTROL ---
-const CACHE_NAME = 'kyp-simri-v4.5.26';
+const CACHE_NAME = 'kyp-simri-v6.5.26';
 
 const assets = [
   './',
