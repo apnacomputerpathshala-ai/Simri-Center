@@ -553,9 +553,18 @@ font-size: 12px;
                 <label class="small fw-bold opacity-75">Batch Month</label>
                 <select id="attMonth" class="form-select form-select-sm" onchange="loadAttendanceList()">
                     <option value="">All Months</option>
-                    <option value="January">January</option><option value="February">February</option>
-                    <option value="March">March</option><option value="April">April</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
                     <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
                 </select>
             </div>
             <div class="col-md-4 col-12">
@@ -599,9 +608,18 @@ font-size: 12px;
             <div class="col-6 col-md-5">
                 <select id="repMonth" class="form-select border-info shadow-none" style="border-radius: 10px;">
                     <option value="">Select Month</option>
-                    <option value="January">January</option><option value="February">February</option>
-                    <option value="March">March</option><option value="April">April</option>
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
                     <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
                 </select>
             </div>
             <div class="col-6 col-md-4">
@@ -1446,7 +1464,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `4.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `6.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
