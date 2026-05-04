@@ -557,11 +557,54 @@ font-size: 12px;
     </div>
 </div>
     <div id="settingsTab" class="tab-content">
-        <div class="row g-4">
-            <div class="col-md-6"><div class="card p-4 border-0 shadow-sm text-center"><i class="fas fa-cloud-download-alt fa-3x text-primary mb-3"></i><button class="btn btn-primary" onclick="backupJSON()">DOWNLOAD BACKUP</button></div></div>
-            <div class="col-md-6"><div class="card p-4 border-0 shadow-sm text-center"><i class="fas fa-cloud-upload-alt fa-3x text-success mb-3"></i><input type="file" id="importFile" hidden onchange="restoreJSON(event)"><button class="btn btn-success" onclick="document.getElementById('importFile').click()">UPLOAD & RESTORE</button></div></div>
+    <div class="row g-4">
+        <div class="col-md-7">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-3 border-0">
+                    <h6 class="m-0 fw-bold"><i class="fas fa-cloud-download-alt me-2"></i> SMART EXPORT CENTER</h6>
+                </div>
+                <div class="card-body p-4">
+                    <p class="small text-muted mb-4"></p>
+                    <div class="d-grid gap-3">
+                        <button class="btn btn-outline-primary d-flex align-items-center justify-content-between p-3 rounded-3" onclick="exportFullCSV()">
+                            <span><i class="fas fa-users-cog me-2"></i> Full Student Records (CSV)</span>
+                            <i class="fas fa-chevron-right opacity-50"></i>
+                        </button>
+                        <button class="btn btn-outline-success d-flex align-items-center justify-content-between p-3 rounded-3" onclick="exportActiveOnlyCSV()">
+                            <span><i class="fas fa-user-check me-2"></i> Active Admitted Students (CSV)</span>
+                            <i class="fas fa-chevron-right opacity-50"></i>
+                        </button>
+                        <button class="btn btn-outline-info d-flex align-items-center justify-content-between p-3 rounded-3" onclick="exportAttendanceLogsCSV()">
+                            <span><i class="fas fa-calendar-check me-2"></i> Daily Attendance Logs (CSV)</span>
+                            <i class="fas fa-chevron-right opacity-50"></i>
+                        </button>
+                        <hr>
+                        <button class="btn btn-dark p-3 rounded-3 fw-bold" onclick="backupJSON()">
+                            <i class="fas fa-database me-2"></i> DOWNLOAD FULL SYSTEM BACKUP (.JSON)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-4 bg-light">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-4">
+                        <div class="bg-white shadow-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="fas fa-file-import fa-2x text-warning"></i>
+                        </div>
+                    </div>
+                    <h6 class="fw-bold">Restore Data</h6>
+                    <p class="small text-muted">json backup file upload</p>
+                    <input type="file" id="importFile" hidden onchange="restoreJSON(event)" accept=".json">
+                    <button class="btn btn-warning w-100 py-3 fw-bold shadow-sm" onclick="document.getElementById('importFile').click()" style="border-radius: 12px;">
+                        UPLOAD & RESTORE NOW
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 <div id="attendanceTab" class="tab-content">
     <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1307,23 +1350,44 @@ function updateStats() {
     document.getElementById('stAlloc').innerText = learners.filter(l => l.alloc === 'Yes').length || 0;
     document.getElementById('stPending').innerText = learners.filter(l => l.verify === 'No').length || 0;
 }
-function backupJSON() { 
-    const blob = new Blob([JSON.stringify(learners)], {type: 'application/json'});
-    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = "KYP_Backup.json"; a.click(); 
+// 1. SIRF ADMITTED STUDENTS KA BACKUP
+function exportActiveOnlyCSV() {
+    const activeList = learners.filter(l => l.admis === 'Yes');
+    if(activeList.length === 0) return showToast("No active students found!", "bg-warning");
+
+    let csv = "SI.No,Candidate Name,Father's Name,Mobile,Village,Aadhar,Batch Remark\n";
+    activeList.forEach((l, i) => {
+        csv += `"${i+1}","${l.name}","${l.father}","${l.mobile}","${l.village}","'${l.aadhar}","${l.remark}"\n`;
+    });
+
+    downloadCSV(csv, "KYP_Active_Students.csv");
 }
 
-function restoreJSON(e) {
-    const reader = new FileReader();
-    reader.onload = function(ev) {
-        try {
-            learners = JSON.parse(ev.target.result);
-            localStorage.setItem('kyp_final_simri_v22', JSON.stringify(learners));
-            updateStats(); switchTab('stats'); showToast("Restored!", "bg-info");
-        } catch(err) { alert("Invalid File!"); }
-    };
-    reader.readAsText(e.target.files[0]);
+// 2. DAILY ATTENDANCE KA PURA HISTORY BACKUP (SUPABASE SE)
+async function exportAttendanceLogsCSV() {
+    showToast("Fetching data from cloud...", "bg-info");
+    const { data: logs, error } = await _supabase.from('attendance_logs').select('*').order('attendance_date', {ascending: false});
+    
+    if(error || !logs) return showToast("Fetch error!", "bg-danger");
+    if(logs.length === 0) return showToast("No logs found!", "bg-warning");
+
+    let csv = "Date,Student ID,Student Name,Status\n";
+    logs.forEach(row => {
+        csv += `"${row.attendance_date}","${row.student_id}","${row.student_name}","${row.status}"\n`;
+    });
+
+    downloadCSV(csv, "KYP_Attendance_History.csv");
 }
 
+// 3. COMMON DOWNLOAD FUNCTION (Jo formatting sahi rakhega)
+function downloadCSV(csv, filename) {
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    showToast("CSV Downloaded!", "bg-success");
+}
 function exportFullCSV() { 
     // Excel Header - सभी कॉलम्स
     let csv = "SI.No,Candidate Name,Father's Name,DOB,Gender,Category,Aadhar No,Mobile No,Village,Panchayat,Block,School,Board,Class,Roll Code,Roll No,Pass Year,Bank Name,Branch Name,Account No,IFSC Code,Receipt No,Verified,Allocated,Admission,Payment,Remark\n";
@@ -1539,7 +1603,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `11.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `13.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
