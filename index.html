@@ -777,7 +777,8 @@ function handleNavClick(tabName) {
 }
 
 function switchTab(tab) {
-    // Mobile par sidebar band karne ke liye
+    // Ye line add karein
+    localStorage.setItem('activeTab', tab); 
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
         const icon = document.getElementById('toggleIcon');
@@ -878,6 +879,7 @@ function applyPermissions() {
 function adminLogout() {
     localStorage.removeItem('admin_active');
     localStorage.removeItem('user_role');
+    localStorage.removeItem('activeTab'); // Isse memory clear ho jayegi
     location.reload();
 }
 // Page load par auth check karein
@@ -1358,9 +1360,17 @@ async function loadDataFromSupabase() {
 window.addEventListener('DOMContentLoaded', async () => {
     checkAuth(); 
     applyPermissions(); 
-    // सीधे Cloud से डेटा खींचने वाले फंक्शन को कॉल करें
     await loadDataFromSupabase(); 
+
+    // Refresh ke baad wahi tab kholne ke liye
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab && document.getElementById('btn-' + savedTab)) {
+        switchTab(savedTab);
+    } else {
+        switchTab('stats');
+    }
 });
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -1464,7 +1474,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `7.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `8.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
