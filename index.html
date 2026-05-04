@@ -103,7 +103,33 @@
         .custom-toast { position: fixed; top: 20px; right: 20px; z-index: 2000; padding: 12px 20px; border-radius: 8px; color: white; }
 
         .section-title { font-size: 12px; font-weight: 800; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; }
+/* --- FRESH ATTENDANCE & POPUP DESIGN --- */
+.att-group { display: flex; gap: 8px; justify-content: center; align-items: center; }
+.att-label {
+    width: 38px; height: 38px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid #e2e8f0; background: #f8fafc; font-size: 14px; margin: 0;
+}
+.btn-check:checked + .label-p { background: #10b981; color: white; border-color: #10b981; transform: scale(1.1); }
+.btn-check:checked + .label-a { background: #ef4444; color: white; border-color: #ef4444; transform: scale(1.1); }
 
+.btn-undo-att { 
+    background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; 
+    width: 30px; height: 30px; border-radius: 50%; font-size: 12px; transition: 0.3s;
+}
+.btn-undo-att:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
+
+.att-success-card {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+    background: white; padding: 25px; border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    z-index: 10005; text-align: center; opacity: 0; pointer-events: none; transition: 0.4s; width: 280px;
+}
+.att-success-card.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+.att-success-img { width: 85px; height: 85px; border-radius: 50%; object-fit: cover; border: 4px solid #10b981; margin-bottom: 12px; }
+.popup-close-btn { margin-top: 15px; width: 100%; border-radius: 12px; font-weight: 800; padding: 10px; font-size: 12px; }
+
+.batch-stat-card { background: white; border-radius: 20px; padding: 18px; border-bottom: 5px solid #2563eb; transition: 0.3s; height: 100%; }
        /* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
     .sidebar {
@@ -489,29 +515,29 @@ font-size: 12px;
         <h6 class="m-0 fw-bold"><i class="fas fa-users me-2"></i> Admitted Students List</h6>
         
         <div class="row g-2 mb-3 p-3 bg-light rounded shadow-sm mx-1 mt-4">
-            <div class="col-6">
-                <label class="small fw-bold text-muted mb-1">Admission Month</label>
-                <select id="activeMonthFilter" class="form-select form-select-sm" onchange="renderActiveStudents()">
-                    <option value="">All Months</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                </select>
-            </div>
-            <div class="col-6">
-                  <label class="small fw-bold text-muted mb-1">Search Batch Time</label>
-                <input type="text" id="activeBatchFilter" class="form-control form-control-sm" placeholder="e.g. 08:30 AM" onkeyup="renderActiveStudents()">
-            </div>
-        </div>
+    <div class="col-6">
+        <label class="small fw-bold text-muted mb-1">Admission Month</label>
+        <select id="activeMonthFilter" class="form-select form-select-sm shadow-sm" onchange="renderActiveStudents()" style="border-radius: 10px;">
+            <option value="">All Months</option>
+            <option value="Jan">January</option>
+            <option value="Feb">February</option>
+            <option value="Mar">March</option>
+            <option value="Apr">April</option>
+            <option value="May">May</option>
+            <option value="Jun">June</option>
+            <option value="Jul">July</option>
+            <option value="Aug">August</option>
+            <option value="Sep">September</option>
+            <option value="Oct">October</option>
+            <option value="Nov">November</option>
+            <option value="Dec">December</option>
+        </select>
+    </div>
+    <div class="col-6">
+        <label class="small fw-bold text-muted mb-1">Search Batch/Time</label>
+        <input type="text" id="activeBatchFilter" class="form-control form-control-sm shadow-sm" placeholder="e.g. 08:30 AM" onkeyup="renderActiveStudents()" style="border-radius: 10px;">
+    </div>
+</div>
     </div>
     
     <div class="table-responsive mt-4">
@@ -540,9 +566,6 @@ font-size: 12px;
     <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="m-0 fw-bold"><i class="fas fa-clock me-2 text-warning"></i> Mark Attendance</h6>
-            <button class="btn btn-success btn-sm fw-bold px-4 shadow text-white" onclick="saveAllAttendance()" style="border-radius:12px;">
-                <i class="fas fa-save me-2"></i>SAVE NOW
-            </button>
         </div>
         <div class="row g-2">
             <div class="col-md-4 col-6">
@@ -774,33 +797,52 @@ function handleNavClick(tabName) {
         icon.className = "fas fa-bars";
     }
 }
-
 function switchTab(tab) {
-    // Ye line add karein
+    // Tab preference save karne ke liye
     localStorage.setItem('activeTab', tab); 
+
+    // Mobile Sidebar handle karne ke liye
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
         const icon = document.getElementById('toggleIcon');
-        if(sidebar.classList.contains('active')) {
+        if(sidebar && sidebar.classList.contains('active')) {
             sidebar.classList.remove('active');
             if(icon) icon.className = "fas fa-bars";
         }
+        // Sidebar overlay agar hai toh use bhi hata dein
+        const overlay = document.querySelector('.sidebar-overlay');
+        if(overlay) overlay.classList.remove('active');
     }
 
+    // Content areas switch karein
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-    document.getElementById(tab + 'Tab').classList.add('active');
+    const targetTab = document.getElementById(tab + 'Tab');
+    if(targetTab) targetTab.classList.add('active');
     
+    // Navigation items active class update karein
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    document.getElementById('btn-' + tab).classList.add('active');
+    const targetBtn = document.getElementById('btn-' + tab);
+    if(targetBtn) targetBtn.classList.add('active');
     
+    // Banner display logic
     const banner = document.getElementById('addressBanner');
-    banner.style.display = (tab === 'stats') ? 'block' : 'none';
+    if(banner) {
+        banner.style.display = (tab === 'stats') ? 'block' : 'none';
+    }
 
+    // --- Tab wise data load logic ---
     if(tab === 'records') renderTable(learners);
+    
     if(tab === 'attendance') {
         loadAttendanceList();
-        updateReportDropdown(); // Dropdown update karne ke liye
+        updateReportDropdown(); 
     }
+
+    // SATIK UPDATE: Active Students tab khulte hi data dikhne lagega
+    if(tab === 'active') {
+        renderActiveStudents();
+    }
+    
     updateStats();
 }
 // --- ADMIN & STAFF AUTH LOGIC (CLOUD & LOCAL SYNC) ---
@@ -1402,49 +1444,73 @@ function showInstallPopUp() {
     alert("App pehle se installed hai ya Browser support nahi kar raha. Chrome menu mein 'Install App' check karein.");
   }
 }
-// केवल Admitted छात्रों को दिखाने के लिए
+// --- UPDATED: ADMITTED LIST LOGIC FOR ALL MONTHS ---
 function renderActiveStudents() {
     const tbody = document.getElementById('activeStudentsTbody');
     const selectedMonth = document.getElementById('activeMonthFilter').value;
     const batchSearch = (document.getElementById('activeBatchFilter').value || "").toLowerCase();
 
-    // Filter Logic: Admis 'Yes' + Month aur Batch match
+    // Filtering logic
     const filteredList = learners.filter(l => {
-        const matchesAdmis = l.admis === 'Yes';
-        const matchesMonth = selectedMonth === "" || (l.remark && l.remark.toLowerCase().includes(selectedMonth.toLowerCase()));
-        const matchesBatch = batchSearch === "" || (l.remark && l.remark.toLowerCase().includes(batchSearch));
+        // 1. Sirf wahi dikhao jinka Admission 'Yes' hai
+        const matchesAdmis = l.admis === 'Yes'; 
+        
+        // 2. All Months Logic: Agar dropdown empty hai ("") toh true, warna remark mein month check karo
+        const matchesMonth = (selectedMonth === "") || 
+                             (l.remark && l.remark.toLowerCase().includes(selectedMonth.toLowerCase()));
+        
+        // 3. Search Logic: Batch/Time details check karega
+        const matchesBatch = (batchSearch === "") || 
+                             (l.remark && l.remark.toLowerCase().includes(batchSearch));
         
         return matchesAdmis && matchesMonth && matchesBatch;
     });
 
     if (filteredList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted">No students found</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted">No records found for this selection.</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = filteredList.map((l, index) => `
+    tbody.innerHTML = filteredList.map((l, index) => {
+        const batchDetails = l.remark || "No Batch Assigned";
+        return `
         <tr>
             <td class="text-center">${index + 1}</td> 
             <td class="text-start">
-                <div class="d-flex align-items-center justify-content-between">
-                    <span class="fw-bold text-primary">${l.name}</span>
-                    ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
-                        ? '<i class="fas fa-check-circle verified-badge"></i>' 
-                        : ''}
+                <div class="d-flex flex-column">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-primary" style="font-size: 13px;">${l.name}</span>
+                        ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
+                            ? '<i class="fas fa-check-circle verified-badge" style="font-size: 11px;"></i>' 
+                            : ''}
+                    </div>
+                    <div class="mt-1">
+                        <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 9px; font-weight: 800;">
+                            <i class="fas fa-clock me-1"></i>${batchDetails}
+                        </span>
+                    </div>
                 </div>
             </td>
-            <td class="text-start">${l.father || "-"}</td>
-            <td>${l.village || "-"}</td>
-            <td>${l.mobile || "-"}</td>
-            <td><span class="badge bg-success">Admitted</span></td>
+            <td class="text-start" style="font-size: 12px;">${l.father || "-"}</td>
+            <td style="font-size: 12px;">${l.village || "-"}</td>
             <td>
-                <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm" onclick="removeAdmission(${l.id})">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                    <span style="font-size: 12px;">${l.mobile || "-"}</span>
+                    ${l.mobile ? `
+                    <a href="tel:${l.mobile}" class="btn-call shadow-sm" style="width: 28px; height: 28px; font-size: 12px;">
+                        <i class="fas fa-phone-alt"></i>
+                    </a>` : ''}
+                </div>
+            </td>
+            <td><span class="badge bg-success" style="font-size: 10px;">Admitted</span></td>
+            <td>
+                <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm" style="font-size: 10px;" onclick="removeAdmission(${l.id})">
                     <i class="fas fa-user-minus me-1"></i> Remove
                 </button>
             </td>
-        </tr>`).join('');
+        </tr>`;
+    }).join('');
 }
-
 // एडमिशन 'No' करने के लिए फंक्शन
 async function removeAdmission(id) {
     if(confirm("क्या आप इस छात्र का एडमिशन रद्द (No) करना चाहते हैं?")) {
@@ -1473,7 +1539,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `10.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `11.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -1659,184 +1725,140 @@ async function fetchStudentReport() {
             </div>`;
     }
 }
-// --- COMPLETE FRESH ATTENDANCE LOGIC ---
-
-function loadAttendanceList() {
+// --- UPDATED: ATTENDANCE LIST (CALL ICON REMOVED FROM NAME) ---
+async function loadAttendanceList() {
     const tbody = document.getElementById('attendanceTbody');
+    const date = document.getElementById('attDate').value;
     const month = document.getElementById('attMonth').value;
     const time = (document.getElementById('attTime').value || "").toLowerCase();
     
+    const { data: logs } = await _supabase.from('attendance_logs').select('*').eq('attendance_date', date);
+
     let filtered = learners.filter(l => l.admis === 'Yes');
+    if (month) filtered = filtered.filter(l => (l.remark || "").toLowerCase().includes(month.toLowerCase()));
+    if (time) filtered = filtered.filter(l => (l.remark || "").toLowerCase().includes(time));
 
-    if (month) filtered = filtered.filter(l => l.remark && l.remark.toLowerCase().includes(month.toLowerCase()));
-    if (time) filtered = filtered.filter(l => l.remark && l.remark.toLowerCase().includes(time));
-
-    tbody.innerHTML = filtered.map((l, i) => `
+    tbody.innerHTML = filtered.map((l, i) => {
+        const studentLog = logs ? logs.find(log => log.student_id === l.id) : null;
+        const batchInfo = l.remark || "-";
+        
+        return `
         <tr>
             <td class="text-center">${i + 1}</td>
-            <td class="text-start learner-info-cell">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <div class="fw-bold text-dark" style="font-size: 13px;">${l.name}</div>
-                        <div class="batch-text-mobile d-md-none text-muted">${l.remark || "-"}</div>
-                    </div>
-                    <a href="tel:${l.mobile}" class="btn-call shadow-sm ms-2" style="width:26px; height:26px; min-width:26px; border-radius:50%; background:#2563eb; color:white; display:flex; align-items:center; justify-content:center; text-decoration:none;">
-                        <i class="fas fa-phone-alt" style="font-size:10px;"></i>
-                    </a>
-                </div>
+            <td class="text-start">
+                <div class="fw-bold text-dark" style="font-size:13px;">${l.name}</div>
+                <div class="d-md-none text-info fw-bold" style="font-size:9px;">${batchInfo}</div>
             </td>
             <td class="text-start d-none d-md-table-cell">
-                <small class="text-muted">${l.remark || "-"}</small>
+                <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 10px;">${batchInfo}</span>
             </td>
-            <td class="text-center">
-                <div class="btn-group shadow-sm" style="border-radius: 20px; overflow: hidden; display: inline-flex;">
-                    <input type="radio" class="btn-check" name="att-${l.id}" id="p-${l.id}" value="Present" checked>
-                    <label class="btn btn-outline-success btn-sm px-2" for="p-${l.id}">P</label>
-                    <input type="radio" class="btn-check" name="att-${l.id}" id="a-${l.id}" value="Absent">
-                    <label class="btn btn-outline-danger btn-sm px-2" for="a-${l.id}">A</label>
+            <td>
+                <div class="att-group">
+                    <input type="radio" class="btn-check" name="att-${l.id}" id="p-${l.id}" value="Present" ${studentLog?.status === 'Present' ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'Present')">
+                    <label class="att-label label-p" for="p-${l.id}"><i class="fas fa-check"></i></label>
+                    
+                    <input type="radio" class="btn-check" name="att-${l.id}" id="a-${l.id}" value="Absent" ${studentLog?.status === 'Absent' ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'Absent')">
+                    <label class="att-label label-a" for="a-${l.id}"><i class="fas fa-times"></i></label>
+                    
+                    <button class="btn-undo-att" onclick="deleteSingleAttendance(${l.id})" title="Clear/Undo">
+                        <i class="fas fa-undo"></i>
+                    </button>
                 </div>
             </td>
-        </tr>`).join('') || '<tr><td colspan="4" class="p-4 text-center text-muted">No Students Found.</td></tr>';
+        </tr>`;
+    }).join('') || '<tr><td colspan="4" class="p-4 text-center">No Admitted Students Found.</td></tr>';
+}
+// --- 2. AUTO-SAVE & MANUAL POPUP LOGIC ---
+async function instantSaveAttendance(sid, status) {
+    const date = document.getElementById('attDate').value;
+    const student = learners.find(l => l.id === sid);
+    try {
+        await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date });
+        const { error } = await _supabase.from('attendance_logs').insert([{ student_id: sid, student_name: student.name, attendance_date: date, status: status }]);
+        if (error) throw error;
+        
+        // Show Popup
+        document.getElementById('popImg').src = student.photo || 'https://via.placeholder.com/100';
+        document.getElementById('popName').innerText = student.name;
+        document.getElementById('popAadhar').innerText = "Aadhar: " + (student.aadhar || "N/A");
+        document.getElementById('popDob').innerText = "DOB: " + (student.dob || "N/A");
+        document.getElementById('attSuccessPopup').classList.add('show');
+    } catch (err) { showToast("Sync Failed!", "bg-danger"); }
 }
 
+function closeAttPopup() {
+    document.getElementById('attSuccessPopup').classList.remove('show');
+}
+
+async function deleteSingleAttendance(sid) {
+    const date = document.getElementById('attDate').value;
+    if(!confirm("Galti sudharna chahte hain? Attendance delete karein?")) return;
+    try {
+        await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date });
+        showToast("Attendance Reset!", "bg-warning");
+        loadAttendanceList(); 
+    } catch (err) { showToast("Error!", "bg-danger"); }
+}
+
+// --- 3. UPDATED BATCH PERFORMANCE (WITH BATCH TIME) ---
 async function fetchBatchReport() {
     const month = document.getElementById('repMonth').value;
     const time = (document.getElementById('repTime').value || "").toLowerCase();
     const resDiv = document.getElementById('reportResult');
-
-    if(!month) return showToast("Month select karein!", "bg-warning");
-    resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
-
-    let batchStudents = learners.filter(l => 
-        l.admis === 'Yes' && 
-        l.remark.toLowerCase().includes(month.toLowerCase()) && 
-        l.remark.toLowerCase().includes(time)
-    );
-
-    const { data: logs } = await _supabase.from('attendance_logs').select('*');
-
-    let html = `<div class="table-responsive mt-3"><table class="table table-sm align-middle">
-                <thead class="table-light text-center">
-                    <tr><th class="text-start">Name</th><th>Total</th><th>Present</th><th>Absent</th><th>Rate</th><th>Call</th></tr>
-                </thead><tbody>`;
-
-    batchStudents.forEach(s => {
-        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id) : [];
-        const total = sLogs.length;
-        const pres = sLogs.filter(lg => lg.status === 'Present').length;
-        const absent = total - pres;
-        const rate = total > 0 ? Math.round((pres/total)*100) : 0;
-        const color = rate > 75 ? 'text-success' : (rate > 50 ? 'text-warning' : 'text-danger');
-
-        html += `<tr>
-            <td class="text-start"><div class="fw-bold small">${s.name}</div></td>
-            <td class="text-center small">${total}</td>
-            <td class="text-center fw-bold text-success small">${pres}</td>
-            <td class="text-center fw-bold text-danger small">${absent}</td>
-            <td class="text-center small"><span class="badge bg-light ${color} border">${rate}%</span></td>
-            <td class="text-center"><a href="tel:${s.mobile}" class="btn-call shadow-sm"><i class="fas fa-phone-alt" style="font-size:11px;"></i></a></td>
-        </tr>`;
-    });
-
-    html += `</tbody></table></div>`;
-    resDiv.innerHTML = html;
-}
-
-function exportBatchExcel() {
-    const month = document.getElementById('repMonth').value;
-    const table = document.querySelector("#reportResult table");
-    if(!table) return showToast("Report generate karein!", "bg-danger");
-
-    let csv = "Name,Total,Present,Absent,Rate\n";
-    table.querySelectorAll("tbody tr").forEach(row => {
-        const cols = row.querySelectorAll("td");
-        csv += `"${cols[0].innerText}","${cols[1].innerText}","${cols[2].innerText}","${cols[3].innerText}","${cols[4].innerText}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `Batch_Report_${month}.csv`;
-    link.click();
-}
-// 2. Batch Performance mein Call aur Analysis add karna
-async function fetchBatchReport() {
-    const month = document.getElementById('repMonth').value;
-    const time = (document.getElementById('repTime').value || "").toLowerCase();
-    const resDiv = document.getElementById('reportResult');
-
-    if(!month) return showToast("Please select a month", "bg-warning");
-    resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
-
-    let batchStudents = learners.filter(l => 
-        l.admis === 'Yes' && 
-        l.remark.toLowerCase().includes(month.toLowerCase()) && 
-        l.remark.toLowerCase().includes(time)
-    );
-
-    const { data: logs } = await _supabase.from('attendance_logs').select('*');
-
-    let html = `<div class="table-responsive mt-3"><table class="table table-sm align-middle">
-                <thead class="table-light text-center">
-                    <tr>
-                        <th class="text-start">Name</th>
-                        <th>Total</th>
-                        <th>Present</th>
-                        <th>Absent</th> <th>Rate</th>
-                        <th>Call</th>
-                    </tr>
-                </thead><tbody>`;
-
-    batchStudents.forEach(s => {
-        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id) : [];
-        const total = sLogs.length;
-        const pres = sLogs.filter(lg => lg.status === 'Present').length;
-        const absent = total - pres; // Absent calculation
-        const rate = total > 0 ? Math.round((pres/total)*100) : 0;
-        const color = rate > 75 ? 'text-success' : (rate > 50 ? 'text-warning' : 'text-danger');
-
-        html += `<tr>
-            <td class="text-start">
-                <div class="fw-bold text-dark" style="font-size:13px;">${s.name}</div>
-            </td>
-            <td class="text-center small">${total}</td>
-            <td class="text-center fw-bold text-success small">${pres}</td>
-            <td class="text-center fw-bold text-danger small">${absent}</td> <td class="text-center small">
-                <span class="badge bg-light ${color} border">${rate}%</span>
-            </td>
-            <td class="text-center">
-                <a href="tel:${s.mobile}" class="btn-call shadow-sm">
-                    <i class="fas fa-phone-alt" style="font-size:12px;"></i>
-                </a>
-            </td>
-        </tr>`;
-    });
-
-    html += `</tbody></table></div>`;
-    resDiv.innerHTML = html;
-}
-// 3. Batch Excel Export Logic
-function exportBatchExcel() {
-    const month = document.getElementById('repMonth').value;
-    const time = document.getElementById('repTime').value;
-    const table = document.querySelector("#reportResult table");
+    if(!month) return showToast("Select Month!", "bg-warning");
     
-    if(!table) return showToast("Pehle View Batch par click karein!", "bg-warning");
+    resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
+    
+    let batchStudents = learners.filter(l => l.admis === 'Yes' && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time));
+    const { data: logs } = await _supabase.from('attendance_logs').select('*');
 
-    let csv = "Batch Report: " + month + " " + (time || "") + "\n";
-    csv += "Name,Total,Present,Absent,Rate\n"; // Header matching
+    let html = `<div class="row g-3 mt-2">`;
+    batchStudents.forEach(s => {
+        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id) : [];
+        const pres = sLogs.filter(lg => lg.status === 'Present').length;
+        const total = sLogs.length;
+        const rate = total > 0 ? Math.round((pres/total)*100) : 0;
+        const colorClass = rate > 75 ? 'text-success' : (rate > 50 ? 'text-warning' : 'text-danger');
 
-    table.querySelectorAll("tbody tr").forEach(row => {
-        const cols = row.querySelectorAll("td");
-        if(cols.length >= 5) {
-            csv += `"${cols[0].innerText}","${cols[1].innerText}","${cols[2].innerText}","${cols[3].innerText}","${cols[4].innerText}"\n`;
-        }
+        html += `
+            <div class="col-md-6 col-lg-4">
+                <div class="batch-stat-card shadow-sm border">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="${s.photo || 'https://via.placeholder.com/50'}" style="width:50px; height:50px; border-radius:12px; object-fit:cover;" class="me-3 border">
+                        <div style="overflow:hidden">
+                            <h6 class="m-0 fw-bold text-dark text-truncate">${s.name}</h6>
+                            <small class="text-muted d-block" style="font-size:10px;">${s.mobile}</small>
+                            <small class="text-info fw-bold" style="font-size:9px;"><i class="fas fa-clock me-1"></i>${s.remark || "N/A"}</small>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded-3">
+                        <div class="text-center"><div class="fw-bold" style="font-size:10px;">P</div><div class="text-success fw-bold">${pres}</div></div>
+                        <div class="text-center"><div class="fw-bold" style="font-size:10px;">A</div><div class="text-danger fw-bold">${total - pres}</div></div>
+                        <div class="text-center"><div class="fw-bold" style="font-size:10px;">RATE</div><div class="${colorClass} fw-bold">${rate}%</div></div>
+                        <a href="tel:${s.mobile}" class="btn-call shadow-sm" style="width:30px; height:30px;"><i class="fas fa-phone-alt" style="font-size:12px;"></i></a>
+                    </div>
+                </div>
+            </div>`;
+    });
+    resDiv.innerHTML = batchStudents.length ? html + `</div>` : `<p class="text-center p-4">No Data.</p>`;
+}
+function exportBatchExcel() {
+    const month = document.getElementById('repMonth').value;
+    const cards = document.querySelectorAll(".batch-stat-card");
+    if(cards.length === 0) return showToast("Generate Report First!", "bg-warning");
+
+    let csv = "Name,Mobile,Present,Absent,Rate\n";
+    cards.forEach(card => {
+        const name = card.querySelector('h6').innerText;
+        const mobile = card.querySelector('small').innerText;
+        const stats = card.querySelectorAll('.fw-bold');
+        csv += `"${name}","${mobile}","${stats[2].innerText}","${stats[4].innerText}","${stats[6].innerText}"\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `Batch_Report_${month}.csv`;
+    link.download = `Batch_Performance_${month}.csv`;
     link.click();
 }
 </script>
@@ -1872,6 +1894,16 @@ function exportBatchExcel() {
             </div>
         </div>
     </div>
+</div>
+<div id="attSuccessPopup" class="att-success-card">
+    <div class="text-success mb-2"><i class="fas fa-check-circle fa-3x"></i></div>
+    <img id="popImg" src="" class="att-success-img">
+    <h6 id="popName" class="fw-bold m-0 text-uppercase text-dark"></h6>
+    <p id="popAadhar" class="small text-muted mb-1" style="font-size: 10px;"></p>
+    <div class="badge bg-light text-dark border p-2 w-100 mb-2" id="popDob" style="font-size: 10px;"></div>
+    <div class="fw-bold text-success mb-3" style="font-size: 12px;">ATTENDANCE MARKED!</div>
+    <button class="btn btn-dark popup-close-btn" onclick="closeAttPopup()">DONE / CLOSE</button>
+</div>
 </div>
 </body>
 </html>
