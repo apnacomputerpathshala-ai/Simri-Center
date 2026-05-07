@@ -325,6 +325,9 @@ font-size: 12px;
     <div class="nav-menu mt-4">
         <div class="nav-item active" id="btn-stats" onclick="handleNavClick('stats')"><i class="fas fa-th-large"></i> Dashboard</div>
 <div class="nav-item" id="btn-reg" onclick="handleNavClick('reg')"><i class="fas fa-user-plus"></i> New Registration</div>
+<div class="nav-item" id="btn-admission" onclick="handleNavClick('admission')">
+    <i class="fas fa-key text-warning"></i> <span>KYP Admission Portal</span>
+</div>
 <div class="nav-item" id="btn-records" onclick="handleNavClick('records')"><i class="fas fa-file-invoice"></i> Student Records</div>
 <div class="nav-item" id="btn-active" onclick="handleNavClick('active')">
     <i class="fas fa-user-check"></i> <span>Active Students</span>
@@ -456,6 +459,32 @@ font-size: 12px;
                     <div class="col-md-3"><label class="small fw-bold">Allocation</label><select id="alloc" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
                     <div class="col-md-3"><label class="small fw-bold">Admission</label><select id="admis" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
                     <div class="col-md-3"><label class="small fw-bold">Payment</label><select id="pay" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                    <div class="section-title">MNSSBY Portal & Registration Details</div>
+<div class="row g-3 mb-3">
+    <div class="col-md-3">
+        <label class="small fw-bold">MNSSBY User ID</label>
+        <input type="text" id="mnssbyId" class="form-control" placeholder="Enter ID">
+    </div>
+    <div class="col-md-3">
+        <label class="small fw-bold">Portal Password</label>
+        <input type="text" id="mnssbyPass" class="form-control" placeholder="Enter Password">
+    </div>
+    <div class="col-md-3">
+        <label class="small fw-bold">Form Status</label>
+        <select id="formStatus" class="form-select">
+            <option value="Pending">Pending</option>
+            <option value="Submitted">Submitted</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="small fw-bold">DRCC Status</label>
+        <select id="drccStatus" class="form-select">
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+        </select>
+    </div>
+</div>
+
                     <div class="col-md-12"><label class="small fw-bold">Remark / Details</label><textarea id="remark" class="form-control" rows="1"></textarea></div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mt-4 fw-bold p-3">SAVE COMPLETE STUDENT RECORD</button>
@@ -510,6 +539,40 @@ font-size: 12px;
             </table>
         </div>
     </div>
+    <div id="admissionTab" class="tab-content">
+    <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold"><i class="fas fa-id-card me-2 text-warning"></i> MNSSBY Online Registration Tracker</h6>
+            <span class="badge bg-warning text-dark">Pending Registration: <span id="pendingAdmissionCount">0</span></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" id="admissionSearch" class="form-control border-start-0" placeholder="Naam ya Aadhar se dhoondhein..." onkeyup="filterAdmissionTable()">
+            </div>
+        </div>
+    </div>
+    
+    <div class="table-responsive shadow-sm rounded-4">
+        <table class="table table-bordered bg-white m-0">
+            <thead class="table-dark">
+                <tr>
+                    <th width="50">#</th>
+                    <th class="text-start">Learner Name</th>
+                    <th>MNSSBY User ID</th>
+                    <th>Password</th>
+                    <th>Form Status</th>
+                    <th>DRCC Status</th>
+                    <th width="150">Portal Action</th>
+                </tr>
+            </thead>
+            <tbody id="admissionTbody"></tbody>
+        </table>
+    </div>
+</div>
 <div id="activeTab" class="tab-content">
     <div class="card border-0 shadow-sm p-3 mb-3 bg-primary text-white">
         <h6 class="m-0 fw-bold"><i class="fas fa-users me-2"></i> Admitted Students List</h6>
@@ -885,7 +948,7 @@ function switchTab(tab) {
     if(tab === 'active') {
         renderActiveStudents();
     }
-    
+    if(tab === 'admission') renderAdmissionTable();
     updateStats();
 }
 // --- ADMIN & STAFF AUTH LOGIC (CLOUD & LOCAL SYNC) ---
@@ -1057,6 +1120,10 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
             admis: document.getElementById('admis').value,
             pay: document.getElementById('pay').value,
             photo: document.getElementById('photoData').value || null,
+            mnssbyId: document.getElementById('mnssbyId').value || "-",
+mnssbyPass: document.getElementById('mnssbyPass').value || "-",
+formStatus: document.getElementById('formStatus').value,
+drccStatus: document.getElementById('drccStatus').value,
             remark: document.getElementById('remark').value || "-"
         };
 
@@ -1316,16 +1383,22 @@ function editL(id) {
     const l = learners.find(x => x.id === id);
     if(!l) return;
     
-    // सभी इनपुट फील्ड्स को डेटा से भरें
-    Object.keys(l).forEach(key => { 
-        if(document.getElementById(key)) document.getElementById(key).value = l[key]; 
+    const fields = [
+        'siNo', 'name', 'father', 'dob', 'gender', 'category', 'aadhar', 'mobile',
+        'village', 'panchayat', 'block', 'pincode', 'school', 'board', 'learnerClass',
+        'rollCode', 'rollNo', 'passYear', 'bankName', 'branchName', 'accNo', 'ifsc',
+        'receipt', 'verify', 'alloc', 'admis', 'pay', 'remark', 
+        'mnssbyId', 'mnssbyPass', 'formStatus', 'drccStatus'
+    ];
+
+    fields.forEach(field => {
+        const el = document.getElementById(field);
+        if(el) el.value = l[field] || (el.tagName === 'SELECT' ? (l[field] || el.options[0].value) : "");
     });
     
-    // छिपे हुए editId फील्ड में ID सेट करें
     document.getElementById('editId').value = l.id;
     switchTab('reg');
 }
-
 // LINE 580 KE PAAS WALE DELETE FUNCTION KO ISSE REPLACE KAREIN
 async function deleteL(id) {
     if(confirm("Confirm Delete? Kya aap ise permanent Cloud se hatana chahte hain?")) {
@@ -1603,7 +1676,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `13.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `14.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -1925,6 +1998,77 @@ function exportBatchExcel() {
     link.download = `Batch_Performance_${month}.csv`;
     link.click();
 }
+// 1. Fixed Admission Table Logic (Only show Verification: No)
+function renderAdmissionTable() {
+    const tbody = document.getElementById('admissionTbody');
+    
+    // फ़िल्टर: सिर्फ वही छात्र जिनका Verification "No" है
+    const list = learners.filter(l => l.verify === 'No' && (l.admis === 'No' || !l.admis));
+    
+    document.getElementById('pendingAdmissionCount').innerText = list.length;
+
+    if(list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted">सभी का वेरिफिकेशन पूरा है! कोई पेंडिंग नहीं।</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = list.map((l, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td class="text-start fw-bold text-primary">${l.name}</td>
+            <td><code class="text-dark fw-bold">${l.mnssbyId || '-'}</code></td>
+            <td><code class="text-danger fw-bold">${l.mnssbyPass || '-'}</code></td>
+            <td><span class="badge ${l.formStatus === 'Submitted' ? 'bg-success' : 'bg-secondary'}">${l.formStatus || 'Pending'}</span></td>
+            <td><span class="badge bg-danger">Verification Pending</span></td>
+            <td>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-dark w-100" onclick="openOfficialPortal('${l.mnssbyId}', '${l.mnssbyPass}')">
+                        <i class="fas fa-external-link-alt"></i> Login
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editL(${l.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>`).join('');
+}
+
+async function openOfficialPortal(user, pass) {
+    if(!user || user === "-" || user === "") {
+        showToast("User ID नहीं मिला! पहले Edit करके ID भरें।", "bg-danger");
+        return;
+    }
+
+    try {
+        // Step 1: Pehle ID copy karein
+        await navigator.clipboard.writeText(user);
+        
+        // Step 2: User ko inform karein ki ID copy ho gayi hai
+        showToast("User ID Copy ho gayi hai! Password yaad rakhein: " + pass, "bg-success");
+
+        // Step 3: Thoda delay dekar portal kholein taaki clipboard update ho jaye
+        setTimeout(() => {
+            window.open('https://www.7nishchay-yuvaupmission.bihar.gov.in/', '_blank');
+        }, 800);
+
+    } catch (err) {
+        // Agar clipboard fail ho jaye toh purana tareeka (Manual Copy)
+        console.error('Clipboard error:', err);
+        window.open('https://www.7nishchay-yuvaupmission.bihar.gov.in/', '_blank');
+    }
+}
+
+// 3. Admission Search Filter
+function filterAdmissionTable() {
+    const searchTerm = document.getElementById('admissionSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#admissionTbody tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
     <div class="card p-4 shadow-lg text-center" style="width: 320px; border-radius: 20px; border: none;">
