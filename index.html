@@ -540,39 +540,44 @@ font-size: 12px;
         </div>
     </div>
     <div id="admissionTab" class="tab-content">
-    <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h6 class="m-0 fw-bold"><i class="fas fa-id-card me-2 text-warning"></i> MNSSBY Online Registration Tracker</h6>
-            <span class="badge bg-warning text-dark">Pending Registration: <span id="pendingAdmissionCount">0</span></span>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <div class="input-group shadow-sm">
-                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                <input type="text" id="admissionSearch" class="form-control border-start-0" placeholder="Naam ya Aadhar se dhoondhein..." onkeyup="filterAdmissionTable()">
+        <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="m-0 fw-bold"><i class="fas fa-id-card me-2 text-warning"></i> MNSSBY Online Registration Tracker</h6>
+                <div class="d-flex gap-2 align-items-center">
+                    <span class="badge bg-warning text-dark">Pending: <span id="pendingAdmissionCount">0</span></span>
+                    <button class="btn btn-sm btn-warning fw-bold" onclick="openOfficialPortal('NEW', 'REGISTRATION')">
+                        <i class="fas fa-user-plus"></i> NEW REGISTRATION
+                    </button>
+                </div>
             </div>
         </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="admissionSearch" class="form-control border-start-0" placeholder="Naam ya Aadhar se dhoondhein..." onkeyup="filterAdmissionTable()">
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-responsive shadow-sm rounded-4">
+            <table class="table table-bordered bg-white m-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th width="50">#</th>
+                        <th class="text-start">Learner Name</th>
+                        <th>MNSSBY User ID</th>
+                        <th>Password</th>
+                        <th>Form Status</th>
+                        <th>DRCC Status</th>
+                        <th width="150">Portal Action</th>
+                    </tr>
+                </thead>
+                <tbody id="admissionTbody"></tbody>
+            </table>
+        </div>
     </div>
-    
-    <div class="table-responsive shadow-sm rounded-4">
-        <table class="table table-bordered bg-white m-0">
-            <thead class="table-dark">
-                <tr>
-                    <th width="50">#</th>
-                    <th class="text-start">Learner Name</th>
-                    <th>MNSSBY User ID</th>
-                    <th>Password</th>
-                    <th>Form Status</th>
-                    <th>DRCC Status</th>
-                    <th width="150">Portal Action</th>
-                </tr>
-            </thead>
-            <tbody id="admissionTbody"></tbody>
-        </table>
-    </div>
-</div>
 <div id="activeTab" class="tab-content">
     <div class="card border-0 shadow-sm p-3 mb-3 bg-primary text-white">
         <h6 class="m-0 fw-bold"><i class="fas fa-users me-2"></i> Admitted Students List</h6>
@@ -763,6 +768,20 @@ font-size: 12px;
     <footer>
         V 2.2 | © 2026 Surya | सूरज कुमार
     </footer>
+   <div class="modal fade" id="portalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white p-2">
+                    <h6 class="modal-title small"><i class="fas fa-globe me-2"></i> MNSSBY Official Portal</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="document.getElementById('portalIframe').src=''"></button>
+                </div>
+                <div class="modal-body p-0" style="height: 90vh;">
+                    <iframe id="portalIframe" src="" style="width:100%; height:100%; border:none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+  
 <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border-radius: 12px; overflow: hidden;">
@@ -1676,7 +1695,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `14.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `17.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -2034,26 +2053,32 @@ function renderAdmissionTable() {
 }
 
 async function openOfficialPortal(user, pass) {
-    if(!user || user === "-" || user === "") {
-        showToast("User ID नहीं मिला! पहले Edit करके ID भरें।", "bg-danger");
-        return;
-    }
-
     try {
-        // Step 1: Pehle ID copy karein
-        await navigator.clipboard.writeText(user);
-        
-        // Step 2: User ko inform karein ki ID copy ho gayi hai
-        showToast("User ID Copy ho gayi hai! Password yaad rakhein: " + pass, "bg-success");
+        const iframe = document.getElementById('portalIframe');
+        const portalUrl = 'https://www.7nishchay-yuvaupmission.bihar.gov.in/';
 
-        // Step 3: Thoda delay dekar portal kholein taaki clipboard update ho jaye
-        setTimeout(() => {
-            window.open('https://www.7nishchay-yuvaupmission.bihar.gov.in/', '_blank');
-        }, 800);
+        // Agar Naya Registration button dabaya ho
+        if(user === 'NEW') {
+            iframe.src = portalUrl;
+            new bootstrap.Modal(document.getElementById('portalModal')).show();
+            return;
+        }
+
+        // Login ke liye ID check
+        if(!user || user === "-" || user === "") {
+            showToast("User ID nahi mila! Edit karke bharein.", "bg-danger");
+            return;
+        }
+
+        // Clipboard me copy karein
+        await navigator.clipboard.writeText(user);
+        alert(`ID Copy ho gayi hai!\n\nPORTAL PASSWORD: ${pass}\n\nAb login box mein paste karein.`);
+
+        iframe.src = portalUrl;
+        new bootstrap.Modal(document.getElementById('portalModal')).show();
 
     } catch (err) {
-        // Agar clipboard fail ho jaye toh purana tareeka (Manual Copy)
-        console.error('Clipboard error:', err);
+        // Agar kuch galat ho toh naye tab me khol dein
         window.open('https://www.7nishchay-yuvaupmission.bihar.gov.in/', '_blank');
     }
 }
