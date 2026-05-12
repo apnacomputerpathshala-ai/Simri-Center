@@ -170,6 +170,95 @@
         -webkit-overflow-scrolling: touch;
     }
 }
+/* --- स्मार्ट फ़िल्टर सेक्शन स्टाइल --- */
+#filterSection {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    margin: 20px !important; /* चारों तरफ से जगह के लिए */
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05) !important;
+}
+
+/* फ़िल्टर के अंदर की हेडिंग */
+#filterSection h6 {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: #1e293b;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* इनपुट और सिलेक्ट बॉक्स का सुंदर डिजाइन */
+#filterSection .form-control, 
+#filterSection .form-select {
+    border-radius: 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    font-size: 12px !important;
+    padding: 8px 12px !important;
+    transition: all 0.3s ease !important;
+    background-color: #ffffff !important;
+}
+
+#filterSection .form-control:focus, 
+#filterSection .form-select:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+    outline: none;
+}
+
+/* चेकलिस्ट (Village/School) बॉक्स स्टाइल */
+#villageChecklist, #schoolChecklist {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 10px !important;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+/* चेकबॉक्स आइटम का स्टाइल */
+.form-check {
+    padding: 6px 8px;
+    margin-left: 25px !important;
+    border-radius: 8px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.form-check:hover {
+    background: #eff6ff;
+}
+
+.form-check-input {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.form-check-label {
+    cursor: pointer;
+    font-weight: 500;
+    color: #475569;
+    font-size: 11px;
+    margin-left: 5px;
+}
+
+/* लेबल स्टाइल */
+#filterSection label {
+    margin-bottom: 4px;
+    color: #64748b;
+}
+
+/* क्लियर फ़िल्टर बटन */
+.btn-danger.w-100 {
+    border-radius: 10px !important;
+    padding: 10px !important;
+    font-size: 12px !important;
+    letter-spacing: 1px;
+}
+
 /* --- FINAL BALANCED A4 PRINT DESIGN --- */
 @media print {
     body * { visibility: hidden; }
@@ -498,20 +587,59 @@ font-size: 12px;
             <button class="btn btn-sm btn-success shadow-sm" onclick="exportFullCSV()" title="Export to Excel"><i class="fas fa-file-excel"></i></button>
         </div>
         
-        <div id="filterSection">
-            <h6 class="fw-bold mb-3 small text-primary"><i class="fas fa-search me-2"></i>Apply Multi-Column Filters</h6>
-            <div class="filter-grid">
-                <input type="text" id="fName" class="form-control form-control-sm" placeholder="Candidate Name..." onkeyup="applyFilters()">
-                <input type="text" id="fVillage" class="form-control form-control-sm" placeholder="Village Name..." onkeyup="applyFilters()">
-                <select id="fGender" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Gender (All)</option><option value="Male">Male</option><option value="Female">Female</option></select>
-                <input type="text" id="fClass" class="form-control form-control-sm" placeholder="Class..." onkeyup="applyFilters()">
-                <input type="text" id="fSchool" class="form-control form-control-sm" placeholder="School Name..." onkeyup="applyFilters()">
-                <select id="fVerify" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Verified?</option><option value="Yes">Yes</option><option value="No">No</option></select>
-                <select id="fAlloc" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Allocated?</option><option value="Yes">Yes</option><option value="No">No</option></select>
-                <select id="fAdmis" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Admission?</option><option value="Yes">Yes</option><option value="No">No</option></select>
-                <select id="fPay" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Payment?</option><option value="Yes">Yes</option><option value="No">No</option></select>
-            </div>
+        <div id="filterSection" class="bg-white p-3 rounded-4 shadow-sm border mb-4">
+    <h6 class="fw-bold text-primary mb-3"><i class="fas fa-search-plus me-2"></i>Smart Multi-Filter System</h6>
+    
+    <div class="row g-2">
+        <div class="col-md-3">
+            <label class="small fw-bold">Candidate Name</label>
+            <input type="text" id="fName" class="form-control form-control-sm" placeholder="Search name..." onkeyup="applyFilters()">
+            <label class="small fw-bold mt-2">Aadhar (Last 4 Digits)</label>
+            <input type="text" id="fAadhar" class="form-control form-control-sm" placeholder="e.g. 1234" maxlength="4" onkeyup="applyFilters()">
         </div>
+
+        <div class="col-md-3">
+            <label class="small fw-bold">Villages</label>
+            <div id="villageChecklist" class="border rounded p-2 bg-light" style="max-height: 100px; overflow-y: auto; font-size: 11px;"></div>
+        </div>
+        <div class="col-md-3">
+            <label class="small fw-bold">Schools</label>
+            <div id="schoolChecklist" class="border rounded p-2 bg-light" style="max-height: 100px; overflow-y: auto; font-size: 11px;"></div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="small fw-bold">Admission Date Range</label>
+            <div class="d-flex gap-1 mb-2">
+                <input type="date" id="fDateFrom" class="form-control form-control-sm" onchange="applyFilters()">
+                <input type="date" id="fDateTo" class="form-control form-control-sm" onchange="applyFilters()">
+            </div>
+            <label class="small fw-bold">Category</label>
+            <select id="fCategory" class="form-select form-select-sm" onchange="applyFilters()">
+                <option value="">All Categories</option>
+                <option value="GEN">GEN</option>
+                <option value="BC">BC</option>
+                <option value="EBC">EBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row g-2 mt-3 pt-2 border-top">
+        <div class="col-md-2 col-6">
+            <select id="fGender" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Gender (All)</option><option value="Male">Male</option><option value="Female">Female</option></select>
+        </div>
+        <div class="col-md-2 col-6">
+            <select id="fVerify" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Verified?</option><option value="Yes">Yes</option><option value="No">No</option></select>
+        </div>
+        <div class="col-md-2 col-6">
+            <select id="fAdmis" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Admission?</option><option value="Yes">Yes</option><option value="No">No</option></select>
+        </div>
+        <div class="col-md-6 col-12">
+            <button class="btn btn-sm btn-danger w-100 fw-bold" onclick="resetAllFilters()">CLEAR ALL FILTERS</button>
+        </div>
+    </div>
+</div>
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover bg-white m-0">
@@ -1192,31 +1320,79 @@ async function loadDataFromSupabase() {
         showToast("Cloud से डेटा लोड नहीं हो पाया!", "bg-danger");
     }
 }
+// 1. डेटा लोड होते ही चेकबॉक्स लिस्ट बनाना
+function updateFilterOptions() {
+    const vList = document.getElementById('villageChecklist');
+    const sList = document.getElementById('schoolChecklist');
+    
+    const villages = [...new Set(learners.map(l => l.village))].filter(v => v && v !== "-").sort();
+    const schools = [...new Set(learners.map(l => l.school))].filter(s => s && s !== "-").sort();
 
+    vList.innerHTML = villages.map(v => `
+        <div class="form-check">
+            <input class="form-check-input v-check" type="checkbox" value="${v}" id="v-${v}" onchange="applyFilters()">
+            <label class="form-check-label" for="v-${v}">${v}</label>
+        </div>`).join('');
+
+    sList.innerHTML = schools.map(s => `
+        <div class="form-check">
+            <input class="form-check-input s-check" type="checkbox" value="${s}" id="s-${s}" onchange="applyFilters()">
+            <label class="form-check-label" for="s-${s}">${s}</label>
+        </div>`).join('');
+}
+
+// 2. एडवांस मल्टी-फिल्टर लॉजिक (Aadhar, Date, Category शामिल)
 function applyFilters() {
     const fName = (document.getElementById('fName').value || "").toLowerCase();
-    const fVillage = (document.getElementById('fVillage').value || "").toLowerCase();
+    const fAadhar = document.getElementById('fAadhar').value;
+    const fDateFrom = document.getElementById('fDateFrom').value;
+    const fDateTo = document.getElementById('fDateTo').value;
+    const fCategory = document.getElementById('fCategory').value;
     const fGender = document.getElementById('fGender').value;
-    const fClass = (document.getElementById('fClass').value || "").toLowerCase();
-    const fSchool = (document.getElementById('fSchool').value || "").toLowerCase();
     const fVerify = document.getElementById('fVerify').value;
-    const fAlloc = document.getElementById('fAlloc').value;
     const fAdmis = document.getElementById('fAdmis').value;
-    const fPay = document.getElementById('fPay').value;
+
+    const selVillages = Array.from(document.querySelectorAll('.v-check:checked')).map(c => c.value);
+    const selSchools = Array.from(document.querySelectorAll('.s-check:checked')).map(c => c.value);
 
     const filtered = learners.filter(l => {
-        return (l.name || "").toLowerCase().includes(fName) && 
-               (l.village || "").toLowerCase().includes(fVillage) &&
+        // Aadhar Last 4 Digits Match
+        const aadharDigits = (l.aadhar || "").replace(/\s/g, '');
+        const aadharMatch = !fAadhar || aadharDigits.endsWith(fAadhar);
+
+        // Date Range Match (DOB या Admission Date के आधार पर)
+        let dateMatch = true;
+        if (fDateFrom && fDateTo && l.dob) {
+            dateMatch = (l.dob >= fDateFrom && l.dob <= fDateTo);
+        }
+
+        return (l.name || "").toLowerCase().includes(fName) &&
+               aadharMatch &&
+               dateMatch &&
+               (fCategory === "" || l.category === fCategory) &&
+               (selVillages.length === 0 || selVillages.includes(l.village)) &&
+               (selSchools.length === 0 || selSchools.includes(l.school)) &&
                (fGender === "" || l.gender === fGender) &&
-               (l.learnerClass || "").toLowerCase().includes(fClass) &&
-               (l.school || "").toLowerCase().includes(fSchool) &&
                (fVerify === "" || l.verify === fVerify) &&
-               (fAlloc === "" || l.alloc === fAlloc) &&
-               (fAdmis === "" || l.admis === fAdmis) &&
-               (fPay === "" || l.pay === fPay);
+               (fAdmis === "" || l.admis === fAdmis);
     });
     renderTable(filtered);
 }
+
+// 3. रिसेट फंक्शन
+function resetAllFilters() {
+    document.getElementById('fName').value = '';
+    document.getElementById('fAadhar').value = '';
+    document.getElementById('fDateFrom').value = '';
+    document.getElementById('fDateTo').value = '';
+    document.getElementById('fCategory').value = '';
+    document.querySelectorAll('.v-check, .s-check').forEach(c => c.checked = false);
+    document.getElementById('fGender').value = '';
+    document.getElementById('fVerify').value = '';
+    document.getElementById('fAdmis').value = '';
+    renderTable(learners);
+}
+
 function renderTable(dataToRender) {
     const tbody = document.getElementById('learnerTbody');
     // अगर डेटा पास नहीं हुआ, तो मुख्य 'learners' लिस्ट का उपयोग करें
@@ -1544,11 +1720,12 @@ async function loadDataFromSupabase() {
         if (error) throw error;
 
         if (data) {
-            learners = data; // ग्लोबल एरे 'learners' में डेटा भरें
-            renderTable(learners); // सबसे जरूरी: टेबल को डेटा भेजें
-            updateStats(); // डैशबोर्ड अपडेट करें
-            console.log("Data loaded:", learners);
-        }
+    learners = data;
+    renderTable(learners);
+    updateStats();
+    updateFilterOptions(); // <--- यह लाइन यहाँ पेस्ट करें
+    console.log("Data successfully loaded from Cloud.");
+}
     } catch (err) {
         console.error("Error loading data:", err.message);
         showToast("डेटा लोड नहीं हो पाया!", "bg-danger");
@@ -1696,7 +1873,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `19.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `20.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
