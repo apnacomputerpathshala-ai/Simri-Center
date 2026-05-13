@@ -373,25 +373,17 @@
 }
 .btn-call:hover { background: #1d4ed8; color: white; transform: scale(1.1); }
 
-/* Excel Button Styling */
-
+/* इस कोड को अपने स्टाइल टैग में सही करें */
 .btn-excel-batch {
-
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 12px;
 }
 
-background: #10b981;
-
-color: white;
-
-border: none;
-
-padding: 8px 15px;
-
-border-radius: 10px;
-
-font-weight: 700;
-
-font-size: 12px;
 /* Mobile responsive padding fix */
 @media (max-width: 768px) {
     #attendanceTbody td {
@@ -818,11 +810,12 @@ font-size: 12px;
                     <div class="col-md-6 mb-2">
     <input type="file" id="restoreInput" style="display:none" onchange="restoreJSON(event)" accept=".json">
     
-    <button class="btn btn-outline-warning w-100" onclick="document.getElementById('restoreInput').click()">
-        <i class="bi bi-cloud-upload me-2"></i>UPLOAD & RESTORE NOW
+    <div class="d-grid gap-2">
+    <button class="btn btn-warning fw-bold" onclick="document.getElementById('finalRestoreInput').click()">
+        <i class="fas fa-file-import me-2"></i> UPLOAD & RESTORE CSV
     </button>
+    <input type="file" id="finalRestoreInput" style="display:none" onchange="restoreCSV(event)" accept=".csv">
 </div>
-
             </div>
         </div>
     </div>
@@ -1943,7 +1936,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `22.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `23.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -2539,35 +2532,61 @@ async function downloadStudentAttendancePDF(sid) {
     toggleDateFields(sid);
 }
 // --- BACKUP & RESTORE LOGIC ---
-async function backupJSON() {
-    showToast("बैकअप फाइल तैयार हो रही है...", "bg-info");
+async function downloadCSVBackup() {
     try {
-        const { data: students } = await _supabase.from('students').select('*');
-        const { data: logs } = await _supabase.from('attendance_logs').select('*');
+        showToast("बैकअप तैयार हो रहा है...", "bg-info");
+        const { data, error } = await _supabase.from('students').select('*').order('name');
+        if (error) throw error;
 
-        const backupData = {
-            students: students || [],
-            attendance_logs: logs || [],
-            exportDate: new Date().toLocaleString()
-        };
+        const headers = "SI.No,Candidate Name,Father's Name,DOB,Gender,Category,Aadhar No,Mobile No,Village,Panchayat,Block,School,Board,Class,Roll Code,Roll No,Pass Year,Bank Name,Branch Name,Account No,IFSC Code,Receipt No,Verified,Allocated,Admission,Payment,Remark";
+        
+        const rows = data.map((s, index) => [
+            index + 1,
+            `"${s.name}"`,
+            `"${s.father}"`,
+            s.dob,
+            s.gender,
+            s.category,
+            `"'${s.aadhar}"`, // नंबर को सुरक्षित रखने के लिए ' जोड़ना
+            s.mobile,
+            `"${s.village}"`,
+            `"${s.panchayat}"`,
+            `"${s.block}"`,
+            `"${s.school}"`,
+            s.board,
+            s.learnerClass,
+            s.rollCode,
+            s.rollNo,
+            s.passYear,
+            `"${s.bankName}"`,
+            `"${s.branchName}"`,
+            `"'${s.accNo}"`, // नंबर को सुरक्षित रखने के लिए ' जोड़ना
+            s.ifsc,
+            s.receipt,
+            s.verify,
+            s.alloc,
+            s.admis,
+            s.pay,
+            `"${s.remark || '-'}"`
+        ].join(","));
 
-        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `ACP_Backup_${new Date().toLocaleDateString()}.json`;
+        const csvContent = headers + "\n" + rows.join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `ACP_Backup_${new Date().toLocaleDateString()}.csv`;
         link.click();
-        showToast("बैकअप डाउनलोड सफल!", "bg-success");
+        showToast("बैकअप फाइल डाउनलोड हो गई!", "bg-success");
     } catch (err) {
-        showToast("Error: " + err.message, "bg-danger");
+        showToast("बैकअप फेल: " + err.message, "bg-danger");
     }
 }
 
-async function restoreJSON(event) {
+async function restoreCSV(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (!confirm("क्या आप वाकई बैकअप रिस्टोर करना चाहते हैं? इससे क्लाउड डेटा अपडेट हो जाएगा।")) {
+    if (!confirm("क्या आप इस CSV फाइल से डेटा रिस्टोर करना चाहते हैं?")) {
         event.target.value = '';
         return;
     }
@@ -2575,22 +2594,62 @@ async function restoreJSON(event) {
     const reader = new FileReader();
     reader.onload = async (e) => {
         try {
-            const backup = JSON.parse(e.target.result);
-            showToast("अपलोड शुरू...", "bg-info");
+            const text = e.target.result;
+            const lines = text.split('\n').filter(l => l.trim() !== ''); 
+            const importedData = [];
 
-            if (backup.students) await _supabase.from('students').upsert(backup.students);
-            if (backup.attendance_logs) await _supabase.from('attendance_logs').upsert(backup.attendance_logs);
+            for (let i = 1; i < lines.length; i++) {
+                const row = lines[i]; // यह लाइन जोड़ना जरूरी है
+                const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.replace(/^"|"$/g, '').trim());
+                
+                if (cols.length >= 20) {
+                    importedData.push({
+                        name: cols[1],
+                        father: cols[2],
+                        dob: cols[3] || null,
+                        gender: cols[4],
+                        category: cols[5],
+                        aadhar: cols[6] ? cols[6].replace(/['"]/g, "").trim() : null,
+                        mobile: cols[7] ? cols[7].replace(/['"]/g, "").trim() : null,
+                        village: cols[8],
+                        panchayat: cols[9],
+                        block: cols[10],
+                        school: cols[11],
+                        board: cols[12],
+                        learnerClass: cols[13],
+                        rollCode: cols[14],
+                        rollNo: cols[15],
+                        passYear: parseInt(cols[16]) || null,
+                        bankName: cols[17],
+                        branchName: cols[18],
+                        accNo: cols[19] ? cols[19].replace(/['"]/g, "").trim() : null,
+                        ifsc: cols[20],
+                        receipt: cols[21],
+                        verify: cols[22],
+                        alloc: cols[23],
+                        admis: cols[24],
+                        pay: cols[25],
+                        remark: cols[26]
+                    });
+                }
+            }
 
-            showToast("डेटा रिस्टोर सफल!", "bg-success");
-            setTimeout(() => location.reload(), 1000);
+            if (importedData.length > 0) {
+                showToast(`${importedData.length} रिकॉर्ड अपलोड हो रहे हैं...`, "bg-info");
+                const { error } = await _supabase.from('students').upsert(importedData);
+                if (error) throw error;
+                showToast("डेटा सफलतापूर्वक रिस्टोर हुआ!", "bg-success");
+                setTimeout(() => location.reload(), 1500);
+            }
         } catch (err) {
-            showToast("रिस्टोर फेल: " + err.message, "bg-danger");
+            showToast("CSV रिस्टोर एरर: " + err.message, "bg-danger");
         } finally {
             event.target.value = '';
         }
     };
     reader.readAsText(file);
 }
+
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
     <div class="card p-4 shadow-lg text-center" style="width: 320px; border-radius: 20px; border: none;">
