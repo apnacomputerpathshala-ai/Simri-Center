@@ -815,10 +815,14 @@ font-size: 12px;
                     <h6 class="fw-bold">Restore Data</h6>
                     <p class="small text-muted">json backup file upload</p>
                     <input type="file" id="importFile" hidden onchange="restoreJSON(event)" accept=".json">
-                    <button class="btn btn-warning w-100 py-3 fw-bold shadow-sm" onclick="document.getElementById('importFile').click()" style="border-radius: 12px;">
-                        UPLOAD & RESTORE NOW
-                    </button>
-                </div>
+                    <div class="col-md-6 mb-2">
+    <input type="file" id="restoreInput" style="display:none" onchange="restoreJSON(event)" accept=".json">
+    
+    <button class="btn btn-outline-warning w-100" onclick="document.getElementById('restoreInput').click()">
+        <i class="bi bi-cloud-upload me-2"></i>UPLOAD & RESTORE NOW
+    </button>
+</div>
+
             </div>
         </div>
     </div>
@@ -1635,7 +1639,15 @@ function editL(id) {
 }
 // LINE 580 KE PAAS WALE DELETE FUNCTION KO ISSE REPLACE KAREIN
 async function deleteL(id) {
-    if(confirm("Confirm Delete? Kya aap ise permanent Cloud se hatana chahte hain?")) {
+    if (!id) {
+        showToast("Error: Student ID missing!", "bg-danger");
+        return;
+    }
+    
+    // अब यूजर को 'DELETE' टाइप करना होगा
+    const confirmName = prompt("डेटा को हमेशा के लिए मिटाने के लिए 'DELETE' टाइप करें:");
+    
+    if (confirmName === "DELETE") {
         const { error } = await _supabase
             .from('students')
             .delete()
@@ -1644,9 +1656,11 @@ async function deleteL(id) {
         if (error) {
             showToast("Delete Failed: " + error.message, "bg-danger");
         } else {
-            showToast("Record Deleted from Cloud!", "bg-danger");
+            showToast("Cloud से डेटा हटा दिया गया!", "bg-success");
             await loadDataFromSupabase();
         }
+    } else if (confirmName !== null) {
+        showToast("डिलीट रद्द कर दिया गया। सही शब्द टाइप करें।", "bg-warning");
     }
 }
 function updateStats() {
@@ -1929,7 +1943,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `21.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `22.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -2016,18 +2030,65 @@ function showUpdatePrompt() {
 document.getElementById('attDate').valueAsDate = new Date();
 async function saveAllAttendance() {
     const date = document.getElementById('attDate').value;
+    
+    // सुरक्षा चेक 1: अगर तारीख नहीं चुनी गई है तो आगे न बढ़ें
+    if (!date) {
+        showToast("कृपया पहले तारीख चुनें!", "bg-warning");
+        return;
+    }
+
     const records = [];
-    learners.filter(l => l.admis === 'Yes').forEach(l => {
-        const status = document.querySelector(`input[name="att-${l.id}"]:checked`)?.value;
-        if(status) records.push({ student_id: l.id, student_name: l.name, attendance_date: date, status: status });
+    const rows = document.querySelectorAll('#attendanceBody tr');
+    
+    // डेटा तैयार करना
+    rows.forEach(row => {
+        const studentId = row.dataset.id;
+        const status = row.querySelector('.status-select').value;
+        const remarks = row.querySelector('.remark-input').value;
+
+        if (studentId) {
+            records.push({
+                student_id: studentId,
+                attendance_date: date,
+                status: status,
+                remarks: remarks,
+                updated_at: new Date().toISOString()
+            });
+        }
     });
-    if(records.length === 0) return showToast("No students to save!", "bg-warning");
+
+    if (records.length === 0) {
+        showToast("सेव करने के लिए कोई रिकॉर्ड नहीं मिला!", "bg-info");
+        return;
+    }
+
     try {
-        await _supabase.from('attendance_logs').delete().eq('attendance_date', date);
-        const { error } = await _supabase.from('attendance_logs').insert(records);
-        if (error) throw error;
-        showToast("Attendance Saved!", "bg-success");
-    } catch (err) { showToast("Error: Table logs missing!", "bg-danger"); }
+        showToast("Cloud पर सेव हो रहा है...", "bg-info");
+
+        // सुरक्षा चेक 2: पहले केवल उसी तारीख का पुराना डेटा डिलीट करें (पूरी टेबल नहीं)
+        const { error: delError } = await _supabase
+            .from('attendance_logs')
+            .delete()
+            .eq('attendance_date', date);
+
+        if (delError) throw delError;
+
+        // नया डेटा इन्सर्ट करें
+        const { error: insError } = await _supabase
+            .from('attendance_logs')
+            .insert(records);
+
+        if (insError) throw insError;
+
+        showToast(`सफलतापूर्वक सेव किया गया: ${date}`, "bg-success");
+        
+        // डैशबोर्ड अपडेट करें
+        await updateStats(); 
+        
+    } catch (err) {
+        console.error("Attendance Error:", err);
+        showToast("सेव करने में त्रुटि: " + err.message, "bg-danger");
+    }
 }
 
 function updateReportDropdown() {
@@ -2477,7 +2538,59 @@ async function downloadStudentAttendancePDF(sid) {
 
     toggleDateFields(sid);
 }
+// --- BACKUP & RESTORE LOGIC ---
+async function backupJSON() {
+    showToast("बैकअप फाइल तैयार हो रही है...", "bg-info");
+    try {
+        const { data: students } = await _supabase.from('students').select('*');
+        const { data: logs } = await _supabase.from('attendance_logs').select('*');
 
+        const backupData = {
+            students: students || [],
+            attendance_logs: logs || [],
+            exportDate: new Date().toLocaleString()
+        };
+
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ACP_Backup_${new Date().toLocaleDateString()}.json`;
+        link.click();
+        showToast("बैकअप डाउनलोड सफल!", "bg-success");
+    } catch (err) {
+        showToast("Error: " + err.message, "bg-danger");
+    }
+}
+
+async function restoreJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!confirm("क्या आप वाकई बैकअप रिस्टोर करना चाहते हैं? इससे क्लाउड डेटा अपडेट हो जाएगा।")) {
+        event.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+        try {
+            const backup = JSON.parse(e.target.result);
+            showToast("अपलोड शुरू...", "bg-info");
+
+            if (backup.students) await _supabase.from('students').upsert(backup.students);
+            if (backup.attendance_logs) await _supabase.from('attendance_logs').upsert(backup.attendance_logs);
+
+            showToast("डेटा रिस्टोर सफल!", "bg-success");
+            setTimeout(() => location.reload(), 1000);
+        } catch (err) {
+            showToast("रिस्टोर फेल: " + err.message, "bg-danger");
+        } finally {
+            event.target.value = '';
+        }
+    };
+    reader.readAsText(file);
+}
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
     <div class="card p-4 shadow-lg text-center" style="width: 320px; border-radius: 20px; border: none;">
