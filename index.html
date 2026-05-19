@@ -282,9 +282,9 @@
 }
 /* --- FINAL BALANCED A4 PRINT DESIGN --- */
 @media print {
-    body * { visibility: hidden; }
-    #printArea, #printArea * { visibility: visible; display: block !important; }
+    body > *:not(#printArea) { display: none !important; }
     #printArea { 
+        display: block !important;
         position: absolute; left: 0; top: 0; width: 210mm; 
         background: white !important; padding: 10mm !important;
     }
@@ -412,6 +412,25 @@
     }
     .btn-group-sm > .btn { padding: 2px 6px !important; font-size: 10px !important; }
 }
+/* --- डेली अटेंडेंस कार्ड की स्टाइलिंग --- */
+.attendance-card {
+    background: #ffffff !important; 
+    border: 1px solid #e2e8f0 !important; 
+    border-radius: 12px !important; 
+    padding: 15px !important;
+    margin-bottom: 12px !important; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important; 
+    color: #1e293b !important; 
+}
+.attendance-card h6 {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    margin-bottom: 4px !important;
+}
+.attendance-card .text-muted {
+    color: #64748b !important;
+}
+
     </style>
 </head>
 <body>
@@ -494,16 +513,18 @@
                     <div class="col-md-1"><label class="small fw-bold">Category</label><select id="category" class="form-select"><option value="GEN">GEN</option><option value="BC">BC</option><option value="EBC">EBC</option><option value="SC">SC</option><option value="ST">ST</option></select></div>
                     <div class="col-md-3">
     <label class="small fw-bold">Aadhar No</label>
-    <input type="text" id="aadhar" class="form-control" maxlength="14" 
-           placeholder=""
-           oninput="formatAadhar(this)">
+    <input type="text" id="aadhar" class="form-control" maxlength="14" minlength="14" 
+           placeholder="XXXX XXXX XXXX"
+           oninput="formatAadhar(this)" required>
 </div>
 
 <div class="col-md-3">
     <label class="small fw-bold">Mobile No</label>
-    <input type="text" id="mobile" class="form-control" maxlength="10" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+    <input type="text" id="mobile" class="form-control" maxlength="10" minlength="10" 
+           pattern="[0-9]{10}" title="कृपया 10 अंकों का सही मोबाइल नंबर डालें"
+           oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
 </div>
+
 <div class="col-md-3">
     <label class="small fw-bold">Candidate Photo</label>
     <input type="file" id="candidatePhoto" class="form-control" accept="image/*" onchange="previewImage(this)">
@@ -600,15 +621,15 @@
             <button class="btn btn-sm btn-success shadow-sm" onclick="exportFullCSV()" title="Export to Excel"><i class="fas fa-file-excel"></i></button>
         </div>
         
-        <div id="filterSection" class="bg-white p-3 rounded-4 shadow-sm border mb-4">
+                <div id="filterSection" class="bg-white p-3 rounded-4 shadow-sm border mb-4">
     <h6 class="fw-bold text-primary mb-3"><i class="fas fa-search-plus me-2"></i>Smart Multi-Filter System</h6>
     
     <div class="row g-2">
         <div class="col-md-3">
             <label class="small fw-bold">Candidate Name</label>
-            <input type="text" id="fName" class="form-control form-control-sm" placeholder="Search name..." onkeyup="applyFilters()">
+            <input type="text" id="fName" class="form-control form-control-sm" placeholder="Search name..." onkeyup="debouncedApplyFilters()">
             <label class="small fw-bold mt-2">Aadhar (Last 4 Digits)</label>
-            <input type="text" id="fAadhar" class="form-control form-control-sm" placeholder="e.g. 1234" maxlength="4" onkeyup="applyFilters()">
+            <input type="text" id="fAadhar" class="form-control form-control-sm" placeholder="e.g. 1234" maxlength="4" onkeyup="debouncedApplyFilters()">
         </div>
 
         <div class="col-md-3">
@@ -626,15 +647,11 @@
                 <input type="date" id="fDateFrom" class="form-control form-control-sm" onchange="applyFilters()">
                 <input type="date" id="fDateTo" class="form-control form-control-sm" onchange="applyFilters()">
             </div>
-            <label class="small fw-bold">Category</label>
-            <select id="fCategory" class="form-select form-select-sm" onchange="applyFilters()">
-                <option value="">All Categories</option>
-                <option value="GEN">GEN</option>
-                <option value="BC">BC</option>
-                <option value="EBC">EBC</option>
-                <option value="SC">SC</option>
-                <option value="ST">ST</option>
-            </select>
+            <label class="small fw-bold">Class & Remark</label>
+            <div class="d-flex gap-1">
+                <input type="text" id="fClass" class="form-control form-control-sm" placeholder="Class..." onkeyup="debouncedApplyFilters()">
+                <input type="text" id="fRemark" class="form-control form-control-sm" placeholder="Remark..." onkeyup="debouncedApplyFilters()">
+            </div>
         </div>
     </div>
 
@@ -646,10 +663,16 @@
             <select id="fVerify" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Verified?</option><option value="Yes">Yes</option><option value="No">No</option></select>
         </div>
         <div class="col-md-2 col-6">
+            <select id="fAlloc" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Allocated?</option><option value="Yes">Yes</option><option value="No">No</option></select>
+        </div>
+        <div class="col-md-2 col-6">
             <select id="fAdmis" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Admission?</option><option value="Yes">Yes</option><option value="No">No</option></select>
         </div>
-        <div class="col-md-6 col-12">
-            <button class="btn btn-sm btn-danger w-100 fw-bold" onclick="resetAllFilters()">CLEAR ALL FILTERS</button>
+        <div class="col-md-2 col-6">
+            <select id="fPay" class="form-select form-select-sm" onchange="applyFilters()"><option value="">Payment?</option><option value="Yes">Yes</option><option value="No">No</option></select>
+        </div>
+        <div class="col-md-2 col-6">
+            <button class="btn btn-sm btn-danger w-100 fw-bold" onclick="resetAllFilters()">CLEAR FILTERS</button>
         </div>
     </div>
 </div>
@@ -804,22 +827,21 @@
                             <i class="fas fa-file-import fa-2x text-warning"></i>
                         </div>
                     </div>
-                    <h6 class="fw-bold">Restore Data</h6>
-                    <p class="small text-muted">json backup file upload</p>
-                    <input type="file" id="importFile" hidden onchange="restoreJSON(event)" accept=".json">
-                    <div class="col-md-6 mb-2">
-    <input type="file" id="restoreInput" style="display:none" onchange="restoreJSON(event)" accept=".json">
-    
-    <div class="d-grid gap-2">
-    <button class="btn btn-warning fw-bold" onclick="document.getElementById('finalRestoreInput').click()">
-        <i class="fas fa-file-import me-2"></i> UPLOAD & RESTORE CSV
-    </button>
-    <input type="file" id="finalRestoreInput" style="display:none" onchange="restoreCSV(event)" accept=".csv">
-</div>
+                                        <h6 class="fw-bold">Restore Data</h6>
+                    <p class="small text-muted mb-3">Upload your previous CSV backup file</p>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-warning fw-bold" onclick="document.getElementById('finalRestoreInput').click()">
+                            <i class="fas fa-file-import me-2"></i> UPLOAD & RESTORE CSV
+                        </button>
+                        <input type="file" id="finalRestoreInput" style="display:none" onchange="restoreCSV(event)" accept=".csv">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 <div id="attendanceTab" class="tab-content">
     <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1134,58 +1156,57 @@ function switchTab(tab) {
     if(tab === 'admission') renderAdmissionTable();
     updateStats();
 }
-// --- ADMIN & STAFF AUTH LOGIC (CLOUD & LOCAL SYNC) ---
-function checkAuth() {
-    const isLogged = localStorage.getItem('admin_active');
-    if (isLogged === 'true') {
-        const overlay = document.getElementById('loginOverlay');
-        if(overlay) overlay.style.display = 'none';
-        applyPermissions();
-    }
-}
-
-function verifyLogin() {
-    const input = document.getElementById('adminPassInput').value;
+// --- SECURE SUPABASE AUTH & ROLE LOGIC ---
+async function checkAuth() {
+    // 1. क्लाउड से चेक करें कि कोई लॉगिन है या नहीं
+    const { data: { session } } = await _supabase.auth.getSession();
+    const overlay = document.getElementById('loginOverlay');
     
-    // localStorage से उठाएगा, अगर नहीं मिला तो डिफ़ॉल्ट पासवर्ड इस्तेमाल करेगा
-    const ADMIN_PASS = localStorage.getItem('app_admin_pass') || "suraj@7070"; 
-    const STAFF_PASS = localStorage.getItem('app_staff_pass') || "kyp@123";
-
-    if (input === ADMIN_PASS) {
-        localStorage.setItem('user_role', 'admin');
-        localStorage.setItem('admin_active', 'true');
-        document.getElementById('loginOverlay').style.display = 'none';
-        applyPermissions();
-        showToast("Welcome SDC!", "bg-success");
-    } 
-    else if (input === STAFF_PASS) {
-        localStorage.setItem('user_role', 'staff');
-        localStorage.setItem('admin_active', 'true');
-        document.getElementById('loginOverlay').style.display = 'none';
-        applyPermissions();
-        showToast("Welcome SDC!", "bg-info");
-    } 
-    else {
-        showToast("Wrong Password!", "bg-danger");
+    if (session) {
+        if(overlay) overlay.style.display = 'none';
+        applyPermissions(); // जो रोल सेव है, उसके हिसाब से परमिशन लगाएगा
+    } else {
+        if(overlay) overlay.style.display = 'flex';
     }
 }
 
-// दोनों पासवर्ड एक साथ सेव करने के लिए फंक्शन
-function saveBothPasswords() {
-    const adminP = document.getElementById('newAdminPass').value;
-    const staffP = document.getElementById('newStaffPass').value;
+async function verifyLogin() {
+    const email = document.getElementById('adminEmailInput').value.toLowerCase().trim();
+    const password = document.getElementById('adminPassInput').value;
+    
+    if(!email || !password) {
+        return showToast("कृपया Email और Password दोनों डालें!", "bg-warning");
+    }
 
-    if (adminP) localStorage.setItem('app_admin_pass', adminP);
-    if (staffP) localStorage.setItem('app_staff_pass', staffP);
+    const btn = document.getElementById('loginBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Checking...';
+    btn.disabled = true;
 
-    if (adminP || staffP) {
-        showToast("Passwords Updated Successfully!", "bg-success");
-        bootstrap.Modal.getInstance(document.getElementById('changePassModal')).hide();
-        // इनपुट साफ करें
-        document.getElementById('newAdminPass').value = '';
-        document.getElementById('newStaffPass').value = '';
+    // 2. Supabase से असली ऑथेंटिकेशन
+    const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+    });
+
+    if (error) {
+        showToast("Login Failed: गलत ईमेल या पासवर्ड", "bg-danger");
+        btn.innerHTML = 'SECURE LOGIN';
+        btn.disabled = false;
     } else {
-        showToast("Please enter a password", "bg-warning");
+        // 3. Admin aur Staff ki pehchan karna
+        const mainAdminEmail = "apnacomputerpathshala@gmail.com"; 
+
+        if (email === mainAdminEmail || email.includes('admin')) {
+            localStorage.setItem('user_role', 'admin');
+            showToast("Welcome Admin!", "bg-success");
+        } else {
+            localStorage.setItem('user_role', 'staff');
+            showToast("Welcome Staff!", "bg-info");
+        }
+
+        document.getElementById('loginOverlay').style.display = 'none';
+        applyPermissions(); // तुरंत पाबंदियां (Restrictions) लागू करेगा
+        await loadDataFromSupabase(); 
     }
 }
 
@@ -1198,6 +1219,7 @@ function applyPermissions() {
         const style = document.createElement('style');
         style.id = "staffRestrictions";
         style.innerHTML = `
+            /* स्टाफ के लिए डिलीट, एडिट, सेटिंग्स और पासवर्ड चेंज बटन छिपा दें */
             .btn-outline-primary, .btn-outline-danger, .btn-warning { display: none !important; }
             #settingsTab, #btn-settings, [onclick*="changePassModal"] { display: none !important; }
             .btn-outline-warning.btn-sm { display: none !important; }
@@ -1206,12 +1228,17 @@ function applyPermissions() {
     }
 }
 
-function adminLogout() {
-    localStorage.removeItem('admin_active');
+async function adminLogout() {
+    await _supabase.auth.signOut(); // क्लाउड से लॉगआउट
     localStorage.removeItem('user_role');
-    localStorage.removeItem('activeTab'); // Isse memory clear ho jayegi
+    localStorage.removeItem('activeTab');
     location.reload();
 }
+
+function saveBothPasswords() {
+    showToast("सुरक्षा कारणों से, पासवर्ड अब Supabase Dashboard से बदलें!", "bg-info");
+}
+
 // Page load par auth check karein
 checkAuth();
 function toggleSidebar() {
@@ -1251,11 +1278,21 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
         const rawAadhar = document.getElementById('aadhar').value;
         const cleanAadhar = rawAadhar.replace(/\s/g, ''); 
 
+        const mobileNum = document.getElementById('mobile').value;
+        if(mobileNum.length > 0 && mobileNum.length < 10) {
+            showToast("मोबाइल नंबर 10 अंकों का होना चाहिए!", "bg-warning");
+            submitBtn.disabled = false;
+            return; 
+        }
+        if(cleanAadhar.length > 0 && cleanAadhar.length < 12) {
+            showToast("आधार नंबर 12 अंकों का होना चाहिए!", "bg-warning");
+            submitBtn.disabled = false;
+            return; 
+        }
         // 2. डुप्लीकेट चेक (सिर्फ नए रजिस्ट्रेशन के लिए)
         if (!editIdVal && cleanAadhar.length === 12) {
             submitBtn.disabled = true;
             submitBtn.innerText = "🔍 Checking Aadhar...";
-            
             const { data: existingStudent, error: checkError } = await _supabase
                 .from('students')
                 .select('name')
@@ -1334,27 +1371,6 @@ drccStatus: document.getElementById('drccStatus').value,
     }
 });
 
-// --- DATA OPERATIONS ---
-async function loadDataFromSupabase() {
-    try {
-        const { data, error } = await _supabase
-            .from('students')
-            .select('*')
-            .order('name', { ascending: true });
-
-        if (error) throw error;
-
-        if (data) {
-            learners = data; // 1. डेटा को ग्लोबल वेरिएबल में भरें
-            renderTable(learners); // 2. टेबल में डेटा दिखाएँ
-            updateStats(); // 3. डैशबोर्ड के नंबर (Total, Verified) अपडेट करें
-            console.log("Data successfully loaded from Cloud.");
-        }
-    } catch (err) {
-        console.error("Fetch Error:", err.message);
-        showToast("Cloud से डेटा लोड नहीं हो पाया!", "bg-danger");
-    }
-}
 // 1. डेटा लोड होते ही चेकबॉक्स लिस्ट बनाना
 function updateFilterOptions() {
     const vList = document.getElementById('villageChecklist');
@@ -1375,17 +1391,30 @@ function updateFilterOptions() {
             <label class="form-check-label" for="s-${s}">${s}</label>
         </div>`).join('');
 }
+// --- नया Debounce लॉजिक (ऐप को हैंग होने से बचाने के लिए) ---
+let searchTimeout;
+function debouncedApplyFilters() {
+    clearTimeout(searchTimeout); // पुराना टाइमर रोकेगा
+    searchTimeout = setTimeout(() => {
+        applyFilters(); // टाइपिंग रुकने के 300ms बाद ही सर्च करेगा
+    }, 300); 
+}
 
-// 2. एडवांस मल्टी-फिल्टर लॉजिक (Aadhar, Date, Category शामिल)
+// 2. एडवांस मल्टी-फिल्टर लॉजिक (नए फ़िल्टर्स के साथ)
 function applyFilters() {
     const fName = (document.getElementById('fName').value || "").toLowerCase();
     const fAadhar = document.getElementById('fAadhar').value;
     const fDateFrom = document.getElementById('fDateFrom').value;
     const fDateTo = document.getElementById('fDateTo').value;
-    const fCategory = document.getElementById('fCategory').value;
+    
+    // नए फ़िल्टर्स की वैल्यूज़
+    const fClass = (document.getElementById('fClass').value || "").toLowerCase();
+    const fRemark = (document.getElementById('fRemark').value || "").toLowerCase();
     const fGender = document.getElementById('fGender').value;
     const fVerify = document.getElementById('fVerify').value;
+    const fAlloc = document.getElementById('fAlloc').value;
     const fAdmis = document.getElementById('fAdmis').value;
+    const fPay = document.getElementById('fPay').value;
 
     const selVillages = Array.from(document.querySelectorAll('.v-check:checked')).map(c => c.value);
     const selSchools = Array.from(document.querySelectorAll('.s-check:checked')).map(c => c.value);
@@ -1395,36 +1424,42 @@ function applyFilters() {
         const aadharDigits = (l.aadhar || "").replace(/\s/g, '');
         const aadharMatch = !fAadhar || aadharDigits.endsWith(fAadhar);
 
-        // Date Range Match (DOB या Admission Date के आधार पर)
+        // Date Range Match
         let dateMatch = true;
         if (fDateFrom && fDateTo && l.dob) {
             dateMatch = (l.dob >= fDateFrom && l.dob <= fDateTo);
         }
 
         return (l.name || "").toLowerCase().includes(fName) &&
+               (l.learnerClass || "").toLowerCase().includes(fClass) &&
+               (l.remark || "").toLowerCase().includes(fRemark) &&
                aadharMatch &&
                dateMatch &&
-               (fCategory === "" || l.category === fCategory) &&
                (selVillages.length === 0 || selVillages.includes(l.village)) &&
                (selSchools.length === 0 || selSchools.includes(l.school)) &&
                (fGender === "" || l.gender === fGender) &&
                (fVerify === "" || l.verify === fVerify) &&
-               (fAdmis === "" || l.admis === fAdmis);
+               (fAlloc === "" || l.alloc === fAlloc) &&
+               (fAdmis === "" || l.admis === fAdmis) &&
+               (fPay === "" || l.pay === fPay);
     });
     renderTable(filtered);
 }
 
-// 3. रिसेट फंक्शन
+// 3. रिसेट फंक्शन (सभी नए फ़िल्टर खाली करने के लिए)
 function resetAllFilters() {
     document.getElementById('fName').value = '';
     document.getElementById('fAadhar').value = '';
     document.getElementById('fDateFrom').value = '';
     document.getElementById('fDateTo').value = '';
-    document.getElementById('fCategory').value = '';
+    document.getElementById('fClass').value = '';
+    document.getElementById('fRemark').value = '';
     document.querySelectorAll('.v-check, .s-check').forEach(c => c.checked = false);
     document.getElementById('fGender').value = '';
     document.getElementById('fVerify').value = '';
+    document.getElementById('fAlloc').value = '';
     document.getElementById('fAdmis').value = '';
+    document.getElementById('fPay').value = '';
     renderTable(learners);
 }
 
@@ -1571,45 +1606,145 @@ function showFullReport(id) {
     new bootstrap.Modal(document.getElementById('reportModal')).show();
 }
 
-// PRINT / PDF DOWNLOAD - Sirf Requested Data (No Statuses)
-function printL(id) {
+// अपडेटेड स्टूडेंट एडमिशन फॉर्म PDF फ़ंक्शन (1 पेज फिट + दोनों तरफ लोगो + 100% सेफ)
+async function printL(id) {
     const l = learners.find(x => x.id === id);
     if(!l) return;
 
-    document.getElementById('pSiNoBadge').innerText = "SI.No: " + (l.siNo || "-");
-    document.getElementById('pName').innerText = l.name || "-";
-    document.getElementById('pFather').innerText = l.father || "-";
-    document.getElementById('pDob').innerText = l.dob || "-";
-    document.getElementById('pGender').innerText = l.gender || "-";
-    document.getElementById('pCategory').innerText = l.category || "-";
-document.getElementById('pAadhar').innerText = l.aadhar || "-";
-    document.getElementById('pMobile').innerText = l.mobile || "-";
-    document.getElementById('pVillagePan').innerText = `${l.village} / ${l.panchayat}`;
-    document.getElementById('pBlockPin').innerText = `${l.block} - ${l.pincode}`;
-    document.getElementById('pSchool').innerText = l.school || "-";
-    document.getElementById('pBoardClass').innerText = `${l.board} / ${l.learnerClass}`;
-    document.getElementById('pRoll').innerText = `${l.rollCode} / ${l.rollNo}`;
-    document.getElementById('pPassYear').innerText = l.passYear || "-";
-    document.getElementById('pBank').innerText = l.bankName || "-";
-    document.getElementById('pBranch').innerText = l.branchName || "-";
-    document.getElementById('pAcc').innerText = l.accNo || "-";
-    document.getElementById('pIfsc').innerText = l.ifsc || "-";
+    showToast("Generating Admission PDF...", "bg-info");
 
-    const imgTag = document.getElementById('pPhoto');
-    if(l.photo) {
-        imgTag.src = l.photo; 
-        imgTag.style.display = 'block'; 
-    } else {
-        imgTag.style.display = 'none'; 
+    const photoHtml = l.photo 
+        ? `<img src="${l.photo}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">` 
+        : `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#cbd5e1; font-size: 11px; font-weight: bold; background:#f8fafc;">NO PHOTO</div>`;
+
+    // 1. ब्राउज़र क्रैश से बचने के लिए इसे एक असली कंटेनर में बनाएँ
+    const pdfContainer = document.createElement('div');
+    pdfContainer.style.position = 'absolute';
+    pdfContainer.style.left = '-9999px';
+    pdfContainer.style.top = '0';
+    pdfContainer.style.width = '800px'; 
+    pdfContainer.style.background = '#ffffff';
+
+    pdfContainer.innerHTML = `
+    <div style="font-family: 'Inter', Arial, sans-serif; color: #1e293b; background: white; width: 100%; box-sizing: border-box; padding: 10px;">
+        
+        <table style="width: 100%; background: #2563eb; border-radius: 8px 8px 0 0; padding: 12px; color: white; border-collapse: collapse;">
+            <tr>
+                <td style="width: 15%; text-align: left; vertical-align: middle;">
+                    <img src="kyp_logo.jpg" style="height: 55px; width: auto; object-fit: contain; border-radius: 4px; background: white; padding: 2px;" onerror="this.onerror=null; this.src='';">
+                </td>
+                <td style="width: 70%; text-align: center; vertical-align: middle;">
+                    <h4 style="margin: 0; font-weight: 800; font-size: 17px; letter-spacing: 0.5px;">कौशल विकास केंद्र, कुशल युवा कार्यक्रम</h4>
+                    <h5 style="margin: 4px 0; font-weight: 700; font-size: 13px;">Kriti Edify Pvt. Ltd. (KYP06020030)</h5>
+                    <p style="font-size: 11px; margin: 0; opacity: 0.9;">कारुबीर बाबा मंदिर के नजदीक, बकुलहा पट्टी सिमरी, 802135</p>
+                </td>
+                <td style="width: 15%; text-align: right; vertical-align: middle;">
+                    <img src="kriti_logo.jpg" style="height: 55px; width: auto; object-fit: contain; border-radius: 4px; background: white; padding: 2px;" onerror="this.onerror=null; this.src='';">
+                </td>
+            </tr>
+        </table>
+
+        <table style="width: 100%; border: 1.5px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 12px; border-collapse: collapse; margin-bottom: 8px;">
+            <tr>
+                <td style="width: 20%; text-align: center; vertical-align: middle; padding-right: 10px;">
+                    <div style="width: 90px; height: 110px; border: 2px solid #f1f5f9; border-radius: 6px; overflow: hidden; background: #f8fafc; margin: 0 auto;">
+                        ${photoHtml}
+                    </div>
+                </td>
+                <td style="width: 80%; text-align: left; vertical-align: middle;">
+                    <h4 style="margin: 0; font-weight: 900; color: #0f172a; text-transform: uppercase; font-size: 19px;">${l.name || "-"}</h4>
+                    <span style="background: #eff6ff; color: #2563eb; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; margin-top: 5px; display: inline-block; border: 1px solid #bfdbfe;">SI.No: ${l.siNo || "-"}</span>
+                </td>
+            </tr>
+        </table>
+
+        <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+            <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Personal Details</div>
+            <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Father's Name</span><b style="font-size: 13px; color: #0f172a;">${l.father || "-"}</b></td>
+                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Gender</span><b style="font-size: 13px; color: #0f172a;">${l.gender || "-"}</b></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Date of Birth</span><b style="font-size: 13px; color: #0f172a;">${l.dob || "-"}</b></td>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Category</span><b style="font-size: 13px; color: #0f172a;">${l.category || "-"}</b></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Mobile No</span><b style="font-size: 13px; color: #0f172a;">${l.mobile || "-"}</b></td>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Aadhar Number</span><b style="font-size: 13px; color: #0f172a; letter-spacing: 0.5px;">${l.aadhar || "-"}</b></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+            <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Address & Education</div>
+            <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Village / Panchayat</span><b style="font-size: 13px; color: #0f172a;">${l.village || "-"} / ${l.panchayat || "-"}</b></td>
+                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">School Name</span><b style="font-size: 13px; color: #0f172a;">${l.school || "-"}</b></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Block / Pin Code</span><b style="font-size: 13px; color: #0f172a;">${l.block || "-"} - ${l.pincode || "-"}</b></td>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Board / Class</span><b style="font-size: 13px; color: #0f172a;">${l.board || "-"} / ${l.learnerClass || "-"}</b></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Roll Code & No</span><b style="font-size: 13px; color: #0f172a;">${l.rollCode || "-"} / ${l.rollNo || "-"}</b></td>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Passing Year</span><b style="font-size: 13px; color: #0f172a;">${l.passYear || "-"}</b></td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 20px;">
+            <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Bank Details</div>
+            <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Bank Name</span><b style="font-size: 13px; color: #0f172a;">${l.bankName || "-"}</b></td>
+                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Branch Name</span><b style="font-size: 13px; color: #0f172a;">${l.branchName || "-"}</b></td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Account Number</span><b style="font-size: 13px; color: #2563eb;">${l.accNo || "-"}</b></td>
+                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">IFSC Code</span><b style="font-size: 13px; color: #2563eb;">${l.ifsc || "-"}</b></td>
+                </tr>
+            </table>
+        </div>
+
+        <table style="width: 100%; margin-top: 30px; margin-bottom: 5px;">
+            <tr>
+                <td style="width: 50%; text-align: center;">
+                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 5px; width: 170px; font-weight: 800; font-size: 12px; color: #0f172a;">Candidate's Signature</div>
+                </td>
+                <td style="width: 50%; text-align: center;">
+                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 5px; width: 170px; font-weight: 800; font-size: 12px; color: #0f172a;">Authorized Center Head</div>
+                </td>
+            </tr>
+        </table>
+    </div>`;
+
+    // 2. कंटेनर को ब्राउज़र में जोड़ें ताकि PDF टूल उसे पढ़ सके
+    document.body.appendChild(pdfContainer);
+
+    const opt = {
+        margin:       [0.15, 0.2, 0.15, 0.2], 
+        filename:     `${(l.name || 'Student').replace(/\s+/g, '_')}_Admission_Form.pdf`,
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+
+    try {
+        await html2pdf().set(opt).from(pdfContainer).save();
+        showToast("Student Form Downloaded!", "bg-success");
+    } catch (err) {
+        showToast("Download Failed!", "bg-danger");
+        console.error(err);
+    } finally {
+        // 3. काम पूरा होने के बाद हटा दें ताकि स्क्रीन पर ना दिखे
+        document.body.removeChild(pdfContainer);
     }
-
-    const printSection = document.getElementById('printArea');
-    printSection.style.display = 'block';
-    setTimeout(() => {
-        window.print();
-        printSection.style.display = 'none';
-    }, 500);
 }
+
+
+
 function editL(id) {
     const l = learners.find(x => x.id === id);
     if(!l) return;
@@ -1637,25 +1772,27 @@ async function deleteL(id) {
         return;
     }
     
-    // अब यूजर को 'DELETE' टाइप करना होगा
-    const confirmName = prompt("डेटा को हमेशा के लिए मिटाने के लिए 'DELETE' टाइप करें:");
+    // अब डेटा हमेशा के लिए डिलीट नहीं होगा, छुप जाएगा
+    const confirmName = prompt("डेटा को रिसाइकिल बिन (Hide) में डालने के लिए 'DELETE' टाइप करें:");
     
     if (confirmName === "DELETE") {
+        // .delete() की जगह .update({ is_active: false }) का उपयोग
         const { error } = await _supabase
             .from('students')
-            .delete()
+            .update({ is_active: false })
             .eq('id', id);
 
         if (error) {
             showToast("Delete Failed: " + error.message, "bg-danger");
         } else {
-            showToast("Cloud से डेटा हटा दिया गया!", "bg-success");
+            showToast("डेटा हटा दिया गया (Soft Delete)!", "bg-success");
             await loadDataFromSupabase();
         }
     } else if (confirmName !== null) {
-        showToast("डिलीट रद्द कर दिया गया। सही शब्द टाइप करें।", "bg-warning");
+        showToast("डिलीट रद्द कर दिया गया।", "bg-warning");
     }
 }
+
 function updateStats() {
     if (!learners) return; // अगर डेटा नहीं है तो रुक जाओ
     
@@ -1703,18 +1840,18 @@ function downloadCSV(csv, filename) {
     showToast("CSV Downloaded!", "bg-success");
 }
 function exportFullCSV() { 
-    // Excel Header - सभी कॉलम्स
-    let csv = "SI.No,Candidate Name,Father's Name,DOB,Gender,Category,Aadhar No,Mobile No,Village,Panchayat,Block,School,Board,Class,Roll Code,Roll No,Pass Year,Bank Name,Branch Name,Account No,IFSC Code,Receipt No,Verified,Allocated,Admission,Payment,Remark\n";
+    // Excel Header - MNSSBY के नए कॉलम्स जोड़े गए हैं
+    let csv = "SI.No,Candidate Name,Father's Name,DOB,Gender,Category,Aadhar No,Mobile No,Village,Panchayat,Block,School,Board,Class,Roll Code,Roll No,Pass Year,Bank Name,Branch Name,Account No,IFSC Code,Receipt No,Verified,Allocated,Admission,Payment,Remark,MNSSBY User ID,MNSSBY Password,Form Status,DRCC Status\n";
 
     learners.forEach((l, index) => {
-        // डेटा को CSV लाइन में बदलना
+        // डेटा को CSV लाइन में बदलना (सभी 31 कॉलम्स)
         csv += `"${index + 1}",` +
                `"${l.name || ''}",` +
                `"${l.father || ''}",` +
                `"${l.dob || ''}",` +
                `"${l.gender || ''}",` +
                `"${l.category || ''}",` +
-               `"'${l.aadhar || ''}",` + // यहाँ ' लगाने से Excel आधार नंबर को छोटा (Scientific) नहीं करेगा
+               `"'${l.aadhar || ''}",` + 
                `"${l.mobile || ''}",` +
                `"${l.village || ''}",` +
                `"${l.panchayat || ''}",` +
@@ -1734,7 +1871,12 @@ function exportFullCSV() {
                `"${l.alloc || ''}",` +
                `"${l.admis || ''}",` +
                `"${l.pay || ''}",` +
-               `"${l.remark || ''}"\n`;
+               `"${l.remark || ''}",` +
+               // --- 4 नए MNSSBY कॉलम्स ---
+               `"${l.mnssbyId || ''}",` +
+               `"${l.mnssbyPass || ''}",` +
+               `"${l.formStatus || ''}",` +
+               `"${l.drccStatus || ''}"\n`;
     });
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -1746,6 +1888,7 @@ function exportFullCSV() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    showToast("Full Export Downloaded!", "bg-success");
 }
 
 function showToast(msg, cls) {
@@ -1760,22 +1903,24 @@ async function loadDataFromSupabase() {
         const { data, error } = await _supabase
             .from('students')
             .select('*')
+            .eq('is_active', true) // <-- सिर्फ एक्टिव (बिना डिलीट किया) डेटा लाएगा
             .order('name', { ascending: true });
 
         if (error) throw error;
 
         if (data) {
-    learners = data;
-    renderTable(learners);
-    updateStats();
-    updateFilterOptions(); // <--- यह लाइन यहाँ पेस्ट करें
-    console.log("Data successfully loaded from Cloud.");
-}
+            learners = data;
+            renderTable(learners);
+            updateStats();
+            updateFilterOptions(); 
+            console.log("Data successfully loaded from Cloud.");
+        }
     } catch (err) {
         console.error("Error loading data:", err.message);
         showToast("डेटा लोड नहीं हो पाया!", "bg-danger");
     }
 }
+
 // पेज लोड होते ही डेटा लाने की प्रक्रिया
 window.addEventListener('DOMContentLoaded', async () => {
     checkAuth(); 
@@ -1936,7 +2081,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `24.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `27.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -2279,32 +2424,121 @@ async function fetchBatchReport() {
                         <div class="text-center"><div class="fw-bold" style="font-size:10px;">P</div><div class="text-success fw-bold">${pres}</div></div>
                         <div class="text-center"><div class="fw-bold" style="font-size:10px;">A</div><div class="text-danger fw-bold">${total - pres}</div></div>
                         <div class="text-center"><div class="fw-bold" style="font-size:10px;">RATE</div><div class="${colorClass} fw-bold">${rate}%</div></div>
-                        <a href="tel:${s.mobile}" class="btn-call shadow-sm" style="width:30px; height:30px;"><i class="fas fa-phone-alt" style="font-size:12px;"></i></a>
-                    </div>
+<div class="d-flex gap-1">
+    <a href="javascript:void(0)" onclick="viewStudentAttDetails(${s.id})" class="btn-call shadow-sm bg-info" style="width:30px; height:30px;" title="View Dates"><i class="fas fa-list" style="font-size:12px;"></i></a>
+    <a href="tel:${s.mobile}" class="btn-call shadow-sm" style="width:30px; height:30px;"><i class="fas fa-phone-alt" style="font-size:12px;"></i></a>
+</div>
+
                 </div>
             </div>`;
     });
     resDiv.innerHTML = batchStudents.length ? html + `</div>` : `<p class="text-center p-4">No Data.</p>`;
 }
-function exportBatchExcel() {
-    const month = document.getElementById('repMonth').value;
-    const cards = document.querySelectorAll(".batch-stat-card");
-    if(cards.length === 0) return showToast("Generate Report First!", "bg-warning");
+async function viewStudentAttDetails(sid) {
+    const student = learners.find(l => l.id === sid);
+    if(!student) return;
+    
+    document.getElementById('modalStudentName').innerText = student.name;
+    document.getElementById('modalAttContent').innerHTML = `<div class="text-center p-3"><div class="spinner-border text-info"></div></div>`;
+    
+    // पॉपअप दिखाएं
+    new bootstrap.Modal(document.getElementById('studentAttModal')).show();
 
-    let csv = "Name,Mobile,Present,Absent,Rate\n";
-    cards.forEach(card => {
-        const name = card.querySelector('h6').innerText;
-        const mobile = card.querySelector('small').innerText;
-        const stats = card.querySelectorAll('.fw-bold');
-        csv += `"${name}","${mobile}","${stats[2].innerText}","${stats[4].innerText}","${stats[6].innerText}"\n`;
+    // डेटाबेस से उस छात्र का डेटा लाएं
+    const { data: logs, error } = await _supabase.from('attendance_logs').select('*').eq('student_id', sid).order('attendance_date', {ascending: false});
+    
+    if(error || !logs || logs.length === 0) {
+        document.getElementById('modalAttContent').innerHTML = `<p class="text-center text-muted small fw-bold mt-2">No attendance records found.</p>`;
+        return;
+    }
+
+    let html = `<table class="table table-sm table-bordered text-center m-0" style="font-size: 11px;">
+                    <thead class="table-light"><tr><th>DATE</th><th>STATUS</th></tr></thead><tbody>`;
+    
+    logs.forEach(lg => {
+        const dateStr = new Date(lg.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+        const badge = lg.status === 'Present' ? '<span class="badge bg-success w-100">PRESENT</span>' : '<span class="badge bg-danger w-100">ABSENT</span>';
+        html += `<tr><td class="fw-bold text-secondary align-middle">${dateStr}</td><td class="align-middle">${badge}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    
+    document.getElementById('modalAttContent').innerHTML = html;
+}
+
+async function exportBatchExcel() {
+    const month = document.getElementById('repMonth').value;
+    const time = (document.getElementById('repTime').value || "").toLowerCase();
+    
+    if(!month) return showToast("Please Select Month First!", "bg-warning");
+
+    showToast("Generating Calendar Excel...", "bg-info");
+    
+    // 1. Batch के छात्रों को फ़िल्टर करें
+    let batchStudents = learners.filter(l => l.admis === 'Yes' && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time));
+    
+    if (batchStudents.length === 0) return showToast("No students in this batch!", "bg-warning");
+
+    // 2. क्लाउड से अटेंडेंस डेटा मंगाएं
+    const { data: logs } = await _supabase.from('attendance_logs').select('*').order('attendance_date', {ascending: true});
+
+    // 3. सिर्फ इस बैच के बच्चों की तारीखें निकालें (ताकि एक्स्ट्रा कॉलम्स न बनें)
+    const batchStudentIds = batchStudents.map(s => s.id);
+    const batchLogs = logs ? logs.filter(lg => batchStudentIds.includes(lg.student_id)) : [];
+
+    // 4. Unique Dates निकालें (Calendar के Columns बनाने के लिए)
+    const uniqueDates = [...new Set(batchLogs.map(lg => lg.attendance_date))].sort();
+
+    // 5. Excel के Headers तैयार करें
+    let headers = ["Candidate Name", "Mobile No", "Total Present", "Total Absent", "Attendance Rate %"];
+    
+    // हर तारीख को हेडर में जोड़ें (जैसे: 01-May, 02-May)
+    uniqueDates.forEach(date => {
+        const dateObj = new Date(date);
+        headers.push(dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
+    });
+    
+    let csv = headers.join(",") + "\n";
+    
+    // 6. हर बच्चे का डेटा और उस तारीख का स्टेटस (P/A) भरें
+    batchStudents.forEach(s => {
+        const sLogs = batchLogs.filter(lg => lg.student_id === s.id);
+        
+        const presCount = sLogs.filter(lg => lg.status === 'Present').length;
+        const absCount = sLogs.filter(lg => lg.status === 'Absent').length;
+        const total = sLogs.length;
+        const rate = total > 0 ? Math.round((presCount/total)*100) : 0;
+        
+        // बेसिक डिटेल्स
+        let rowData = [
+            `"${s.name}"`,
+            `"${s.mobile}"`,
+            presCount,
+            absCount,
+            `"${rate}%"`
+        ];
+
+        // हर तारीख के नीचे P या A सेट करें
+        uniqueDates.forEach(date => {
+            const logForDate = sLogs.find(lg => lg.attendance_date === date);
+            if (logForDate) {
+                rowData.push(logForDate.status === 'Present' ? '"P"' : '"A"');
+            } else {
+                rowData.push('"-"'); // अगर उस दिन की अटेंडेंस मार्क नहीं हुई है
+            }
+        });
+
+        csv += rowData.join(",") + "\n";
     });
 
+    // 7. फाइल डाउनलोड करें
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `Batch_Performance_${month}.csv`;
+    link.download = `KYP_Attendance_Register_${month}.csv`;
     link.click();
+    showToast("Calendar Excel Downloaded!", "bg-success");
 }
+
 // --- ADMISSION PORTAL FUNCTIONS ---
 
 // 1. Admission Table Render karein (Sirf Pending Verification wale dikhayenge)
@@ -2388,6 +2622,7 @@ function filterAdmissionTable() {
         row.style.display = text.includes(searchTerm) ? '' : 'none';
     });
 }
+
 // 1. डेट फ़ील्ड्स को दिखाने/छिपाने के लिए
 function toggleDateFields(sid) {
     const wrapper = document.getElementById(`dateWrapper_${sid}`);
@@ -2403,25 +2638,7 @@ function toggleDateFields(sid) {
         mainBtn.classList.replace('btn-outline-secondary', 'btn-outline-info');
     }
 }
-
-// 2. अपडेटेड PDF फ़ंक्शन (Present/Absent काउंट के साथ)
-// 1. डेट फ़ील्ड्स को दिखाने/छिपाने के लिए
-function toggleDateFields(sid) {
-    const wrapper = document.getElementById(`dateWrapper_${sid}`);
-    const mainBtn = document.getElementById(`mainRepBtn_${sid}`);
-    
-    wrapper.classList.toggle('show');
-    
-    if(wrapper.classList.contains('show')) {
-        mainBtn.innerHTML = `<i class="fas fa-times me-1"></i> Cancel`;
-        mainBtn.classList.replace('btn-outline-info', 'btn-outline-secondary');
-    } else {
-        mainBtn.innerHTML = `<i class="fas fa-calendar-alt me-1"></i> Generate Report`;
-        mainBtn.classList.replace('btn-outline-secondary', 'btn-outline-info');
-    }
-}
-
-// अपडेटेड PDF फ़ंक्शन (कंटेंट कटने और सिंटैक्स एरर का समाधान)
+// अपडेटेड PDF फ़ंक्शन (ब्लैंक PDF और कटने की समस्या का 100% समाधान)
 async function downloadStudentAttendancePDF(sid) {
     const l = learners.find(x => x.id === sid);
     const fromDate = document.getElementById(`fromDate_${sid}`).value;
@@ -2432,7 +2649,7 @@ async function downloadStudentAttendancePDF(sid) {
         return;
     }
 
-    showToast("Generating Full Report...", "bg-info");
+    showToast("Generating PDF Report...", "bg-info");
 
     const { data: logs, error } = await _supabase
         .from('attendance_logs')
@@ -2443,7 +2660,7 @@ async function downloadStudentAttendancePDF(sid) {
         .order('attendance_date', { ascending: true });
 
     if (error || !logs || logs.length === 0) {
-        showToast("डेटा नहीं मिला!", "bg-warning");
+        showToast("चुनी गई तारीखों में कोई डेटा नहीं मिला!", "bg-warning");
         return;
     }
 
@@ -2452,84 +2669,97 @@ async function downloadStudentAttendancePDF(sid) {
     const absentDays = logs.filter(r => r.status === 'Absent').length;
     const rate = Math.round((presentDays / totalDays) * 100);
 
+    // PDF के लिए एक नया कंटेनर बनाएँ
     const element = document.createElement('div');
-    element.className = "pdf-container"; 
-    element.style.width = "800px"; 
-    element.style.background = "#ffffff";
-    
-    // HTML Structure को एक ही साथ लिखें
+    // ब्राउज़र में रेंडर करने के लिए इसे स्क्रीन से बाहर (Hide) रखें
+    element.style.position = 'absolute';
+    element.style.left = '-9999px';
+    element.style.top = '0';
+    element.style.width = '800px';
+    element.style.background = '#ffffff';
+
+    // Flexbox की जगह Table का उपयोग ताकि PDF बिलकुल परफेक्ट आए
     element.innerHTML = `
-    <div style="padding: 20px; border: 6px solid #2563eb; background: #fff; border-radius: 5px; box-sizing: border-box;">
-        <div style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">
-            <h2 style="color: #2563eb; margin: 0;">KRITI EDIFY PVT. LTD.</h2>
-            <p style="margin: 5px 0; font-weight: bold;">Attendance Summary Report</p>
-            <small>Period: ${new Date(fromDate).toLocaleDateString()} to ${new Date(toDate).toLocaleDateString()}</small>
-        </div>
-        
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; background: #f8fafc; padding: 15px; border-radius: 8px;">
-            <div>
-                <p style="margin:2px 0;"><b>Name:</b> ${l.name}</p>
-                <p style="margin:2px 0;"><b>Reg. No:</b> ${l.siNo}</p>
+    <div style="padding: 30px; font-family: Arial, sans-serif; background: #fff;">
+        <div style="border: 4px solid #2563eb; padding: 20px; border-radius: 8px;">
+            
+            <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
+                <h2 style="color: #2563eb; margin: 0; font-weight: 900;">KRITI EDIFY PVT. LTD.</h2>
+                <h4 style="margin: 8px 0 5px 0; color: #0f172a;">Attendance Summary Report</h4>
+                <p style="margin: 0; color: #64748b; font-size: 14px;">Period: ${new Date(fromDate).toLocaleDateString('en-GB')} to ${new Date(toDate).toLocaleDateString('en-GB')}</p>
             </div>
-            <div style="display: flex; gap: 15px; text-align: center;">
-                <div style="color: green;"><b>Present:</b><br>${presentDays}</div>
-                <div style="color: red;"><b>Absent:</b><br>${absentDays}</div>
-                <div style="background: #2563eb; color:white; padding: 5px 10px; border-radius: 5px;">
-                    <b>Score:</b><br>${rate}%
-                </div>
-            </div>
-        </div>
-
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead style="background: #0f172a; color: white;">
+            
+            <table style="width: 100%; margin-bottom: 20px; background: #f8fafc; border-radius: 8px;">
                 <tr>
-                    <th style="padding: 10px; border: 1px solid #ddd;">Date</th>
-                    <th style="padding: 10px; border: 1px solid #ddd;">Status</th>
+                    <td style="padding: 15px; width: 50%; vertical-align: top;">
+                        <h4 style="margin:0 0 5px 0; color: #0f172a; text-transform: uppercase;">${l.name}</h4>
+                        <p style="margin:0; color: #475569; font-weight: bold;">SI.No / Reg No: ${l.siNo}</p>
+                    </td>
+                    <td style="padding: 15px; width: 50%; text-align: right; vertical-align: top;">
+                        <span style="color: #16a34a; font-weight: bold; font-size: 16px; margin-right: 15px;">Present: ${presentDays}</span>
+                        <span style="color: #dc2626; font-weight: bold; font-size: 16px; margin-right: 15px;">Absent: ${absentDays}</span>
+                        <span style="background: #2563eb; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 16px;">Score: ${rate}%</span>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                ${logs.map(r => `
-                    <tr>
-                        <td style="padding: 8px; border: 1px solid #ddd;">${new Date(r.attendance_date).toLocaleDateString('en-GB')}</td>
-                        <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: ${r.status === 'Present' ? 'green' : 'red'}; font-weight: bold;">
-                            ${r.status.toUpperCase()}
-                        </td>
-                    </tr>
-                `).join('')}
-            </tbody>
-        </table>
+            </table>
 
-        <div style="margin-top: 40px; display: flex; justify-content: space-between;">
-            <div style="text-align: center; border-top: 1px solid #000; width: 150px; font-size: 12px;">Center Seal</div>
-            <div style="text-align: center; border-top: 1px solid #000; width: 150px; font-size: 12px;">Authorized Sign</div>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                <thead style="background: #0f172a; color: white;">
+                    <tr>
+                        <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Date</th>
+                        <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${logs.map(r => `
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #475569;">
+                                ${new Date(r.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: ${r.status === 'Present' ? '#16a34a' : '#dc2626'};">
+                                ${r.status.toUpperCase()}
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+
+            <table style="width: 100%; margin-top: 60px;">
+                <tr>
+                    <td style="width: 50%; text-align: left;">
+                        <div style="border-top: 1px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; text-align: center; font-weight: bold; color: #0f172a;">Center Seal</div>
+                    </td>
+                    <td style="width: 50%; text-align: right;">
+                        <div style="border-top: 1px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; text-align: center; font-weight: bold; color: #0f172a;">Authorized Sign</div>
+                    </td>
+                </tr>
+            </table>
+            
         </div>
     </div>`;
 
+    // 1. ब्राउज़र (DOM) में इसे जोड़ना ज़रूरी है! (यहीं गलती थी)
+    document.body.appendChild(element);
+
     const opt = {
-        margin: 0.2, 
-        filename: `${l.name}_Final_Report.pdf`,
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true, 
-            width: 800, 
-            windowWidth: 800,
-            scrollY: 0,
-            x: 0,
-            y: 0
-        },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all'] }
+        margin: 0, 
+        filename: `${l.name.replace(/\s+/g, '_')}_Attendance_Report.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
 
     try {
         await html2pdf().set(opt).from(element).save();
-        showToast("Report Downloaded!", "bg-success");
+        showToast("Report Downloaded Successfully!", "bg-success");
     } catch (err) {
         showToast("Download Failed!", "bg-danger");
+        console.error(err);
+    } finally {
+        // 2. PDF जनरेट होने के बाद इसे ब्राउज़र से हटा दें
+        document.body.removeChild(element);
+        toggleDateFields(sid);
     }
-
-    toggleDateFields(sid);
 }
 // --- BACKUP & RESTORE LOGIC ---
 async function downloadCSVBackup() {
@@ -2649,17 +2879,31 @@ async function restoreCSV(event) {
     };
     reader.readAsText(file);
 }
-
+function backupJSON() {
+    if (!learners || learners.length === 0) {
+        showToast("बैकअप के लिए कोई डेटा नहीं है!", "bg-warning");
+        return;
+    }
+    const dataStr = JSON.stringify(learners, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `SDC_Simri_JSON_Backup_${new Date().toLocaleDateString('en-GB')}.json`;
+    link.click();
+    showToast("JSON Backup Downloaded!", "bg-success");
+}
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
     <div class="card p-4 shadow-lg text-center" style="width: 320px; border-radius: 20px; border: none;">
         <div class="mb-3">
-            <i class="fas fa-user-shield fa-3x text-primary"></i>
+            <i class="fas fa-shield-alt fa-3x text-primary"></i>
         </div>
-        <h5 class="fw-bold">Admin Login</h5>
-        <p class="small text-muted">Enter password to access portal</p>
+        <h5 class="fw-bold">Secure Portal</h5>
+        <p class="small text-muted">Enter your Email & Password</p>
+        <input type="email" id="adminEmailInput" class="form-control mb-2 text-center" placeholder="Email" style="border-radius: 10px;">
         <input type="password" id="adminPassInput" class="form-control mb-3 text-center" placeholder="Password" style="border-radius: 10px;">
-        <button class="btn btn-primary w-100 fw-bold" onclick="verifyLogin()" style="border-radius: 10px;">ENTER PORTAL</button>
+        <button id="loginBtn" class="btn btn-primary w-100 fw-bold" onclick="verifyLogin()" style="border-radius: 10px;">SECURE LOGIN</button>
     </div>
 </div>
 
@@ -2684,6 +2928,22 @@ async function restoreCSV(event) {
         </div>
     </div>
 </div>
+<div class="modal fade" id="studentAttModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="border-radius: 20px;">
+            <div class="modal-header bg-info text-white" style="border-radius: 20px 20px 0 0; padding: 12px 20px;">
+                <h6 class="modal-title fw-bold"><i class="fas fa-calendar-check me-2"></i> Monthly Report</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3">
+                <h6 id="modalStudentName" class="fw-bold text-center text-dark mb-3 text-uppercase"></h6>
+                <div id="modalAttContent" style="max-height: 300px; overflow-y: auto; scrollbar-width: thin;">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="attSuccessPopup" class="att-success-card">
     <div class="text-success mb-2"><i class="fas fa-check-circle fa-3x"></i></div>
     <img id="popImg" src="" class="att-success-img">
