@@ -431,45 +431,125 @@
 .attendance-card .text-muted {
     color: #64748b !important;
 }
+        /* --- ULTRA SLIM SIDEBAR --- */
+        .sidebar { 
+            width: max-content !important; 
+            min-width: 0px !important; 
+            padding-right: 5px !important;
+            background: #f8fafc; color: #1e293b; position: fixed; 
+            height: 100dvh !important; /* 100vh को 100dvh कर दिया ताकि मोबाइल में फुटर न छिपे */
+            z-index: 1100; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); left: 0;
+            display: flex; flex-direction: column; border-right: 1px solid #e2e8f0;
+        }
+        .sidebar.hidden { left: -100%; }
+
+        /* Menu scroll area */
+        .nav-menu { flex: 1; overflow-y: auto; min-height: 0; padding-bottom: 20px; }
+        .nav-menu::-webkit-scrollbar { width: 5px; }
+        .nav-menu::-webkit-scrollbar-track { background: transparent; }
+        .nav-menu::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .nav-item { 
+            padding: 10px 15px !important; 
+            margin: 4px 8px !important;    
+            cursor: pointer; display: flex; align-items: center; color: #475569; 
+            border-radius: 10px; transition: 0.3s; font-size: 13px; font-weight: 700; text-decoration: none; 
+        }
+        .nav-item:hover, .nav-item.active { background: #eff6ff; color: #2563eb; }
+        .nav-item i { width: 30px; font-size: 16px; }
+
+        /* फुटर को सिकुड़ने से रोकने के लिए flex-shrink: 0 लगाया गया है */
+        .sidebar-footer { 
+            margin-top: auto; padding: 15px; text-align: center; 
+            font-size: 11px; border-top: 1px solid #e2e8f0; color: #64748b; 
+            background: #f8fafc; flex-shrink: 0 !important; 
+        }
+
+        /* Mobile Overlay Background (ऑटो-हाइड के लिए) */
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(2px);
+            z-index: 1050; display: none; opacity: 0; transition: 0.3s ease;
+        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        @media (max-width: 768px) {
+            .sidebar { left: -110%; width: max-content; }
+            .sidebar.active { left: 0; }
+        }
+/* --- NATIVE PULL-TO-REFRESH & STICKY APP LAYOUT --- */
+html, body {
+    min-height: 100dvh !important; 
+    overflow-x: hidden !important;
+    overflow-y: auto !important; /* यह लाइन मोबाइल में 'अंगुली से खींचकर रिफ्रेश' को वापस चालू करेगी */
+    background-color: #f8fafc;
+}
+
+.main-wrapper {
+    min-height: 100dvh !important; /* टैब बदलने पर पेज को झटके से रोकेगा */
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important; /* इसे फ्री कर दिया ताकि मोबाइल का रिफ्रेश काम कर सके */
+}
+
+/* फुटर को हमेशा स्क्रीन के नीचे चिपका कर रखने के लिए */
+footer {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: #ffffff !important;
+    padding: 12px 15px !important;
+    text-align: center !important;
+    border-top: 1px solid #e2e8f0 !important;
+    z-index: 1040 !important;
+    margin-top: auto !important;
+    box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05);
+}
+
+/* पूरे पेज के लिए नया और स्लिम स्क्रॉलबार (लैपटॉप के लिए) */
+body::-webkit-scrollbar { width: 6px; }
+body::-webkit-scrollbar-track { background: #f8fafc; }
+body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
     </style>
 </head>
 <body>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <div id="toastContainer"></div>
-
 <div class="sidebar" id="sidebar">
-    <div class="p-4 border-bottom border-secondary text-center">
-    <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #fff;">
-    <h5 class="text-white m-0 fw-bold">Kriti Edify Pvt. Ltd</h5>
-    <small class="text-warning fw-bold">Kushal Yuva Program</small>
-</div>
+    <div class="p-4 border-bottom text-center" style="border-color: #e2e8f0 !important;">
+        <img src="logo.png" alt="Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #cbd5e1;">
+        <h5 class="m-0 fw-bold text-uppercase" style="color: #0f172a;">Kriti Edify Pvt. Ltd</h5>
+        <small class="fw-bold" style="color: #2563eb;">Kushal Yuva Program</small>
+    </div>
+
     <div class="nav-menu mt-4">
         <div class="nav-item active" id="btn-stats" onclick="handleNavClick('stats')"><i class="fas fa-th-large"></i> Dashboard</div>
-<div class="nav-item" id="btn-reg" onclick="handleNavClick('reg')"><i class="fas fa-user-plus"></i> New Registration</div>
-<div class="nav-item" id="btn-admission" onclick="handleNavClick('admission')">
-    <i class="fas fa-key text-warning"></i> <span>KYP Admission Portal</span>
-</div>
-<div class="nav-item" id="btn-records" onclick="handleNavClick('records')"><i class="fas fa-file-invoice"></i> Student Records</div>
-<div class="nav-item" id="btn-active" onclick="handleNavClick('active')">
-    <i class="fas fa-user-check"></i> <span>Active Students</span>
-</div>
-<div class="nav-item" id="btn-attendance" onclick="handleNavClick('attendance')">
-    <i class="fas fa-calendar-check text-info"></i> <span>Daily Attendance</span>
-</div>
-<div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')"><i class="fas fa-database"></i> Backup & Data</div>
-<div class="nav-item text-warning" onclick="new bootstrap.Modal(document.getElementById('changePassModal')).show()">
-    <i class="fas fa-key"></i> <span>Change Password</span>
-</div>
-<div class="nav-item text-danger mt-3" onclick="adminLogout()">
-    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-</div>
-<div class="nav-item text-info rounded p-2 m-2" onclick="manualUpdateCheck()" style="cursor: pointer; border: 1px dashed #3b82f6; text-align: center;">
-    <i class="fas fa-sync-alt me-2"></i> <b>CHECK FOR UPDATE</b>
-</div>
-<div class="nav-item text-warning rounded p-2 m-2" onclick="showInstallPopUp()" style="cursor: pointer; border: 1px dashed #f59e0b; text-align: center;">
-    <i class="fas fa-download me-2"></i> <b>INSTALL APP</b>
-</div>
+        <div class="nav-item" id="btn-reg" onclick="handleNavClick('reg')"><i class="fas fa-user-plus"></i> New Registration</div>
+        <div class="nav-item" id="btn-admission" onclick="handleNavClick('admission')">
+            <i class="fas fa-key text-warning"></i> <span>KYP Admission Portal</span>
+        </div>
+        <div class="nav-item" id="btn-records" onclick="handleNavClick('records')"><i class="fas fa-file-invoice"></i> Student Records</div>
+        <div class="nav-item" id="btn-active" onclick="handleNavClick('active')">
+            <i class="fas fa-user-check"></i> <span>Active Students</span>
+        </div>
+        <div class="nav-item" id="btn-attendance" onclick="handleNavClick('attendance')">
+            <i class="fas fa-calendar-check text-info"></i> <span>Daily Attendance</span>
+        </div>
+        <div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')"><i class="fas fa-database"></i> Backup & Data</div>
+        <div class="nav-item text-warning" onclick="new bootstrap.Modal(document.getElementById('changePassModal')).show()">
+            <i class="fas fa-key"></i> <span>Change Password</span>
+        </div>
+        <div class="nav-item text-danger mt-3" onclick="adminLogout()">
+            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+        </div>
+        <div class="nav-item text-info rounded p-2 m-2" onclick="manualUpdateCheck()" style="cursor: pointer; border: 1px dashed #3b82f6; text-align: center;">
+            <i class="fas fa-sync-alt me-2"></i> <b>CHECK FOR UPDATE</b>
+        </div>
+        <div class="nav-item text-warning rounded p-2 m-2" onclick="showInstallPopUp()" style="cursor: pointer; border: 1px dashed #f59e0b; text-align: center;">
+            <i class="fas fa-download me-2"></i> <b>INSTALL APP</b>
+        </div>
     </div>
     <div class="sidebar-footer">
         V 2.2 | © 2026 Surya | सूरज कुमार
@@ -477,10 +557,21 @@
 </div>
 
 <div class="main-wrapper" id="mainWrapper">
-    <div class="top-nav">
-        <div class="toggle-btn" onclick="toggleSidebar()">
-    <i class="fas fa-bars" id="toggleIcon"></i> </div>
-        <div class="fw-bold text-secondary">SDC SIMRI</div>
+    
+    <div class="top-nav shadow-sm" style="border-bottom: 1px solid #e2e8f0; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px); position: sticky; top: 0; z-index: 1050;">
+        <div class="d-flex align-items-center gap-3">
+            <div class="toggle-btn" onclick="toggleSidebar()" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                <i class="fas fa-bars" id="toggleIcon" style="color: #475569;"></i> 
+            </div>
+            <div class="fw-bold" style="color: #0f172a; font-size: 16px; letter-spacing: 0.5px;">SDC SIMRI</div>
+        </div>
+        
+        <div class="d-flex align-items-center">
+            <div onclick="location.reload()" title="Refresh Page" 
+                 style="cursor: pointer; width: 35px; height: 35px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: 0.3s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+        </div>
     </div>
 
     <div id="addressBanner">
@@ -1246,8 +1337,11 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const wrapper = document.getElementById('mainWrapper');
     const icon = document.getElementById('toggleIcon');
+    const overlay = document.getElementById('sidebarOverlay'); 
+    
     if (window.innerWidth <= 768) {
         sidebar.classList.toggle('active');
+        if(overlay) overlay.classList.toggle('active'); // यह ओवरले को दिखाएगा/छिपाएगा
         icon.className = sidebar.classList.contains('active') ? "fas fa-times" : "fas fa-bars";
     } else {
         sidebar.classList.toggle('hidden');
@@ -1255,6 +1349,17 @@ function toggleSidebar() {
         icon.className = sidebar.classList.contains('hidden') ? "fas fa-arrow-right" : "fas fa-arrow-left";
     }
 }
+
+// यह फंक्शन साइडबार की चौड़ाई को नापकर डैशबोर्ड को सही जगह सेट करता है
+function adjustSidebarWidth() {
+    const sidebar = document.getElementById('sidebar');
+    if (window.innerWidth > 768) {
+        document.documentElement.style.setProperty('--sidebar-width', sidebar.offsetWidth + 'px');
+    }
+}
+window.addEventListener('DOMContentLoaded', adjustSidebarWidth);
+window.addEventListener('resize', adjustSidebarWidth);
+
 
 function toggleFilterMenu() {
     const fs = document.getElementById('filterSection');
@@ -2073,7 +2178,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `28.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `29.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
