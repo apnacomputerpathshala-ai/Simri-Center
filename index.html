@@ -481,7 +481,10 @@
 html, body {
     min-height: 100dvh !important; 
     overflow-x: hidden !important;
-    overflow-y: auto !important; /* यह लाइन मोबाइल में 'अंगुली से खींचकर रिफ्रेश' को वापस चालू करेगी */
+    overflow-y: auto !important; 
+    overscroll-behavior-y: auto !important; /* Pull-to-refresh को चालू रखने के लिए */
+    overscroll-behavior-x: none !important; /* पेज को दाएँ-बाएँ खिसकने से पूरी तरह रोकने के लिए */
+    -webkit-overflow-scrolling: touch !important; /* ऐप जैसी स्मूथ स्क्रॉलिंग के लिए */
     background-color: #f8fafc;
 }
 
@@ -519,7 +522,7 @@ body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 <div id="toastContainer"></div>
 <div class="sidebar" id="sidebar">
     <div class="p-4 border-bottom text-center" style="border-color: #e2e8f0 !important;">
-        <img src="logo.png" alt="Logo" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #cbd5e1;">
+        <img src="logo.png" alt="Logo" style="width: 85px; height: 85px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #cbd5e1;">
         <h5 class="m-0 fw-bold text-uppercase" style="color: #0f172a;">Kriti Edify Pvt. Ltd</h5>
         <small class="fw-bold" style="color: #2563eb;">Kushal Yuva Program</small>
     </div>
@@ -537,19 +540,13 @@ body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         <div class="nav-item" id="btn-attendance" onclick="handleNavClick('attendance')">
             <i class="fas fa-calendar-check text-info"></i> <span>Daily Attendance</span>
         </div>
-        <div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')"><i class="fas fa-database"></i> Backup & Data</div>
-        <div class="nav-item text-warning" onclick="new bootstrap.Modal(document.getElementById('changePassModal')).show()">
-            <i class="fas fa-key"></i> <span>Change Password</span>
+                <div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')">
+            <i class="fas fa-cogs"></i> <span>Settings & Backup</span>
         </div>
         <div class="nav-item text-danger mt-3" onclick="adminLogout()">
             <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
         </div>
-        <div class="nav-item text-info rounded p-2 m-2" onclick="manualUpdateCheck()" style="cursor: pointer; border: 1px dashed #3b82f6; text-align: center;">
-            <i class="fas fa-sync-alt me-2"></i> <b>CHECK FOR UPDATE</b>
-        </div>
-        <div class="nav-item text-warning rounded p-2 m-2" onclick="showInstallPopUp()" style="cursor: pointer; border: 1px dashed #f59e0b; text-align: center;">
-            <i class="fas fa-download me-2"></i> <b>INSTALL APP</b>
-        </div>
+
     </div>
     <div class="sidebar-footer">
         V 2.2 | © 2026 Surya | सूरज कुमार
@@ -558,12 +555,15 @@ body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
 <div class="main-wrapper" id="mainWrapper">
     
-    <div class="top-nav shadow-sm" style="border-bottom: 1px solid #e2e8f0; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px); position: sticky; top: 0; z-index: 1050;">
+        <div class="top-nav shadow-sm" style="border-bottom: 1px solid #e2e8f0; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px); position: sticky; top: 0; z-index: 1050;">
         <div class="d-flex align-items-center gap-3">
             <div class="toggle-btn" onclick="toggleSidebar()" style="background: #f8fafc; border: 1px solid #e2e8f0;">
                 <i class="fas fa-bars" id="toggleIcon" style="color: #475569;"></i> 
             </div>
-            <div class="fw-bold" style="color: #0f172a; font-size: 16px; letter-spacing: 0.5px;">SDC SIMRI</div>
+            <div class="d-flex flex-column">
+                <div class="fw-bold" style="color: #0f172a; font-size: 16px; letter-spacing: 0.5px; line-height: 1.2;">SDC SIMRI</div>
+                <div style="color: #2563eb; font-size: 11px; font-weight: 800; letter-spacing: 0.3px;">Kushal Yuva Program</div>
+            </div>
         </div>
         
         <div class="d-flex align-items-center">
@@ -882,54 +882,129 @@ body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </div>
 </div>
     <div id="settingsTab" class="tab-content">
+    <div class="alert border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; padding: 20px;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-white bg-opacity-25 rounded-circle p-3 d-inline-flex align-items-center justify-content-center" style="width: 55px; height: 55px; backdrop-filter: blur(5px);">
+                    <i class="fas fa-cogs fa-lg text-white"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold m-0" style="letter-spacing: 0.5px;">Settings & Data Management</h5>
+                    <p class="small m-0 text-white-50">Manage your backups, restore data, and app preferences.</p>
+                </div>
+            </div>
+            <span class="badge bg-white text-primary border-0 py-2 px-3 rounded-pill fw-bold shadow-sm" style="font-size: 11px;">
+                <i class="fas fa-shield-alt text-success me-1"></i> Secure Panel
+            </span>
+        </div>
+    </div>
+
     <div class="row g-4">
         <div class="col-md-7">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-header bg-primary text-white p-3 border-0">
-                    <h6 class="m-0 fw-bold"><i class="fas fa-cloud-download-alt me-2"></i> SMART EXPORT CENTER</h6>
+            <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden bg-white">
+                <div class="p-4 border-bottom" style="background: #f8fafc;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                            <i class="fas fa-cloud-download-alt text-primary fa-lg"></i>
+                        </div>
+                        <div>
+                            <h6 class="m-0 fw-bold text-dark">Data Export & Backup</h6>
+                            <small class="text-muted">Download your student records and attendance logs</small>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body p-4">
-                    <p class="small text-muted mb-4"></p>
-                    <div class="d-grid gap-3">
-                        <button class="btn btn-outline-primary d-flex align-items-center justify-content-between p-3 rounded-3" onclick="exportFullCSV()">
-                            <span><i class="fas fa-users-cog me-2"></i> Full Student Records (CSV)</span>
-                            <i class="fas fa-chevron-right opacity-50"></i>
-                        </button>
-                        <button class="btn btn-outline-success d-flex align-items-center justify-content-between p-3 rounded-3" onclick="exportActiveOnlyCSV()">
-                            <span><i class="fas fa-user-check me-2"></i> Active Admitted Students (CSV)</span>
-                            <i class="fas fa-chevron-right opacity-50"></i>
-                        </button>
-                        <button class="btn btn-outline-info d-flex align-items-center justify-content-between p-3 rounded-3" onclick="exportAttendanceLogsCSV()">
-                            <span><i class="fas fa-calendar-check me-2"></i> Daily Attendance Logs (CSV)</span>
-                            <i class="fas fa-chevron-right opacity-50"></i>
-                        </button>
-                        <hr>
-                        <button class="btn btn-dark p-3 rounded-3 fw-bold" onclick="backupJSON()">
-                            <i class="fas fa-database me-2"></i> DOWNLOAD FULL SYSTEM BACKUP (.JSON)
+                    <div class="d-flex flex-column gap-3">
+                        <div onclick="exportFullCSV()" class="d-flex align-items-center justify-content-between p-3 rounded-3" style="background: #ffffff; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s;" onmouseover="this.style.borderColor='#2563eb'; this.style.boxShadow='0 4px 6px -1px rgba(37, 99, 235, 0.1)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary bg-opacity-10 rounded text-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark" style="font-size: 13px;">Full Student Records</div>
+                                    <div class="text-muted" style="font-size: 11px;">Excel/CSV format with all details</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-download text-primary"></i>
+                        </div>
+
+                        <div onclick="exportActiveOnlyCSV()" class="d-flex align-items-center justify-content-between p-3 rounded-3" style="background: #ffffff; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s;" onmouseover="this.style.borderColor='#10b981'; this.style.boxShadow='0 4px 6px -1px rgba(16, 185, 129, 0.1)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-success bg-opacity-10 rounded text-success d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark" style="font-size: 13px;">Active Admitted Students</div>
+                                    <div class="text-muted" style="font-size: 11px;">Only verified and admitted learners</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-download text-success"></i>
+                        </div>
+
+                        <div onclick="exportAttendanceLogsCSV()" class="d-flex align-items-center justify-content-between p-3 rounded-3" style="background: #ffffff; border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s;" onmouseover="this.style.borderColor='#06b6d4'; this.style.boxShadow='0 4px 6px -1px rgba(6, 182, 212, 0.1)';" onmouseout="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none';">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-info bg-opacity-10 rounded text-info d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-dark" style="font-size: 13px;">Daily Attendance Logs</div>
+                                    <div class="text-muted" style="font-size: 11px;">Complete attendance history</div>
+                                </div>
+                            </div>
+                            <i class="fas fa-download text-info"></i>
+                        </div>
+
+                        <div class="my-2 border-top"></div>
+
+                        <button onclick="backupJSON()" class="btn w-100 p-3 rounded-3 fw-bold d-flex align-items-center justify-content-center gap-2" style="background: #f8fafc; border: 1px dashed #cbd5e1; color: #475569; font-size: 13px; transition: 0.3s;" onmouseover="this.style.background='#0f172a'; this.style.color='white'; this.style.borderStyle='solid';" onmouseout="this.style.background='#f8fafc'; this.style.color='#475569'; this.style.borderStyle='dashed';">
+                            <i class="fas fa-database"></i> DOWNLOAD FULL SYSTEM BACKUP (.JSON)
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-5">
-            <div class="card border-0 shadow-sm rounded-4 bg-light">
+
+        <div class="col-md-5 d-flex flex-column gap-4">
+            
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
                 <div class="card-body p-4 text-center">
-                    <div class="mb-4">
-                        <div class="bg-white shadow-sm rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-                            <i class="fas fa-file-import fa-2x text-warning"></i>
+                    <div class="mb-3">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="fas fa-file-import fa-2x"></i>
                         </div>
                     </div>
-                                        <h6 class="fw-bold">Restore Data</h6>
-                    <p class="small text-muted mb-3">Upload your previous CSV backup file</p>
+                    <h6 class="fw-bold text-dark mb-1">Restore Data</h6>
+                    <p class="small text-muted mb-4">Upload your previous backup CSV file</p>
                     
+                    <button class="btn btn-warning w-100 fw-bold p-3 rounded-3 d-flex align-items-center justify-content-center gap-2 text-dark shadow-sm" onclick="document.getElementById('finalRestoreInput').click()" style="font-size: 13px;">
+                        <i class="fas fa-upload"></i> UPLOAD & RESTORE CSV
+                    </button>
+                    <input type="file" id="finalRestoreInput" style="display:none" onchange="restoreCSV(event)" accept=".csv">
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                <div class="p-3 border-bottom" style="background: #f8fafc;">
+                    <h6 class="m-0 fw-bold text-dark text-center"><i class="fas fa-mobile-alt me-2 text-primary"></i>APP SETTINGS</h6>
+                </div>
+                <div class="card-body p-3">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-warning fw-bold" onclick="document.getElementById('finalRestoreInput').click()">
-                            <i class="fas fa-file-import me-2"></i> UPLOAD & RESTORE CSV
+                        <button class="btn text-start p-3 rounded-3 fw-bold text-dark d-flex align-items-center justify-content-between" onclick="new bootstrap.Modal(document.getElementById('changePassModal')).show()" style="background: #ffffff; border: 1px solid #e2e8f0; font-size: 13px; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                            <span><i class="fas fa-key text-warning me-3 fa-lg"></i>Change Passwords</span>
+                            <i class="fas fa-chevron-right text-muted" style="font-size: 11px;"></i>
                         </button>
-                        <input type="file" id="finalRestoreInput" style="display:none" onchange="restoreCSV(event)" accept=".csv">
+                        <button class="btn text-start p-3 rounded-3 fw-bold text-dark d-flex align-items-center justify-content-between" onclick="manualUpdateCheck()" style="background: #ffffff; border: 1px solid #e2e8f0; font-size: 13px; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                            <span><i class="fas fa-sync text-info me-3 fa-lg"></i>Check For Updates</span>
+                            <i class="fas fa-chevron-right text-muted" style="font-size: 11px;"></i>
+                        </button>
+                        <button class="btn text-start p-3 rounded-3 fw-bold text-dark d-flex align-items-center justify-content-between" onclick="showInstallPopUp()" style="background: #ffffff; border: 1px solid #e2e8f0; font-size: 13px; transition: 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='#ffffff'">
+                            <span><i class="fas fa-download text-success me-3 fa-lg"></i>Install Web App</span>
+                            <i class="fas fa-chevron-right text-muted" style="font-size: 11px;"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -2178,7 +2253,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `29.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `30.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
