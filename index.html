@@ -1737,7 +1737,16 @@ function renderTable(dataToRender) {
             <td class="text-start">${l.father || "-"}</td>
             <td>${l.village || "-"}</td>
             <td>${l.aadhar || "-"}</td>
-            <td>${l.mobile || "-"}</td>
+            <td>
+    <div style="display: flex; align-items: center; justify-content: flex-start; gap: 8px;">
+        <span style="font-size: 12px; min-width: 80px; text-align: left;">${l.mobile || "-"}</span>
+        ${l.mobile && l.mobile !== "-" ? `
+            <a href="tel:${l.mobile}" class="btn-call shadow-sm" style="width: 28px; height: 28px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+                <i class="fas fa-phone-alt"></i>
+            </a>` : ''}
+    </div>
+</td>
+
             <td>${l.receipt || "-"}</td>
             <td>${l.gender || "-"}</td>
             <td>${l.learnerClass || "-"}</td>
@@ -2322,7 +2331,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `31.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `32.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
