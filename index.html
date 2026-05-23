@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kushal Yuva Program</title>
+    <title></title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -477,42 +477,100 @@
             .sidebar { left: -110%; width: max-content; }
             .sidebar.active { left: 0; }
         }
-/* --- NATIVE PULL-TO-REFRESH & STICKY APP LAYOUT --- */
+/* =========================================================
+   🍎 iOS STYLE MINIMAL & BEAUTIFUL UI (छोटा, स्लिम और सुंदर)
+========================================================= */
+
+/* 1. LAYOUT (टॉप-बार हमेशा चिपका रहेगा) */
 html, body {
     min-height: 100dvh !important; 
-    overflow-x: hidden !important;
-    overflow-y: auto !important; 
-    overscroll-behavior-y: auto !important; /* Pull-to-refresh को चालू रखने के लिए */
-    overscroll-behavior-x: none !important; /* पेज को दाएँ-बाएँ खिसकने से पूरी तरह रोकने के लिए */
-    -webkit-overflow-scrolling: touch !important; /* ऐप जैसी स्मूथ स्क्रॉलिंग के लिए */
-    background-color: #f8fafc;
+    overflow-x: clip !important; /* पेज को खिसकने से 100% रोकेगा */
+    background-color: #f8fafc !important; /* एकदम शांत और साफ़ बैकग्राउंड */
+    -webkit-overflow-scrolling: touch !important;
 }
 
-.main-wrapper {
-    min-height: 100dvh !important; /* टैब बदलने पर पेज को झटके से रोकेगा */
-    display: flex;
-    flex-direction: column;
-    overflow: visible !important; /* इसे फ्री कर दिया ताकि मोबाइल का रिफ्रेश काम कर सके */
-}
-
-/* फुटर को हमेशा स्क्रीन के नीचे चिपका कर रखने के लिए */
-footer {
+/* 2. TOP NAV (प्रीमियम ब्लर इफ़ेक्ट) */
+.top-nav {
+    position: -webkit-sticky !important; 
     position: sticky !important;
-    bottom: 0 !important;
-    background: #ffffff !important;
-    padding: 12px 15px !important;
-    text-align: center !important;
-    border-top: 1px solid #e2e8f0 !important;
-    z-index: 1040 !important;
-    margin-top: auto !important;
-    box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05);
+    top: 0 !important;
+    z-index: 1050 !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px) !important; /* आईफोन जैसा धुंधलापन */
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    padding: 8px 20px !important; /* इसे थोड़ा स्लिम किया है */
 }
 
-/* पूरे पेज के लिए नया और स्लिम स्क्रॉलबार (लैपटॉप के लिए) */
-body::-webkit-scrollbar { width: 6px; }
-body::-webkit-scrollbar-track { background: #f8fafc; }
-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+/* 3. ICONS (छोटे और बहुत प्यारे) */
+i.fas, i.fab, i.far {
+    font-size: 13.5px !important; /* आइकॉन्स का साइज छोटा और क्यूट कर दिया गया है */
+}
+.sidebar .nav-item i {
+    font-size: 14px !important; 
+    width: 26px !important; /* साइडबार के आइकॉन को पास-पास सेट किया है */
+}
+
+/* 4. CARDS & BOXES (स्लिम और साफ़-सुथरे) */
+.card, .attendance-card, .p-card, #filterSection, .mini-stat {
+    background: #ffffff !important;
+    border: 1px solid #f1f5f9 !important; /* बहुत ही पतली और सुंदर आउटलाइन */
+    border-radius: 12px !important; /* बॉक्स के कोनों को छोटा गोल किया है */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important; /* एकदम न के बराबर शैडो */
+    transition: all 0.2s ease !important;
+    padding: 15px !important; /* अंदर की जगह (Padding) कम की है ताकि कॉम्पैक्ट दिखे */
+}
+
+/* 5. TEXT & TYPOGRAPHY (साफ़ और पतला) */
+h1, h2, h3, h4, h5, h6, .fw-bold {
+    font-weight: 600 !important; /* भद्दे मोटेपन को हटाकर स्लिम (Semi-bold) किया */
+    letter-spacing: 0.2px !important;
+    color: #0f172a !important;
+}
+.text-muted, .small {
+    font-size: 11px !important; /* छोटे टेक्स्ट को एकदम साफ़ रखा है */
+    color: #64748b !important;
+    font-weight: 500 !important;
+}
+
+/* 6. INPUTS & FORMS (स्लिम और ब्यूटीफुल इनपुट बॉक्स) */
+.form-control, .form-select {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important; /* इनपुट बॉक्स छोटे और प्यारे */
+    padding: 8px 12px !important; /* ऊंचाई कम की है */
+    font-size: 12px !important; 
+    color: #1e293b !important;
+    font-weight: 500 !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease !important;
+}
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important; /* क्लिक करने पर सुंदर नीला ग्लो */
+}
+
+/* 7. BUTTONS (छोटे, मॉडर्न और सुंदर) */
+.btn {
+    border-radius: 8px !important; /* बटन के कोने छोटे */
+    padding: 8px 16px !important; /* बटन का साइज़ कॉम्पैक्ट (छोटा) किया है */
+    font-size: 12px !important; 
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03) !important; /* बहुत हल्की परछाई */
+    transition: all 0.2s ease !important;
+    border: none !important;
+}
+.btn-primary {
+    background: #2563eb !important;
+    color: white !important;
+}
+.btn:hover {
+    opacity: 0.9 !important;
+    transform: translateY(-1px) !important; /* होवर करने पर बस हल्का सा फील आएगा */
+}
+/* ========================================================= */
 
     </style>
 </head>
@@ -527,26 +585,37 @@ body::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         <small class="fw-bold" style="color: #2563eb;">Kushal Yuva Program</small>
     </div>
 
-    <div class="nav-menu mt-4">
-        <div class="nav-item active" id="btn-stats" onclick="handleNavClick('stats')"><i class="fas fa-th-large"></i> Dashboard</div>
-        <div class="nav-item" id="btn-reg" onclick="handleNavClick('reg')"><i class="fas fa-user-plus"></i> New Registration</div>
+        <div class="nav-menu mt-4">
+        <div class="nav-item active" id="btn-stats" onclick="handleNavClick('stats')">
+            <i class="fa-solid fa-shapes"></i> <span>Dashboard</span>
+        </div>
+        
+        <div class="nav-item" id="btn-reg" onclick="handleNavClick('reg')">
+            <i class="fa-solid fa-user-plus"></i> <span>New Registration</span>
+        </div>
+        
         <div class="nav-item" id="btn-admission" onclick="handleNavClick('admission')">
-            <i class="fas fa-key text-warning"></i> <span>KYP Admission Portal</span>
+            <i class="fa-solid fa-fingerprint"></i> <span>KYP Admission Portal</span>
         </div>
-        <div class="nav-item" id="btn-records" onclick="handleNavClick('records')"><i class="fas fa-file-invoice"></i> Student Records</div>
+        
+        <div class="nav-item" id="btn-records" onclick="handleNavClick('records')">
+            <i class="fa-solid fa-folder-open"></i> <span>Student Records</span>
+        </div>
+        
         <div class="nav-item" id="btn-active" onclick="handleNavClick('active')">
-            <i class="fas fa-user-check"></i> <span>Active Students</span>
+            <i class="fa-solid fa-user-graduate"></i> <span>Active Students</span>
         </div>
+        
         <div class="nav-item" id="btn-attendance" onclick="handleNavClick('attendance')">
-            <i class="fas fa-calendar-check text-info"></i> <span>Daily Attendance</span>
+            <i class="fa-solid fa-calendar-days"></i> <span>Daily Attendance</span>
         </div>
-                <div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')">
-            <i class="fas fa-cogs"></i> <span>Settings & Backup</span>
+        
+        <div class="nav-item" id="btn-settings" onclick="handleNavClick('settings')">
+            <i class="fa-solid fa-sliders"></i> <span>Settings & Backup</span>
         </div>
-        <div class="nav-item text-danger mt-3" onclick="adminLogout()">
-            <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-        </div>
-
+        <div class="nav-item text-danger mt-5" onclick="adminLogout()" style="cursor: pointer; padding: 10px 20px;">
+    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+</div>
     </div>
     <div class="sidebar-footer">
         V 2.2 | © 2026 Surya | सूरज कुमार
@@ -2253,7 +2322,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `30.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `31.5.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
