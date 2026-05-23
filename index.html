@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@600;700;800&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#2563eb">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -1311,6 +1312,29 @@ function previewImage(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+// हिंदी टेक्स्ट को बिना तोड़े हाई-क्वालिटी इमेज में बदलने का फंक्शन
+function getHindiTextImg(text, fontSize, fontWeight, color) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const scale = 4; // PDF फटने से रोकने के लिए हाई-रिज़ॉल्यूशन स्केल
+    const scaledSize = fontSize * scale;
+    
+    ctx.font = `${fontWeight} ${scaledSize}px 'Noto Sans Devanagari', sans-serif`;
+    const metrics = ctx.measureText(text);
+    
+    canvas.width = metrics.width + (20 * scale);
+    canvas.height = scaledSize * 2; 
+    
+    // Canvas का साइज़ बदलने पर फॉन्ट रीसेट हो जाता है, इसलिए दोबारा सेट करें
+    ctx.font = `${fontWeight} ${scaledSize}px 'Noto Sans Devanagari', sans-serif`;
+    ctx.fillStyle = color;
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    
+    ctx.fillText(text, canvas.width / 2, canvas.height / 2 + (2 * scale));
+    return canvas.toDataURL('image/png');
+}
+
 // फोटो को स्टोरेज में अपलोड करने का फंक्शन
 async function uploadToSupabaseStorage(file) {
     const fileName = `${Date.now()}_${file.name}`; // यूनिक फाइल नाम
@@ -1870,6 +1894,12 @@ async function printL(id) {
 
     showToast("Generating Admission PDF...", "bg-info");
 
+    // हिंदी शब्दों की साइज़ बढ़ा दी गई है (28px और 15px)
+    const titleImg = getHindiTextImg("कौशल विकास केंद्र, कुशल युवा कार्यक्रम", 28, "800", "#ffffff");
+    const addressImg = getHindiTextImg("कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर - 802135", 15, "600", "#ffffff");
+    const sign1Img = getHindiTextImg("उम्मीदवार के हस्ताक्षर", 14, "800", "#0f172a");
+    const sign2Img = getHindiTextImg("अधिकृत केंद्र प्रमुख", 14, "800", "#0f172a");
+
     const photoHtml = l.photo 
         ? `<img src="${l.photo}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">` 
         : `<div style="display:flex; align-items:center; justify-content:center; height:100%; color:#cbd5e1; font-size: 11px; font-weight: bold; background:#f8fafc; text-align:center;">NO PHOTO</div>`;
@@ -1882,18 +1912,18 @@ async function printL(id) {
     pdfContainer.innerHTML = `
     <div style="font-family: 'Inter', Arial, sans-serif; color: #1e293b; width: 100%; box-sizing: border-box;">
         
-        <table style="width: 100%; background: #2563eb; border-radius: 8px 8px 0 0; padding: 12px; color: white; border-collapse: collapse; margin-bottom: 12px;">
+        <table style="width: 100%; background: #2563eb; border-radius: 12px 12px 0 0; padding: 15px; color: white; border-collapse: collapse; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
             <tr>
-                <td style="width: 15%; text-align: left; vertical-align: middle; padding-left: 10px;">
-                    <img src="kyp_logo.jpg" style="height: 55px; width: auto; object-fit: contain; border-radius: 4px; background: white; padding: 2px;" crossorigin="anonymous" onerror="this.style.display='none';">
+                <td style="width: 18%; text-align: left; vertical-align: middle; padding-left: 15px;">
+                    <img src="kyp_logo.jpg" style="height: 78px; width: auto; object-fit: contain; border-radius: 6px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" crossorigin="anonymous" onerror="this.style.display='none';">
                 </td>
-                <td style="width: 70%; text-align: center; vertical-align: middle;">
-                    <h4 style="margin: 0; font-weight: 800; font-size: 21px; font-family: 'Nirmala UI', 'Mangal', 'Noto Sans Devanagari', sans-serif;">कौशल विकास केंद्र, कुशल युवा कार्यक्रम</h4>
-                    <h5 style="margin: 6px 0; font-weight: 700; font-size: 14px; letter-spacing: 0.5px;">Kriti Edify Pvt. Ltd. (KYP06020030)</h5>
-                    <p style="font-size: 12px; margin: 0; font-weight: 600; opacity: 0.95; font-family: 'Nirmala UI', 'Mangal', 'Noto Sans Devanagari', sans-serif;">कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर - 802135</p>
+                <td style="width: 64%; text-align: center; vertical-align: middle;">
+                    <img src="${titleImg}" style="height: 34px; display: block; margin: 0 auto 8px auto;">
+                    <h5 style="margin: 0 0 8px 0; font-weight: 700; font-size: 12.5px; letter-spacing: 1.5px; color: #e2e8f0; text-transform: uppercase;">Kriti Edify Pvt. Ltd. (KYP06020030)</h5>
+                    <img src="${addressImg}" style="height: 16px; display: block; margin: 0 auto;">
                 </td>
-                <td style="width: 15%; text-align: right; vertical-align: middle; padding-right: 10px;">
-                    <img src="kriti_logo.jpg" style="height: 55px; width: auto; object-fit: contain; border-radius: 4px; background: white; padding: 2px;" crossorigin="anonymous" onerror="this.style.display='none';">
+                <td style="width: 18%; text-align: right; vertical-align: middle; padding-right: 15px;">
+                    <img src="kriti_logo.jpg" style="height: 78px; width: auto; object-fit: contain; border-radius: 6px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" crossorigin="anonymous" onerror="this.style.display='none';">
                 </td>
             </tr>
         </table>
@@ -1962,14 +1992,14 @@ async function printL(id) {
         <table style="width: 100%; margin-top: 80px; margin-bottom: 20px;">
             <tr>
                 <td style="width: 50%; text-align: center;">
-                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; font-weight: 800; font-size: 13px; color: #0f172a; font-family: 'Nirmala UI', 'Mangal', sans-serif;">
-                        उम्मीदवार के हस्ताक्षर<br>
+                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px;">
+                        <img src="${sign1Img}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
                         <span style="font-size: 10px; color: #475569; font-weight: 600; font-family: 'Inter', sans-serif;">(Candidate's Signature)</span>
                     </div>
                 </td>
                 <td style="width: 50%; text-align: center;">
-                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; font-weight: 800; font-size: 13px; color: #0f172a; font-family: 'Nirmala UI', 'Mangal', sans-serif;">
-                        अधिकृत केंद्र प्रमुख<br>
+                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px;">
+                        <img src="${sign2Img}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
                         <span style="font-size: 10px; color: #475569; font-weight: 600; font-family: 'Inter', sans-serif;">(Authorized Center Head)</span>
                     </div>
                 </td>
@@ -1993,7 +2023,6 @@ async function printL(id) {
         console.error(err);
     }
 }
-
 
 function editL(id) {
     const l = learners.find(x => x.id === id);
@@ -2331,7 +2360,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `32.5.26`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.5`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -2906,6 +2935,12 @@ async function downloadStudentAttendancePDF(sid) {
     const absentDays = logs.filter(r => r.status === 'Absent').length;
     const rate = Math.round((presentDays / totalDays) * 100);
 
+    // हिंदी शब्दों की साइज़ बढ़ा दी गई है (28px और 15px)
+    const titleImgAtt = getHindiTextImg("कौशल विकास केंद्र, कुशल युवा कार्यक्रम", 28, "800", "#2563eb");
+    const addressImgAtt = getHindiTextImg("कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर - 802135", 15, "600", "#475569");
+    const signSeal = getHindiTextImg("केंद्र की मुहर", 14, "800", "#0f172a");
+    const signAuth = getHindiTextImg("अधिकृत हस्ताक्षर", 14, "800", "#0f172a");
+
     const element = document.createElement('div');
     element.style.width = '794px'; 
     element.style.background = '#ffffff';
@@ -2917,9 +2952,9 @@ async function downloadStudentAttendancePDF(sid) {
         <div style="border: 4px solid #2563eb; padding: 20px; border-radius: 8px;">
             
             <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
-                <h4 style="margin: 0 0 5px 0; font-weight: 800; color: #2563eb; font-size: 20px;">कौशल विकास केंद्र, कुशल युवा कार्यक्रम</h4>
-                <h2 style="color: #0f172a; margin: 0; font-weight: 900; font-size: 18px;">KRITI EDIFY PVT. LTD. (KYP06020030)</h2>
-                <p style="font-size: 13px; margin: 4px 0 10px 0; color: #475569; font-weight: 600;">कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर - 802135</p>
+                <img src="${titleImgAtt}" style="height: 34px; display: block; margin: 0 auto 8px auto;">
+                <h2 style="color: #0f172a; margin: 0 0 8px 0; font-weight: 800; font-size: 14px; letter-spacing: 1.5px;">KRITI EDIFY PVT. LTD. (KYP06020030)</h2>
+                <img src="${addressImgAtt}" style="height: 16px; display: block; margin: 0 auto 15px auto;">
                 
                 <h4 style="margin: 8px 0 5px 0; color: #0f172a; background: #f1f5f9; display: inline-block; padding: 5px 15px; border-radius: 8px;">Attendance Summary Report</h4>
                 <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px; font-weight: bold;">Period: ${new Date(fromDate).toLocaleDateString('en-GB')} to ${new Date(toDate).toLocaleDateString('en-GB')}</p>
@@ -2968,14 +3003,14 @@ async function downloadStudentAttendancePDF(sid) {
             <table style="width: 100%; margin-top: 100px;">
                 <tr>
                     <td style="width: 50%; text-align: left;">
-                        <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; text-align: center; font-weight: bold; color: #0f172a;">
-                            केंद्र की मुहर<br>
+                        <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; text-align: center;">
+                            <img src="${signSeal}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
                             <span style="font-size: 10px; color: #475569; font-weight: 600;">(Center Seal)</span>
                         </div>
                     </td>
                     <td style="width: 50%; text-align: right;">
-                        <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; text-align: center; font-weight: bold; color: #0f172a;">
-                            अधिकृत हस्ताक्षर<br>
+                        <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; text-align: center;">
+                            <img src="${signAuth}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
                             <span style="font-size: 10px; color: #475569; font-weight: 600;">(Authorized Sign)</span>
                         </div>
                     </td>
