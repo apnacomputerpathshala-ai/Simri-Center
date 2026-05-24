@@ -50,11 +50,77 @@
             display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid #e2e8f0;
         }
 
-        #addressBanner { 
-            background: linear-gradient(135deg, #1e293b, #334155); color: white; 
-            padding: 20px; border-radius: 12px; margin: 20px; border-bottom: 4px solid var(--accent);
-            text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: block;
-        }
+/* --- PREMIUM GREY & WHITE BANNER DESIGN --- */
+#premiumAddressBanner {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    padding: 18px 25px;
+    border-radius: 16px;
+    margin: 20px 20px 15px 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.banner-glow {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.9);
+    filter: blur(30px);
+    border-radius: 50%;
+}
+
+.banner-icon-box {
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #475569;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.5), 0 4px 10px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    border: 1px solid #ffffff;
+}
+
+.banner-title {
+    font-size: 18px;
+    letter-spacing: 0.5px;
+    font-weight: 800;
+    color: #0f172a; /* एकदम डार्क ग्रे (साफ़ और क्लियर दिखेगा) */
+}
+
+.banner-subtitle {
+    color: #64748b;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    margin-top: 3px !important;
+}
+
+.banner-location {
+    font-size: 11px;
+    color: #475569;
+    background: #ffffff;
+    padding: 5px 12px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 1px solid #cbd5e1;
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+@media (max-width: 768px) {
+    #premiumAddressBanner {
+        margin: 15px;
+        padding: 15px;
+        border-radius: 12px;
+    }
+    .banner-title { font-size: 16px; }
+    .banner-location { padding: 4px 10px; font-size: 10px; }
+}
 
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding: 0 20px 20px 20px; }
         .mini-stat { background: white; padding: 20px; border-radius: 12px; text-align: center; border-left: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
@@ -157,11 +223,6 @@
 
     .filter-grid {
         grid-template-columns: 1fr; /* Filters ek ke niche ek aayenge */
-    }
-
-    #addressBanner {
-        margin: 10px;
-        padding: 15px;
     }
 
     .top-nav {
@@ -479,99 +540,151 @@
             .sidebar.active { left: 0; }
         }
 /* =========================================================
-   🍎 iOS STYLE MINIMAL & BEAUTIFUL UI (छोटा, स्लिम और सुंदर)
+   🍏 APPLE "PRO" GREY & WHITE (ATTRACTIVE & PREMIUM)
 ========================================================= */
 
-/* 1. LAYOUT (टॉप-बार हमेशा चिपका रहेगा) */
-html, body {
-    min-height: 100dvh !important; 
-    overflow-x: clip !important; /* पेज को खिसकने से 100% रोकेगा */
-    background-color: #f8fafc !important; /* एकदम शांत और साफ़ बैकग्राउंड */
-    -webkit-overflow-scrolling: touch !important;
+:root { 
+    --primary: #1d1d1f !important;      
+    --secondary: #f5f5f7 !important;    
+    --bg: #f2f2f7 !important;           /* Slightly darker Apple background for contrast */
+    --white: #ffffff !important;        
+    --text-main: #1c1c1e !important;    
+    --text-muted: #8e8e93 !important;   
+    --border-color: rgba(0, 0, 0, 0.05) !important; /* Ultra-soft borders */
+    --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.04) !important; /* Premium deep shadow */
 }
 
-/* 2. TOP NAV (प्रीमियम ब्लर इफ़ेक्ट) */
-.top-nav {
-    position: -webkit-sticky !important; 
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 1050 !important;
-    background: rgba(255, 255, 255, 0.85) !important;
-    backdrop-filter: blur(20px) !important; /* आईफोन जैसा धुंधलापन */
-    -webkit-backdrop-filter: blur(20px) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
-    padding: 8px 20px !important; /* इसे थोड़ा स्लिम किया है */
+/* 1. Global Background & Text */
+body {
+    background-color: var(--bg) !important;
+    color: var(--text-main) !important;
+    font-weight: 400 !important;
+    -webkit-font-smoothing: antialiased; 
 }
 
-/* 3. ICONS (छोटे और बहुत प्यारे) */
-i.fas, i.fab, i.far {
-    font-size: 13.5px !important; /* आइकॉन्स का साइज छोटा और क्यूट कर दिया गया है */
-}
-.sidebar .nav-item i {
-    font-size: 14px !important; 
-    width: 26px !important; /* साइडबार के आइकॉन को पास-पास सेट किया है */
+/* 2. Text Normalization (Clean & Sharp) */
+h1, h2, h3, h4, h5, h6, .fw-bold, b, strong {
+    font-weight: 600 !important; /* Slightly bolder than previous for better pop */
+    letter-spacing: -0.015em !important;
+    color: var(--text-main) !important;
 }
 
-/* 4. CARDS & BOXES (स्लिम और साफ़-सुथरे) */
-.card, .attendance-card, .p-card, #filterSection, .mini-stat {
-    background: #ffffff !important;
-    border: 1px solid #f1f5f9 !important; /* बहुत ही पतली और सुंदर आउटलाइन */
-    border-radius: 12px !important; /* बॉक्स के कोनों को छोटा गोल किया है */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02) !important; /* एकदम न के बराबर शैडो */
-    transition: all 0.2s ease !important;
-    padding: 15px !important; /* अंदर की जगह (Padding) कम की है ताकि कॉम्पैक्ट दिखे */
-}
-
-/* 5. TEXT & TYPOGRAPHY (साफ़ और पतला) */
-h1, h2, h3, h4, h5, h6, .fw-bold {
-    font-weight: 600 !important; /* भद्दे मोटेपन को हटाकर स्लिम (Semi-bold) किया */
-    letter-spacing: 0.2px !important;
-    color: #0f172a !important;
-}
-.text-muted, .small {
-    font-size: 11px !important; /* छोटे टेक्स्ट को एकदम साफ़ रखा है */
-    color: #64748b !important;
+label, .small, .text-muted {
     font-weight: 500 !important;
+    color: var(--text-muted) !important;
 }
 
-/* 6. INPUTS & FORMS (स्लिम और ब्यूटीफुल इनपुट बॉक्स) */
-.form-control, .form-select {
-    background-color: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 8px !important; /* इनपुट बॉक्स छोटे और प्यारे */
-    padding: 8px 12px !important; /* ऊंचाई कम की है */
-    font-size: 12px !important; 
-    color: #1e293b !important;
-    font-weight: 500 !important;
-    box-shadow: none !important;
-    transition: all 0.2s ease !important;
-}
-.form-control:focus, .form-select:focus {
-    background-color: #ffffff !important;
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important; /* क्लिक करने पर सुंदर नीला ग्लो */
+/* 3. Cards & Stats (Added 3D Depth & Hover Animations) */
+#premiumAddressBanner, .mini-stat, .card, #filterSection, .attendance-card, .p-card {
+    background: var(--white) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-soft) !important;
+    border-radius: 18px !important; /* Smoother Apple-like rounded corners */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
 }
 
-/* 7. BUTTONS (छोटे, मॉडर्न और सुंदर) */
-.btn {
-    border-radius: 8px !important; /* बटन के कोने छोटे */
-    padding: 8px 16px !important; /* बटन का साइज़ कॉम्पैक्ट (छोटा) किया है */
-    font-size: 12px !important; 
+/* Make Cards "Lift" when you hover over them */
+.mini-stat:hover, .attendance-card:hover, .card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08) !important;
+}
+.mini-stat { border-left: none !important; }
+
+/* 4. Premium Silver Banner */
+#premiumAddressBanner {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%) !important;
+}
+.banner-icon-box {
+    background: linear-gradient(180deg, #ffffff 0%, #e5e5ea 100%) !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important;
+    border: 1px solid rgba(255,255,255,0.8) !important;
+}
+
+/* 5. Attractive Interactive Tables */
+.table-responsive {
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--shadow-soft) !important;
+    border-radius: 14px !important;
+    background: var(--white) !important;
+}
+.table thead th {
+    background-color: #f9f9fb !important;
+    color: var(--text-muted) !important;
+    border-bottom: 2px solid rgba(0,0,0,0.04) !important;
+    border-right: none !important; border-left: none !important;
     font-weight: 600 !important;
-    letter-spacing: 0.3px !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.03) !important; /* बहुत हल्की परछाई */
+    text-transform: capitalize !important;
+}
+.table tbody td {
+    border-bottom: 1px solid rgba(0,0,0,0.03) !important;
+    border-right: none !important; border-left: none !important;
+    color: var(--text-main) !important;
+    font-weight: 500 !important;
+    transition: background-color 0.2s ease !important;
+}
+/* Highlight row on hover */
+.table tbody tr:hover td {
+    background-color: #f2f2f7 !important; 
+}
+
+/* 6. Buttons (Sleek Dark Mode Apple Style) */
+.btn {
+    font-weight: 600 !important;
+    border-radius: 10px !important;
     transition: all 0.2s ease !important;
-    border: none !important;
 }
 .btn-primary {
-    background: #2563eb !important;
-    color: white !important;
+    background: linear-gradient(180deg, #3a3a3c 0%, #1c1c1e 100%) !important; /* Subtle 3D gradient */
+    color: var(--white) !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
 }
-.btn:hover {
-    opacity: 0.9 !important;
-    transform: translateY(-1px) !important; /* होवर करने पर बस हल्का सा फील आएगा */
+.btn-primary:hover {
+    transform: scale(1.02) !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
 }
-/* ========================================================= */
+.btn-dark {
+    background: #e5e5ea !important;
+    color: var(--text-main) !important;
+    border: none !important;
+}
+.btn-dark:hover { background: #d1d1d6 !important; }
+
+/* 7. Top Navigation & Sidebar (Frosted Glass) */
+.top-nav {
+    background: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: saturate(180%) blur(25px) !important; /* Real Apple Glass Effect */
+    border-bottom: 1px solid var(--border-color) !important;
+}
+.sidebar {
+    background: var(--white) !important;
+    border-right: 1px solid var(--border-color) !important;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.02) !important;
+}
+.nav-item {
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    margin: 4px 12px !important;
+}
+.nav-item:hover, .nav-item.active {
+    background: var(--bg) !important;
+    color: var(--text-main) !important;
+    transform: translateX(4px) !important; /* Slight slide effect */
+}
+
+/* 8. Inputs (Clean & Soft) */
+.form-control, .form-select {
+    background: #f9f9fb !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
+    border-radius: 12px !important;
+}
+.form-control:focus, .form-select:focus {
+    background: var(--white) !important;
+    border-color: #c7c7cc !important;
+    box-shadow: 0 0 0 4px rgba(0,0,0,0.03) !important;
+}
+
 
     </style>
 </head>
@@ -644,11 +757,23 @@ h1, h2, h3, h4, h5, h6, .fw-bold {
         </div>
     </div>
 
-    <div id="addressBanner">
-        <h4 class="fw-bold m-0">SKILL DEVELOPMENT CENTRE</h4>
-        <h6 class="text-uppercase fw-bold m-0" style="color: #cbd5e1;">Kushal Yuva Program (KYP)</h6>
-        <p class="small m-0 mt-1"><i class="fas fa-map-marker-alt text-warning"></i> Near Karubir Baba Temple, Simri, Buxar, Bihar</p>
+    <div id="premiumAddressBanner" class="position-relative overflow-hidden shadow-sm">
+    <div class="banner-glow"></div>
+    
+    <div class="d-flex align-items-center justify-content-md-start justify-content-center gap-3 position-relative" style="z-index: 1;">
+        <div class="banner-icon-box d-none d-md-flex">
+            <i class="fas fa-graduation-cap"></i>
+        </div>
+        
+        <div class="text-md-start text-center w-100">
+            <h4 class="fw-bold m-0 banner-title">SKILL DEVELOPMENT CENTRE</h4>
+            <h6 class="fw-bold m-0 banner-subtitle">KUSHAL YUVA PROGRAM (KYP)</h6>
+            <div class="m-0 mt-2 banner-location">
+                <i class="fas fa-map-marker-alt text-warning me-1"></i> Near Karubir Baba Temple, Simri, Buxar
+            </div>
+        </div>
     </div>
+</div>
 
     <div id="statsTab" class="tab-content active">
         <div class="stat-grid">
@@ -867,16 +992,16 @@ h1, h2, h3, h4, h5, h6, .fw-bold {
     </div>
    <div id="admissionTab" class="tab-content">
     <div class="card border-0 shadow-sm p-3 mb-3 bg-dark text-white rounded-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h6 class="m-0 fw-bold"><i class="fas fa-id-card me-2 text-warning"></i> MNSSBY REGISTRATION TRACKER</h6>
-            <div class="d-flex gap-2 align-items-center">
-                <span class="badge bg-warning text-dark">Pending: <span id="pendingAdmissionCount">0</span></span>
-                <button class="btn btn-sm btn-warning fw-bold" onclick="openOfficialPortal('NEW', 'REGISTRATION')">
-                    <i class="fas fa-user-plus"></i> NEW REGISTRATION
-                </button>
-            </div>
-        </div>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h6 class="m-0" style="font-weight: 700; font-size: 14px;"><i class="fas fa-id-card me-2 text-warning"></i> MNSSBY REGISTRATION TRACKER</h6>
+    <div class="d-flex gap-2 align-items-center">
+        <span class="badge bg-warning text-dark" style="font-size: 11px;">Pending: <span id="pendingAdmissionCount">0</span></span>
+        <button class="btn btn-warning shadow-sm" style="font-size: 11px; padding: 6px 12px; font-weight: 600; white-space: nowrap; border-radius: 8px;" onclick="openOfficialPortal('NEW', 'REGISTRATION')">
+            <i class="fas fa-user-plus"></i> NEW REGISTRATION
+        </button>
     </div>
+</div>
+</div>
 
     <div class="row mb-3">
         <div class="col-md-6">
@@ -1369,8 +1494,9 @@ function handleNavClick(tabName) {
     }
 }
 function switchTab(tab) {
-    // Tab preference save karne ke liye
-    localStorage.setItem('activeTab', tab); 
+    // सिर्फ जब तक टैब खुला है तब तक याद रखने के लिए
+    sessionStorage.setItem('activeTab', tab); 
+
 
     // Mobile Sidebar handle karne ke liye
     if (window.innerWidth <= 768) {
@@ -1395,8 +1521,8 @@ function switchTab(tab) {
     const targetBtn = document.getElementById('btn-' + tab);
     if(targetBtn) targetBtn.classList.add('active');
     
-    // Banner display logic
-    const banner = document.getElementById('addressBanner');
+    // 👇 बैनर वाला सही लॉजिक (यह इसी फंक्शन के अंदर होना चाहिए)
+    const banner = document.getElementById('premiumAddressBanner');
     if(banner) {
         banner.style.display = (tab === 'stats') ? 'block' : 'none';
     }
@@ -1409,13 +1535,15 @@ function switchTab(tab) {
         updateReportDropdown(); 
     }
 
-    // SATIK UPDATE: Active Students tab khulte hi data dikhne lagega
     if(tab === 'active') {
         renderActiveStudents();
     }
+    
     if(tab === 'admission') renderAdmissionTable();
+    
     updateStats();
 }
+
 // --- SECURE SUPABASE AUTH & ROLE LOGIC ---
 async function checkAuth() {
     // 1. क्लाउड से चेक करें कि कोई लॉगिन है या नहीं
@@ -2206,8 +2334,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     applyPermissions(); 
     await loadDataFromSupabase(); 
 
-    // Refresh ke baad wahi tab kholne ke liye
-    const savedTab = localStorage.getItem('activeTab');
+    // Refresh ke baad wahi tab kholne ke liye (Close karne pe Dashboard khulega)
+    const savedTab = sessionStorage.getItem('activeTab');
     if (savedTab && document.getElementById('btn-' + savedTab)) {
         switchTab(savedTab);
     } else {
@@ -2360,7 +2488,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.5`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.6`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
