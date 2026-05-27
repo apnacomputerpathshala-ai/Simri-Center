@@ -712,6 +712,10 @@ label, .small, .text-muted {
             <i class="fa-solid fa-fingerprint"></i> <span>KYP Admission Portal</span>
         </div>
         
+            <div class="nav-item" id="btn-deep" onclick="handleNavClick('deep')">
+            <i class="fa-solid fa-laptop-code"></i> <span>DEEP IT Classes</span>
+        </div>
+
         <div class="nav-item" id="btn-records" onclick="handleNavClick('records')">
             <i class="fa-solid fa-folder-open"></i> <span>Student Records</span>
         </div>
@@ -775,14 +779,19 @@ label, .small, .text-muted {
     </div>
 </div>
 
-    <div id="statsTab" class="tab-content active">
-        <div class="stat-grid">
-            <div class="mini-stat"><h4><span id="stTotal">0</span></h4><p class="small m-0 text-muted fw-bold">TOTAL LEARNERS</p></div>
-            <div class="mini-stat" style="border-left-color: #10b981;"><h4><span id="stVerified">0</span></h4><p class="small m-0 text-success fw-bold">VERIFIED</p></div>
-            <div class="mini-stat" style="border-left-color: #f59e0b;"><h4><span id="stAlloc">0</span></h4><p class="small m-0 text-warning fw-bold">ALLOCATED</p></div>
-            <div class="mini-stat" style="border-left-color: #ef4444;"><h4><span id="stPending">0</span></h4><p class="small m-0 text-danger fw-bold">PENDING</p></div>
-        </div>
+<div id="statsTab" class="tab-content active">
+    <div class="stat-grid">
+        <div class="mini-stat"><h4><span id="stTotal">0</span></h4><p class="small m-0 text-muted fw-bold">TOTAL LEARNERS</p></div>
+        <div class="mini-stat" style="border-left-color: #10b981;"><h4><span id="stVerified">0</span></h4><p class="small m-0 text-success fw-bold">VERIFIED</p></div>
+        <div class="mini-stat" style="border-left-color: #f59e0b;"><h4><span id="stAlloc">0</span></h4><p class="small m-0 text-warning fw-bold">ALLOCATED</p></div>
+        <div class="mini-stat" style="border-left-color: #ef4444;"><h4><span id="stPending">0</span></h4><p class="small m-0 text-danger fw-bold">PENDING</p></div>
+        
+        <!-- ये रहे आपके 3 नए कार्ड्स -->
+        <div class="mini-stat" style="border-left-color: #3b82f6;"><h4><span id="stAdmission">0</span></h4><p class="small m-0 text-primary fw-bold">ADMISSION DONE</p></div>
+        <div class="mini-stat" style="border-left-color: #10b981;"><h4><span id="stPayment">0</span></h4><p class="small m-0 text-success fw-bold">PAYMENT DONE</p></div>
+        <div class="mini-stat" style="border-left-color: #06b6d4;"><h4><span id="stDeep">0</span></h4><p class="small m-0 text-info fw-bold">DEEP IT CLASSES</p></div>
     </div>
+</div>
 
     <div id="regTab" class="tab-content">
         <div class="card border-0 shadow-sm p-4 rounded-4">
@@ -1029,35 +1038,69 @@ label, .small, .text-muted {
         </table>
     </div>
 </div>
+<div id="deepTab" class="tab-content">
+    <div class="card border-0 shadow-sm p-3 mb-3 text-white rounded-4" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h6 class="m-0" style="font-weight: 700; font-size: 14px;"><i class="fas fa-laptop-code me-2 text-warning"></i> DEEP BASIC IT ADMISSION</h6>
+            <span class="badge bg-white text-info shadow-sm" style="font-size: 11px;">Pending KYP Students</span>
+        </div>
+    </div>
+    
+    <div class="table-responsive shadow-sm rounded-4">
+        <table class="table table-bordered bg-white m-0 text-center">
+            <thead class="table-dark" style="background-color: #0891b2;">
+                <tr>
+                    <th width="50">#</th>
+                    <th class="text-start">Learner Name</th>
+                    <th>Mobile No</th>
+                    <!-- नया कॉलम: बैच असाइन करने के लिए -->
+                    <th width="200">Assign Batch (Month & Time)</th>
+                    <th width="100">Action</th>
+                </tr>
+            </thead>
+            <tbody id="deepTbody"></tbody>
+        </table>
+    </div>
+</div>
 
 <div id="activeTab" class="tab-content">
     <div class="card border-0 shadow-sm p-3 mb-3 bg-primary text-white">
         <h6 class="m-0 fw-bold"><i class="fas fa-users me-2"></i> Admitted Students List</h6>
         
         <div class="row g-2 mb-3 p-3 bg-light rounded shadow-sm mx-1 mt-4">
-    <div class="col-6">
-        <label class="small fw-bold text-muted mb-1">Admission Month</label>
-        <select id="activeMonthFilter" class="form-select form-select-sm shadow-sm" onchange="renderActiveStudents()" style="border-radius: 10px;">
-            <option value="">All Months</option>
-            <option value="Jan">January</option>
-            <option value="Feb">February</option>
-            <option value="Mar">March</option>
-            <option value="Apr">April</option>
-            <option value="May">May</option>
-            <option value="Jun">June</option>
-            <option value="Jul">July</option>
-            <option value="Aug">August</option>
-            <option value="Sep">September</option>
-            <option value="Oct">October</option>
-            <option value="Nov">November</option>
-            <option value="Dec">December</option>
-        </select>
-    </div>
-    <div class="col-6">
-        <label class="small fw-bold text-muted mb-1">Search Batch/Time</label>
-        <input type="text" id="activeBatchFilter" class="form-control form-control-sm shadow-sm" placeholder="e.g. 08:30 AM" onkeyup="renderActiveStudents()" style="border-radius: 10px;">
-    </div>
-</div>
+            <!-- ✅ नया कोर्स फ़िल्टर (सिर्फ KYP और DEEP) -->
+            <div class="col-md-4 col-12 mb-2 mb-md-0">
+                <label class="small fw-bold text-muted mb-1">Course Type</label>
+                <select id="activeCourseFilter" class="form-select form-select-sm shadow-sm" onchange="renderActiveStudents()" style="border-radius: 10px;">
+                    <option value="KYP">KYP Batch</option>
+                    <option value="DEEP">DEEP IT Batch</option>
+                </select>
+            </div>
+            
+            <div class="col-md-4 col-6">
+                <label class="small fw-bold text-muted mb-1">Admission Month</label>
+                <select id="activeMonthFilter" class="form-select form-select-sm shadow-sm" onchange="renderActiveStudents()" style="border-radius: 10px;">
+                    <option value="">All Months</option>
+                    <option value="Jan">January</option>
+                    <option value="Feb">February</option>
+                    <option value="Mar">March</option>
+                    <option value="Apr">April</option>
+                    <option value="May">May</option>
+                    <option value="Jun">June</option>
+                    <option value="Jul">July</option>
+                    <option value="Aug">August</option>
+                    <option value="Sep">September</option>
+                    <option value="Oct">October</option>
+                    <option value="Nov">November</option>
+                    <option value="Dec">December</option>
+                </select>
+            </div>
+            
+            <div class="col-md-4 col-6">
+                <label class="small fw-bold text-muted mb-1">Search Batch/Time</label>
+                <input type="text" id="activeBatchFilter" class="form-control form-control-sm shadow-sm" placeholder="e.g. 08:30 AM" onkeyup="renderActiveStudents()" style="border-radius: 10px;">
+            </div>
+        </div>
     </div>
     
     <div class="table-responsive mt-4">
@@ -1076,6 +1119,7 @@ label, .small, .text-muted {
         </table>
     </div>
 </div>
+
     <div id="settingsTab" class="tab-content">
     <div class="alert border-0 shadow-sm rounded-4 mb-4" style="background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; padding: 20px;">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
@@ -1209,32 +1253,39 @@ label, .small, .text-muted {
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h6 class="m-0 fw-bold"><i class="fas fa-clock me-2 text-warning"></i> Mark Attendance</h6>
         </div>
-        <div class="row g-2">
-            <div class="col-md-4 col-6">
+                <div class="row g-2">
+            <div class="col-md-3 col-6">
                 <label class="small fw-bold opacity-75">Date</label>
                 <input type="date" id="attDate" class="form-control form-control-sm" onchange="loadAttendanceList()">
             </div>
-            <div class="col-md-4 col-6">
-                <label class="small fw-bold opacity-75">Batch Month</label>
-                <select id="attMonth" class="form-select form-select-sm" onchange="loadAttendanceList()">
-                    <option value="">All Months</option>
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
+            <div class="col-md-3 col-6">
+                <label class="small fw-bold opacity-75">Course</label>
+                <select id="attCourse" class="form-select form-select-sm" onchange="loadAttendanceList()">
+                    <option value="KYP">KYP Batch</option>
+                    <option value="DEEP">DEEP IT Batch</option>
                 </select>
             </div>
-            <div class="col-md-4 col-12">
-                <label class="small fw-bold opacity-75">Search Batch Time</label>
-                <input type="text" id="attTime" class="form-control form-control-sm" placeholder="e.g. 08:30 AM" onkeyup="loadAttendanceList()">
+            <div class="col-md-3 col-6">
+                <label class="small fw-bold opacity-75">Batch Month</label>
+                <select id="attMonth" class="form-select form-select-sm" onchange="loadAttendanceList()">
+                    <option value="">All</option>
+                    <option value="January">Jan</option>
+                    <option value="February">Feb</option>
+                    <option value="March">Mar</option>
+                    <option value="April">Apr</option>
+                    <option value="May">May</option>
+                    <option value="June">Jun</option>
+                    <option value="July">Jul</option>
+                    <option value="August">Aug</option>
+                    <option value="September">Sep</option>
+                    <option value="October">Oct</option>
+                    <option value="November">Nov</option>
+                    <option value="December">Dec</option>
+                </select>
+            </div>
+            <div class="col-md-3 col-6">
+                <label class="small fw-bold opacity-75">Search Time</label>
+                <input type="text" id="attTime" class="form-control form-control-sm" placeholder="e.g. 08:30" onkeyup="loadAttendanceList()">
             </div>
         </div>
     </div>
@@ -1540,7 +1591,8 @@ function switchTab(tab) {
     }
     
     if(tab === 'admission') renderAdmissionTable();
-    
+        if(tab === 'deep') renderDeepTable();
+
     updateStats();
 }
 
@@ -2022,7 +2074,7 @@ async function printL(id) {
 
     showToast("Generating Admission PDF...", "bg-info");
 
-    // हिंदी शब्दों की साइज़ बढ़ा दी गई है (28px और 15px)
+    // हिंदी शब्दों की साइज़ 
     const titleImg = getHindiTextImg("कौशल विकास केंद्र, कुशल युवा कार्यक्रम", 28, "800", "#ffffff");
     const addressImg = getHindiTextImg("कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर - 802135", 15, "600", "#ffffff");
     const sign1Img = getHindiTextImg("उम्मीदवार के हस्ताक्षर", 14, "800", "#0f172a");
@@ -2035,104 +2087,111 @@ async function printL(id) {
     const pdfContainer = document.createElement('div');
     pdfContainer.style.width = '794px'; 
     pdfContainer.style.background = '#ffffff';
-    pdfContainer.style.padding = '15px';
+    pdfContainer.style.padding = '20px'; // A4 पेज के किनारों से खाली जगह (मार्जिन)
 
     pdfContainer.innerHTML = `
-    <div style="font-family: 'Inter', Arial, sans-serif; color: #1e293b; width: 100%; box-sizing: border-box;">
+    <!-- ✅ यहाँ पूरे A4 पेज पर डार्क ब्लू/ग्रे बॉर्डर लगाया गया है -->
+    <div style="font-family: 'Inter', Arial, sans-serif; color: #1e293b; width: 100%; box-sizing: border-box; border: 3px solid #0f172a; border-radius: 12px; padding: 10px; min-height: 1080px; display: flex; flex-direction: column; justify-content: space-between;">
         
-        <table style="width: 100%; background: #2563eb; border-radius: 12px 12px 0 0; padding: 15px; color: white; border-collapse: collapse; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-            <tr>
-                <td style="width: 18%; text-align: left; vertical-align: middle; padding-left: 15px;">
-                    <img src="kyp_logo.jpg" style="height: 78px; width: auto; object-fit: contain; border-radius: 6px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" crossorigin="anonymous" onerror="this.style.display='none';">
-                </td>
-                <td style="width: 64%; text-align: center; vertical-align: middle;">
-                    <img src="${titleImg}" style="height: 34px; display: block; margin: 0 auto 8px auto;">
-                    <h5 style="margin: 0 0 8px 0; font-weight: 700; font-size: 12.5px; letter-spacing: 1.5px; color: #e2e8f0; text-transform: uppercase;">Kriti Edify Pvt. Ltd. (KYP06020030)</h5>
-                    <img src="${addressImg}" style="height: 16px; display: block; margin: 0 auto;">
-                </td>
-                <td style="width: 18%; text-align: right; vertical-align: middle; padding-right: 15px;">
-                    <img src="kriti_logo.jpg" style="height: 78px; width: auto; object-fit: contain; border-radius: 6px; background: white; padding: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" crossorigin="anonymous" onerror="this.style.display='none';">
-                </td>
-            </tr>
-        </table>
+        <!-- टॉप कंटेंट (हेडर, फोटो और पर्सनल डिटेल्स) -->
+        <div>
+            <table style="width: 100%; background: #2563eb; border-radius: 8px 8px 0 0; padding: 15px; color: white; border-collapse: collapse; margin-bottom: 12px;">
+                <tr>
+                    <td style="width: 18%; text-align: left; vertical-align: middle; padding-left: 15px;">
+                        <img src="kyp_logo.jpg" style="height: 78px; width: auto; object-fit: contain; border-radius: 6px; background: white; padding: 4px;" crossorigin="anonymous" onerror="this.style.display='none';">
+                    </td>
+                    <td style="width: 64%; text-align: center; vertical-align: middle;">
+                        <img src="${titleImg}" style="height: 34px; display: block; margin: 0 auto 8px auto;">
+                        <h5 style="margin: 0 0 8px 0; font-weight: 700; font-size: 12.5px; letter-spacing: 1.5px; color: #e2e8f0; text-transform: uppercase;">Kriti Edify Pvt. Ltd. (KYP06020030)</h5>
+                        <img src="${addressImg}" style="height: 16px; display: block; margin: 0 auto;">
+                    </td>
+                    <td style="width: 18%; text-align: right; vertical-align: middle; padding-right: 15px;">
+                        <img src="kriti_logo.jpg" style="height: 78px; width: auto; object-fit: contain; border-radius: 6px; background: white; padding: 4px;" crossorigin="anonymous" onerror="this.style.display='none';">
+                    </td>
+                </tr>
+            </table>
 
-        <div style="text-align: center; border: 1.5px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 20px; margin-top: -12px; margin-bottom: 15px; background: #f8fafc;">
-            <div style="width: 100px; height: 125px; border: 3px solid #ffffff; border-radius: 8px; overflow: hidden; background: #e2e8f0; margin: 0 auto 12px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                ${photoHtml}
+            <div style="text-align: center; border: 1.5px solid #e2e8f0; border-top: none; border-radius: 0 0 8px 8px; padding: 20px; margin-top: -12px; margin-bottom: 15px; background: #f8fafc;">
+                <div style="width: 100px; height: 125px; border: 3px solid #ffffff; border-radius: 8px; overflow: hidden; background: #e2e8f0; margin: 0 auto 12px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    ${photoHtml}
+                </div>
+                <h4 style="margin: 0; font-weight: 900; color: #0f172a; text-transform: uppercase; font-size: 22px; letter-spacing: 0.5px;">${l.name || "-"}</h4>
+                <div style="margin-top: 8px;">
+                    <span style="background: #eff6ff; color: #2563eb; padding: 4px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid #bfdbfe;">SI.No: ${l.siNo || "-"}</span>
+                    <span style="background: #ffffff; color: #475569; padding: 3px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid #cbd5e1; display: inline-block;">Receipt No: ${l.receipt || "-"}</span>
+                </div>
             </div>
-            <h4 style="margin: 0; font-weight: 900; color: #0f172a; text-transform: uppercase; font-size: 22px; letter-spacing: 0.5px;">${l.name || "-"}</h4>
-            <div style="margin-top: 8px;">
-                <span style="background: #eff6ff; color: #2563eb; padding: 4px 15px; border-radius: 20px; font-size: 12px; font-weight: 800; border: 1px solid #bfdbfe;">SI.No: ${l.siNo || "-"}</span>
-                <span style="background: #ffffff; color: #475569; padding: 3px 15px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid #cbd5e1; display: inline-block;">Receipt No: ${l.receipt || "-"}</span>
+
+            <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+                <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Personal Details</div>
+                <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Father's Name</span><b style="font-size: 13px; color: #0f172a;">${l.father || "-"}</b></td>
+                        <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Gender</span><b style="font-size: 13px; color: #0f172a;">${l.gender || "-"}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Date of Birth</span><b style="font-size: 13px; color: #0f172a;">${l.dob || "-"}</b></td>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Category</span><b style="font-size: 13px; color: #0f172a;">${l.category || "-"}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Mobile No</span><b style="font-size: 13px; color: #0f172a;">${l.mobile || "-"}</b></td>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Aadhar Number</span><b style="font-size: 13px; color: #0f172a; letter-spacing: 0.5px;">${l.aadhar || "-"}</b></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+                <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Address & Education</div>
+                <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Village / Panchayat</span><b style="font-size: 13px; color: #0f172a;">${l.village || "-"} / ${l.panchayat || "-"}</b></td>
+                        <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">School Name</span><b style="font-size: 13px; color: #0f172a;">${l.school || "-"}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Block / Pin Code</span><b style="font-size: 13px; color: #0f172a;">${l.block || "-"} - ${l.pincode || "-"}</b></td>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Board / Class</span><b style="font-size: 13px; color: #0f172a;">${l.board || "-"} / ${l.learnerClass || "-"}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Roll Code & No</span><b style="font-size: 13px; color: #0f172a;">${l.rollCode || "-"} / ${l.rollNo || "-"}</b></td>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Passing Year</span><b style="font-size: 13px; color: #0f172a;">${l.passYear || "-"}</b></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Bank Details</div>
+                <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Bank Name</span><b style="font-size: 13px; color: #0f172a;">${l.bankName || "-"}</b></td>
+                        <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Branch Name</span><b style="font-size: 13px; color: #0f172a;">${l.branchName || "-"}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Account Number</span><b style="font-size: 13px; color: #2563eb;">${l.accNo || "-"}</b></td>
+                        <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">IFSC Code</span><b style="font-size: 13px; color: #2563eb;">${l.ifsc || "-"}</b></td>
+                    </tr>
+                </table>
             </div>
         </div>
 
-        <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
-            <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Personal Details</div>
-            <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
+        <!-- बॉटम कंटेंट (सिग्नेचर) जो हमेशा पेज के नीचे रहेगा -->
+        <div style="padding-top: 20px; padding-bottom: 10px;">
+            <table style="width: 100%;">
                 <tr>
-                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Father's Name</span><b style="font-size: 13px; color: #0f172a;">${l.father || "-"}</b></td>
-                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Gender</span><b style="font-size: 13px; color: #0f172a;">${l.gender || "-"}</b></td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Date of Birth</span><b style="font-size: 13px; color: #0f172a;">${l.dob || "-"}</b></td>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Category</span><b style="font-size: 13px; color: #0f172a;">${l.category || "-"}</b></td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Mobile No</span><b style="font-size: 13px; color: #0f172a;">${l.mobile || "-"}</b></td>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Aadhar Number</span><b style="font-size: 13px; color: #0f172a; letter-spacing: 0.5px;">${l.aadhar || "-"}</b></td>
-                </tr>
-            </table>
-        </div>
-
-        <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
-            <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Address & Education</div>
-            <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
-                <tr>
-                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Village / Panchayat</span><b style="font-size: 13px; color: #0f172a;">${l.village || "-"} / ${l.panchayat || "-"}</b></td>
-                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">School Name</span><b style="font-size: 13px; color: #0f172a;">${l.school || "-"}</b></td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Block / Pin Code</span><b style="font-size: 13px; color: #0f172a;">${l.block || "-"} - ${l.pincode || "-"}</b></td>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Board / Class</span><b style="font-size: 13px; color: #0f172a;">${l.board || "-"} / ${l.learnerClass || "-"}</b></td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Roll Code & No</span><b style="font-size: 13px; color: #0f172a;">${l.rollCode || "-"} / ${l.rollNo || "-"}</b></td>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Passing Year</span><b style="font-size: 13px; color: #0f172a;">${l.passYear || "-"}</b></td>
+                    <td style="width: 50%; text-align: center;">
+                        <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px;">
+                            <img src="${sign1Img}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
+                            <span style="font-size: 10px; color: #475569; font-weight: 600; font-family: 'Inter', sans-serif;">(Candidate's Signature)</span>
+                        </div>
+                    </td>
+                    <td style="width: 50%; text-align: center;">
+                        <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px;">
+                            <img src="${sign2Img}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
+                            <span style="font-size: 10px; color: #475569; font-weight: 600; font-family: 'Inter', sans-serif;">(Authorized Center Head)</span>
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
-
-        <div style="border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
-            <div style="color: #2563eb; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; border-left: 3.5px solid #2563eb; padding-left: 8px; line-height: 1;">Bank Details</div>
-            <table style="width: 100%; font-size: 12px; border-collapse: separate; border-spacing: 0 4px;">
-                <tr>
-                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Bank Name</span><b style="font-size: 13px; color: #0f172a;">${l.bankName || "-"}</b></td>
-                    <td style="width: 50%; vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Branch Name</span><b style="font-size: 13px; color: #0f172a;">${l.branchName || "-"}</b></td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">Account Number</span><b style="font-size: 13px; color: #2563eb;">${l.accNo || "-"}</b></td>
-                    <td style="vertical-align: top;"><span style="color: #64748b; font-size: 10px; font-weight: 700; text-transform: uppercase; display: block;">IFSC Code</span><b style="font-size: 13px; color: #2563eb;">${l.ifsc || "-"}</b></td>
-                </tr>
-            </table>
-        </div>
-
-        <table style="width: 100%; margin-top: 80px; margin-bottom: 20px;">
-            <tr>
-                <td style="width: 50%; text-align: center;">
-                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px;">
-                        <img src="${sign1Img}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
-                        <span style="font-size: 10px; color: #475569; font-weight: 600; font-family: 'Inter', sans-serif;">(Candidate's Signature)</span>
-                    </div>
-                </td>
-                <td style="width: 50%; text-align: center;">
-                    <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px;">
-                        <img src="${sign2Img}" style="height: 16px; display: block; margin: 0 auto 4px auto;">
-                        <span style="font-size: 10px; color: #475569; font-weight: 600; font-family: 'Inter', sans-serif;">(Authorized Center Head)</span>
-                    </div>
-                </td>
-            </tr>
-        </table>
     </div>`;
 
     const opt = {
@@ -2203,11 +2262,18 @@ async function deleteL(id) {
 function updateStats() {
     if (!learners) return; // अगर डेटा नहीं है तो रुक जाओ
     
+    // पुराने काउंटर्स
     document.getElementById('stTotal').innerText = learners.length || 0;
     document.getElementById('stVerified').innerText = learners.filter(l => l.verify === 'Yes').length || 0;
     document.getElementById('stAlloc').innerText = learners.filter(l => l.alloc === 'Yes').length || 0;
     document.getElementById('stPending').innerText = learners.filter(l => l.verify === 'No').length || 0;
+
+    // नए काउंटर्स का लॉजिक
+    document.getElementById('stAdmission').innerText = learners.filter(l => l.admis === 'Yes').length || 0;
+    document.getElementById('stPayment').innerText = learners.filter(l => l.pay === 'Yes').length || 0;
+    document.getElementById('stDeep').innerText = learners.filter(l => l.deep_admis === 'Yes').length || 0;
 }
+
 // 1. SIRF ADMITTED STUDENTS KA BACKUP
 function exportActiveOnlyCSV() {
     const activeList = learners.filter(l => l.admis === 'Yes');
@@ -2375,39 +2441,56 @@ function showInstallPopUp() {
     alert("App pehle se installed hai ya Browser support nahi kar raha. Chrome menu mein 'Install App' check karein.");
   }
 }
-// --- UPDATED: ADMITTED LIST LOGIC FOR ALL MONTHS ---
+// --- UPDATED: ADMITTED LIST LOGIC FOR ALL MONTHS (KYP + DEEP) ---
 function renderActiveStudents() {
     const tbody = document.getElementById('activeStudentsTbody');
+    
+    // तीनों फ़िल्टर्स की वैल्यू लें
+    const selectedCourse = document.getElementById('activeCourseFilter') ? document.getElementById('activeCourseFilter').value : "";
     const selectedMonth = document.getElementById('activeMonthFilter').value;
     const batchSearch = (document.getElementById('activeBatchFilter').value || "").toLowerCase();
 
     // Filtering logic
     const filteredList = learners.filter(l => {
-        // 1. Sirf wahi dikhao jinka Admission 'Yes' hai
-        const matchesAdmis = l.admis === 'Yes'; 
         
-        // 2. All Months Logic: Agar dropdown empty hai ("") toh true, warna remark mein month check karo
+        // 1. कोर्स के हिसाब से फ़िल्टर
+        let matchesCourse = false;
+        if (selectedCourse === 'KYP') {
+            matchesCourse = (l.admis === 'Yes'); // सिर्फ KYP
+        } else if (selectedCourse === 'DEEP') {
+            matchesCourse = (l.deep_admis === 'Yes'); // सिर्फ DEEP
+        } else {
+            matchesCourse = (l.admis === 'Yes' || l.deep_admis === 'Yes'); // दोनों
+        }
+        
+        // 2. महीने के हिसाब से फ़िल्टर
         const matchesMonth = (selectedMonth === "") || 
                              (l.remark && l.remark.toLowerCase().includes(selectedMonth.toLowerCase()));
         
-        // 3. Search Logic: Batch/Time details check karega
+        // 3. बैच या टाइम के हिसाब से फ़िल्टर
         const matchesBatch = (batchSearch === "") || 
                              (l.remark && l.remark.toLowerCase().includes(batchSearch));
         
-        return matchesAdmis && matchesMonth && matchesBatch;
+        return matchesCourse && matchesMonth && matchesBatch;
     });
 
     if (filteredList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted">No records found for this selection.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted fw-bold">No records found for this selection.</td></tr>`;
         return;
     }
 
-        tbody.innerHTML = filteredList.map((l, index) => {
+    tbody.innerHTML = filteredList.map((l, index) => {
         const batchDetails = l.remark || "No Batch Assigned";
+        
+        // कोर्स का बैज तय करें (KYP है या DEEP)
+        const courseBadge = l.admis === 'Yes' 
+            ? '<span class="badge bg-success shadow-sm" style="font-size: 10px;">KYP</span>' 
+            : '<span class="badge bg-info shadow-sm" style="font-size: 10px;">DEEP IT</span>';
+
         return `
         <tr>
-            <td class="text-center">${index + 1}</td> 
-            <td class="text-start">
+            <td class="text-center align-middle">${index + 1}</td> 
+            <td class="text-start align-middle">
                 <div class="d-flex flex-column">
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="fw-bold text-primary" style="font-size: 13px;">${l.name}</span>
@@ -2422,9 +2505,9 @@ function renderActiveStudents() {
                     </div>
                 </div>
             </td>
-            <td class="text-start" style="font-size: 12px;">${l.father || "-"}</td>
-            <td style="font-size: 12px;">${l.village || "-"}</td>
-            <td>
+            <td class="text-start align-middle" style="font-size: 12px;">${l.father || "-"}</td>
+            <td class="align-middle" style="font-size: 12px;">${l.village || "-"}</td>
+            <td class="align-middle">
                 <div class="d-flex align-items-center justify-content-center gap-2">
                     <span style="font-size: 12px;">${l.mobile || "-"}</span>
                     ${l.mobile ? `
@@ -2433,39 +2516,40 @@ function renderActiveStudents() {
                     </a>` : ''}
                 </div>
             </td>
-            <td><span class="badge bg-success" style="font-size: 10px;">Admitted</span></td>
-            <td>
-    <div class="d-flex flex-column align-items-center">
-        <div id="dateWrapper_${l.id}" class="date-picker-container">
-            <label class="fw-bold mb-1" style="font-size: 10px; color: #1e293b;">Select Date Range:</label>
-            <div class="d-flex gap-1 mb-2">
-                <input type="date" id="fromDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
-                <input type="date" id="toDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
-            </div>
-            <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" style="font-size: 10px; border-radius: 8px;" onclick="downloadStudentAttendancePDF(${l.id})">
-                <i class="fas fa-file-download me-1"></i> Download PDF
-            </button>
-        </div>
+            <td class="text-center align-middle">${courseBadge}</td>
+            <td class="align-middle">
+                <div class="d-flex flex-column align-items-center">
+                    <div id="dateWrapper_${l.id}" class="date-picker-container">
+                        <label class="fw-bold mb-1" style="font-size: 10px; color: #1e293b;">Select Date Range:</label>
+                        <div class="d-flex gap-1 mb-2">
+                            <input type="date" id="fromDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
+                            <input type="date" id="toDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
+                        </div>
+                        <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" style="font-size: 10px; border-radius: 8px;" onclick="downloadStudentAttendancePDF(${l.id})">
+                            <i class="fas fa-file-download me-1"></i> Download PDF
+                        </button>
+                    </div>
 
-        <button id="mainRepBtn_${l.id}" class="btn btn-outline-info btn-sm rounded-pill px-3 shadow-sm w-100" style="font-size: 10px;" onclick="toggleDateFields(${l.id})">
-            <i class="fas fa-calendar-alt me-1"></i> Generate Report
-        </button>
-        
-        <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="removeAdmission(${l.id})">
-            <i class="fas fa-user-minus me-1"></i> Remove
-        </button>
-    </div>
-</td>
+                    <button id="mainRepBtn_${l.id}" class="btn btn-outline-info btn-sm rounded-pill px-3 shadow-sm w-100" style="font-size: 10px;" onclick="toggleDateFields(${l.id})">
+                        <i class="fas fa-calendar-alt me-1"></i> Generate Report
+                    </button>
+                    
+                    <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="removeAdmission(${l.id})">
+                        <i class="fas fa-user-minus me-1"></i> Remove
+                    </button>
+                </div>
+            </td>
         </tr>`;
     }).join('');
 }
 
-// एडमिशन 'No' करने के लिए फंक्शन
+// एडमिशन (KYP aur DEEP dono) रद्द (No) करने के लिए फंक्शन
 async function removeAdmission(id) {
     if(confirm("क्या आप इस छात्र का एडमिशन रद्द (No) करना चाहते हैं?")) {
+        // yahan admis aur deep_admis dono ko 'No' kiya jaa raha hai
         const { error } = await _supabase
             .from('students')
-            .update({ admis: 'No' })
+            .update({ admis: 'No', deep_admis: 'No' }) 
             .eq('id', id);
 
         if (error) {
@@ -2473,22 +2557,25 @@ async function removeAdmission(id) {
         } else {
             showToast("Admission Status Updated!", "bg-warning");
             
-            // स्थानीय (Local) लिस्ट को भी तुरंत अपडेट करें ताकि पेज रिफ्रेश न करना पड़े
+            // Local list ko bhi turant update karein
             const index = learners.findIndex(l => l.id === id);
             if (index !== -1) {
                 learners[index].admis = 'No';
+                learners[index].deep_admis = 'No';
             }
             
-            renderActiveStudents(); // एक्टिव लिस्ट रिफ्रेश करें
-            renderTable(learners);  // मुख्य रिकॉर्ड टेबल रिफ्रेश करें
-            updateStats();          // डैशबोर्ड के नंबर अपडेट करें
+            renderActiveStudents(); // Active list refresh karein
+            renderTable(learners);  // Main record table refresh karein
+            if (typeof renderDeepTable === "function") renderDeepTable(); // DEEP table bhi refresh karein
+            updateStats();          // Dashboard numbers update karein
         }
     }
 }
+
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.6`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.7`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -2721,96 +2808,205 @@ async function fetchStudentReport() {
             </div>`;
     }
 }
-// --- UPDATED: ATTENDANCE LIST (CALL ICON REMOVED FROM NAME) ---
+// ==========================================
+// DEEP IT CLASSES LOGIC
+// ==========================================
+function renderDeepTable() {
+    const tbody = document.getElementById('deepTbody');
+    const list = learners.filter(l => l.admis !== 'Yes' && l.deep_admis !== 'Yes');
+    
+    if(list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted fw-bold">Sabhi pending students ka admission ho chuka hai.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = list.map((l, index) => `
+        <tr>
+            <td class="text-center align-middle">${index + 1}</td>
+            <td class="text-start fw-bold text-dark align-middle">${l.name}</td>
+            <td class="text-center align-middle">${l.mobile}</td>
+            <td class="text-center align-middle">
+                <div class="d-flex gap-1 justify-content-center">
+                    <select id="deepMonth_${l.id}" class="form-select form-select-sm" style="width: 85px; font-size: 11px;">
+                        <option value="">Month</option>
+                        <option value="January">Jan</option><option value="February">Feb</option><option value="March">Mar</option>
+                        <option value="April">Apr</option><option value="May">May</option><option value="June">Jun</option>
+                        <option value="July">Jul</option><option value="August">Aug</option><option value="September">Sep</option>
+                        <option value="October">Oct</option><option value="November">Nov</option><option value="December">Dec</option>
+                    </select>
+                    <input type="text" id="deepTime_${l.id}" class="form-control form-control-sm" placeholder="08:30 AM" style="width: 85px; font-size: 11px;">
+                </div>
+            </td>
+            <td class="text-center align-middle">
+                <button class="btn btn-sm btn-info text-white fw-bold w-100" onclick="admitToDeep(${l.id})">Admit</button>
+            </td>
+        </tr>`).join('');
+}
+
+async function admitToDeep(id) {
+    const month = document.getElementById(`deepMonth_${id}`).value;
+    const time = document.getElementById(`deepTime_${id}`).value;
+    if (!month || !time) { showToast("Batch Month aur Time bharein!", "bg-warning"); return; }
+    
+    const batchDetails = `${month} - ${time}`;
+    if(confirm(`Is student ko 'DEEP Basic IT' (${batchDetails}) mein add karein?`)) {
+        const { error } = await _supabase.from('students').update({ deep_admis: 'Yes', remark: batchDetails }).eq('id', id);
+        if(!error) { showToast("Success!", "bg-success"); await loadDataFromSupabase(); renderDeepTable(); }
+        else showToast("Error!", "bg-danger");
+    }
+}
+
 async function loadAttendanceList() {
     const tbody = document.getElementById('attendanceTbody');
     const date = document.getElementById('attDate').value;
-    const month = document.getElementById('attMonth').value;
-    const time = (document.getElementById('attTime').value || "").toLowerCase();
+    const course = document.getElementById('attCourse').value; // 'KYP' ya 'DEEP'
     
+    if(!date) return;
+
     const { data: logs } = await _supabase.from('attendance_logs').select('*').eq('attendance_date', date);
 
-    let filtered = learners.filter(l => l.admis === 'Yes');
-    if (month) filtered = filtered.filter(l => (l.remark || "").toLowerCase().includes(month.toLowerCase()));
-    if (time) filtered = filtered.filter(l => (l.remark || "").toLowerCase().includes(time));
+    // Filter students based on course
+    let filtered = learners.filter(l => {
+        if(course === 'KYP') return l.admis === 'Yes';
+        if(course === 'DEEP') return l.deep_admis === 'Yes';
+        return false;
+    });
 
     tbody.innerHTML = filtered.map((l, i) => {
-        const studentLog = logs ? logs.find(log => log.student_id === l.id) : null;
-        const batchInfo = l.remark || "-";
-        
+        const studentLog = logs ? logs.find(log => log.student_id === l.id && (log.course_type === course || (!log.course_type && course === 'KYP'))) : null;
         return `
         <tr>
-            <td class="text-center">${i + 1}</td>
-            <td class="text-start">
-                <div class="fw-bold text-dark" style="font-size:13px;">${l.name}</div>
-                <div class="d-md-none text-info fw-bold" style="font-size:9px;">${batchInfo}</div>
+            <td class="text-center align-middle">${i + 1}</td>
+            
+            <!-- ✅ नाम और बैच (Month & Time) एक साथ (मोबाइल में भी दिखेगा) -->
+            <td class="text-start align-middle">
+                <div class="fw-bold" style="font-size: 13px; color: #0f172a;">${l.name}</div>
+                <div class="mt-1">
+                    <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 9px; font-weight: 800;">
+                        <i class="fas fa-clock me-1"></i>${l.remark || "No Batch"}
+                    </span>
+                </div>
             </td>
-            <td class="text-start d-none d-md-table-cell">
-                <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 10px;">${batchInfo}</span>
+            
+            <!-- लैपटॉप स्क्रीन के लिए एक्स्ट्रा कॉलम (मोबाइल पर हाईड रहेगा) -->
+            <td class="text-start d-none d-md-table-cell align-middle">
+                <span class="badge bg-light text-dark">${l.remark || "-"}</span>
             </td>
-            <td>
+            
+            <td class="align-middle">
                 <div class="att-group">
                     <input type="radio" class="btn-check" name="att-${l.id}" id="p-${l.id}" value="Present" ${studentLog?.status === 'Present' ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'Present')">
                     <label class="att-label label-p" for="p-${l.id}"><i class="fas fa-check"></i></label>
                     
                     <input type="radio" class="btn-check" name="att-${l.id}" id="a-${l.id}" value="Absent" ${studentLog?.status === 'Absent' ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'Absent')">
                     <label class="att-label label-a" for="a-${l.id}"><i class="fas fa-times"></i></label>
-                    
-                    <button class="btn-undo-att" onclick="deleteSingleAttendance(${l.id})" title="Clear/Undo">
-                        <i class="fas fa-undo"></i>
+
+                    <!-- ✅ आपका सुंदर डिलीट/Undo आइकॉन -->
+                    <button class="btn-undo-att" onclick="deleteAttendance(${l.id})" title="Clear Attendance">
+                        <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
             </td>
         </tr>`;
-    }).join('') || '<tr><td colspan="4" class="p-4 text-center">No Admitted Students Found.</td></tr>';
+    }).join('') || '<tr><td colspan="4" class="p-4 text-center text-muted fw-bold">No students found for this course.</td></tr>';
 }
-// --- 2. AUTO-SAVE & MANUAL POPUP LOGIC ---
+
 async function instantSaveAttendance(sid, status) {
     const date = document.getElementById('attDate').value;
+    const courseElement = document.getElementById('attCourse');
+    const course = courseElement ? courseElement.value : 'KYP'; 
     const student = learners.find(l => l.id === sid);
+    
+    // Debugging के लिए: देखें कि छात्र मिला या नहीं
+    console.log("Saving attendance for:", student ? student.name : "Student not found");
+
     try {
-        await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date });
-        const { error } = await _supabase.from('attendance_logs').insert([{ student_id: sid, student_name: student.name, attendance_date: date, status: status }]);
+        await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date, course_type: course });
+        const { error } = await _supabase.from('attendance_logs').insert([{ 
+            student_id: sid, 
+            student_name: student.name, 
+            attendance_date: date, 
+            status: status,
+            course_type: course 
+        }]);
+        
         if (error) throw error;
         
-        // Show Popup
-        document.getElementById('popImg').src = student.photo || 'https://via.placeholder.com/100';
-        document.getElementById('popName').innerText = student.name;
-        document.getElementById('popAadhar').innerText = "Aadhar: " + (student.aadhar || "N/A");
-        document.getElementById('popDob').innerText = "DOB: " + (student.dob || "N/A");
-        document.getElementById('attSuccessPopup').classList.add('show');
-    } catch (err) { showToast("Sync Failed!", "bg-danger"); }
+        // Debugging के लिए: देखें कि क्या पॉपअप वाले एलिमेंट्स मौजूद हैं
+        const popup = document.getElementById('attSuccessPopup');
+        if (popup) {
+            document.getElementById('popImg').src = student.photo || 'https://via.placeholder.com/100';
+            document.getElementById('popName').innerText = student.name + ` (${course})`;
+            document.getElementById('popAadhar').innerText = "Aadhar: " + (student.aadhar || "N/A");
+            popup.classList.add('show');
+            console.log("Popup triggered successfully");
+        } else {
+            console.error("Popup element not found in HTML!");
+        }
+    } catch (err) { 
+        console.error("Error:", err);
+        showToast("Sync Failed!", "bg-danger"); 
+    }
+}
+// गलती से चढ़ी अटेंडेंस को हटाने का फंक्शन
+async function deleteAttendance(sid) {
+    const date = document.getElementById('attDate').value;
+    const courseElement = document.getElementById('attCourse');
+    const course = courseElement ? courseElement.value : 'KYP';
+    
+    if(!confirm("क्या आप इस छात्र की आज की अटेंडेंस हटाना (Undo) चाहते हैं?")) return;
+
+    try {
+        // डेटाबेस से उस दिन और उस कोर्स की अटेंडेंस डिलीट करें
+        const { error } = await _supabase
+            .from('attendance_logs')
+            .delete()
+            .match({ student_id: sid, attendance_date: date, course_type: course });
+        
+        if (error) throw error;
+        
+        showToast("अटेंडेंस हटा दी गई!", "bg-success");
+        
+        // स्क्रीन पर से 'Present' या 'Absent' का सिलेक्शन हटा दें (UI Update)
+        const pRadio = document.getElementById(`p-${sid}`);
+        const aRadio = document.getElementById(`a-${sid}`);
+        if(pRadio) pRadio.checked = false;
+        if(aRadio) aRadio.checked = false;
+
+    } catch (err) {
+        console.error("Delete Error:", err);
+        showToast("डिलीट करने में एरर आया!", "bg-danger");
+    }
 }
 
 function closeAttPopup() {
     document.getElementById('attSuccessPopup').classList.remove('show');
 }
 
-async function deleteSingleAttendance(sid) {
-    const date = document.getElementById('attDate').value;
-    if(!confirm("Galti sudharna chahte hain? Attendance delete karein?")) return;
-    try {
-        await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date });
-        showToast("Attendance Reset!", "bg-warning");
-        loadAttendanceList(); 
-    } catch (err) { showToast("Error!", "bg-danger"); }
-}
-
-// --- 3. UPDATED BATCH PERFORMANCE (WITH BATCH TIME) ---
+// --- 3. UPDATED BATCH PERFORMANCE (WITH COURSE LOGIC) ---
 async function fetchBatchReport() {
     const month = document.getElementById('repMonth').value;
     const time = (document.getElementById('repTime').value || "").toLowerCase();
+    const courseElement = document.getElementById('attCourse');
+    const course = courseElement ? courseElement.value : 'KYP'; // KYP या DEEP
+    
     const resDiv = document.getElementById('reportResult');
     if(!month) return showToast("Select Month!", "bg-warning");
     
     resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
     
-    let batchStudents = learners.filter(l => l.admis === 'Yes' && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time));
+    // सिर्फ उसी कोर्स के बच्चे छांटें जो अटेंडेंस टैब में चुना गया है
+    let batchStudents = learners.filter(l => {
+        let isValidCourse = (course === 'KYP') ? (l.admis === 'Yes') : (l.deep_admis === 'Yes');
+        return isValidCourse && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time);
+    });
+    
     const { data: logs } = await _supabase.from('attendance_logs').select('*');
 
     let html = `<div class="row g-3 mt-2">`;
     batchStudents.forEach(s => {
-        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id) : [];
+        // पुराने रिकॉर्ड्स (जिनमें course_type नहीं था) उन्हें डिफ़ॉल्ट 'KYP' माना जाएगा
+        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id && (lg.course_type === course || (!lg.course_type && course === 'KYP'))) : [];
         const pres = sLogs.filter(lg => lg.status === 'Present').length;
         const total = sLogs.length;
         const rate = total > 0 ? Math.round((pres/total)*100) : 0;
@@ -2831,74 +3027,43 @@ async function fetchBatchReport() {
                         <div class="text-center"><div class="fw-bold" style="font-size:10px;">P</div><div class="text-success fw-bold">${pres}</div></div>
                         <div class="text-center"><div class="fw-bold" style="font-size:10px;">A</div><div class="text-danger fw-bold">${total - pres}</div></div>
                         <div class="text-center"><div class="fw-bold" style="font-size:10px;">RATE</div><div class="${colorClass} fw-bold">${rate}%</div></div>
-<div class="d-flex gap-1">
-    <a href="javascript:void(0)" onclick="viewStudentAttDetails(${s.id})" class="btn-call shadow-sm bg-info" style="width:30px; height:30px;" title="View Dates"><i class="fas fa-list" style="font-size:12px;"></i></a>
-    <a href="tel:${s.mobile}" class="btn-call shadow-sm" style="width:30px; height:30px;"><i class="fas fa-phone-alt" style="font-size:12px;"></i></a>
-</div>
-
+                        <div class="d-flex gap-1">
+                            <a href="javascript:void(0)" onclick="viewStudentAttDetails(${s.id})" class="btn-call shadow-sm bg-info" style="width:30px; height:30px;" title="View Dates"><i class="fas fa-list" style="font-size:12px;"></i></a>
+                            <a href="tel:${s.mobile}" class="btn-call shadow-sm" style="width:30px; height:30px;"><i class="fas fa-phone-alt" style="font-size:12px;"></i></a>
+                        </div>
+                    </div>
                 </div>
             </div>`;
     });
-    resDiv.innerHTML = batchStudents.length ? html + `</div>` : `<p class="text-center p-4">No Data.</p>`;
-}
-async function viewStudentAttDetails(sid) {
-    const student = learners.find(l => l.id === sid);
-    if(!student) return;
-    
-    document.getElementById('modalStudentName').innerText = student.name;
-    document.getElementById('modalAttContent').innerHTML = `<div class="text-center p-3"><div class="spinner-border text-info"></div></div>`;
-    
-    // पॉपअप दिखाएं
-    new bootstrap.Modal(document.getElementById('studentAttModal')).show();
-
-    // डेटाबेस से उस छात्र का डेटा लाएं
-    const { data: logs, error } = await _supabase.from('attendance_logs').select('*').eq('student_id', sid).order('attendance_date', {ascending: false});
-    
-    if(error || !logs || logs.length === 0) {
-        document.getElementById('modalAttContent').innerHTML = `<p class="text-center text-muted small fw-bold mt-2">No attendance records found.</p>`;
-        return;
-    }
-
-    let html = `<table class="table table-sm table-bordered text-center m-0" style="font-size: 11px;">
-                    <thead class="table-light"><tr><th>DATE</th><th>STATUS</th></tr></thead><tbody>`;
-    
-    logs.forEach(lg => {
-        const dateStr = new Date(lg.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
-        const badge = lg.status === 'Present' ? '<span class="badge bg-success w-100">PRESENT</span>' : '<span class="badge bg-danger w-100">ABSENT</span>';
-        html += `<tr><td class="fw-bold text-secondary align-middle">${dateStr}</td><td class="align-middle">${badge}</td></tr>`;
-    });
-    html += `</tbody></table>`;
-    
-    document.getElementById('modalAttContent').innerHTML = html;
+    resDiv.innerHTML = batchStudents.length ? html + `</div>` : `<p class="text-center p-4 fw-bold text-muted">No Data Found for ${course} Batch.</p>`;
 }
 
 async function exportBatchExcel() {
     const month = document.getElementById('repMonth').value;
     const time = (document.getElementById('repTime').value || "").toLowerCase();
+    const courseElement = document.getElementById('attCourse');
+    const course = courseElement ? courseElement.value : 'KYP';
     
     if(!month) return showToast("Please Select Month First!", "bg-warning");
 
     showToast("Generating Calendar Excel...", "bg-info");
     
-    // 1. Batch के छात्रों को फ़िल्टर करें
-    let batchStudents = learners.filter(l => l.admis === 'Yes' && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time));
+    // 1. Batch के छात्रों को फ़िल्टर करें (KYP या DEEP)
+    let batchStudents = learners.filter(l => {
+        let isValidCourse = (course === 'KYP') ? (l.admis === 'Yes') : (l.deep_admis === 'Yes');
+        return isValidCourse && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time);
+    });
     
     if (batchStudents.length === 0) return showToast("No students in this batch!", "bg-warning");
 
-    // 2. क्लाउड से अटेंडेंस डेटा मंगाएं
     const { data: logs } = await _supabase.from('attendance_logs').select('*').order('attendance_date', {ascending: true});
 
-    // 3. सिर्फ इस बैच के बच्चों की तारीखें निकालें (ताकि एक्स्ट्रा कॉलम्स न बनें)
     const batchStudentIds = batchStudents.map(s => s.id);
-    const batchLogs = logs ? logs.filter(lg => batchStudentIds.includes(lg.student_id)) : [];
+    const batchLogs = logs ? logs.filter(lg => batchStudentIds.includes(lg.student_id) && (lg.course_type === course || (!lg.course_type && course === 'KYP'))) : [];
 
-    // 4. Unique Dates निकालें (Calendar के Columns बनाने के लिए)
     const uniqueDates = [...new Set(batchLogs.map(lg => lg.attendance_date))].sort();
 
-    // 5. Excel के Headers तैयार करें
     let headers = ["Candidate Name", "Mobile No", "Total Present", "Total Absent", "Attendance Rate %"];
-    
-    // हर तारीख को हेडर में जोड़ें (जैसे: 01-May, 02-May)
     uniqueDates.forEach(date => {
         const dateObj = new Date(date);
         headers.push(dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }));
@@ -2906,42 +3071,30 @@ async function exportBatchExcel() {
     
     let csv = headers.join(",") + "\n";
     
-    // 6. हर बच्चे का डेटा और उस तारीख का स्टेटस (P/A) भरें
     batchStudents.forEach(s => {
         const sLogs = batchLogs.filter(lg => lg.student_id === s.id);
-        
         const presCount = sLogs.filter(lg => lg.status === 'Present').length;
         const absCount = sLogs.filter(lg => lg.status === 'Absent').length;
         const total = sLogs.length;
         const rate = total > 0 ? Math.round((presCount/total)*100) : 0;
         
-        // बेसिक डिटेल्स
-        let rowData = [
-            `"${s.name}"`,
-            `"${s.mobile}"`,
-            presCount,
-            absCount,
-            `"${rate}%"`
-        ];
+        let rowData = [ `"${s.name}"`, `"${s.mobile}"`, presCount, absCount, `"${rate}%"` ];
 
-        // हर तारीख के नीचे P या A सेट करें
         uniqueDates.forEach(date => {
             const logForDate = sLogs.find(lg => lg.attendance_date === date);
             if (logForDate) {
                 rowData.push(logForDate.status === 'Present' ? '"P"' : '"A"');
             } else {
-                rowData.push('"-"'); // अगर उस दिन की अटेंडेंस मार्क नहीं हुई है
+                rowData.push('"-"'); 
             }
         });
-
         csv += rowData.join(",") + "\n";
     });
 
-    // 7. फाइल डाउनलोड करें
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `KYP_Attendance_Register_${month}.csv`;
+    link.download = `${course}_Attendance_Register_${month}.csv`;
     link.click();
     showToast("Calendar Excel Downloaded!", "bg-success");
 }
@@ -3063,22 +3216,28 @@ async function downloadStudentAttendancePDF(sid) {
     const absentDays = logs.filter(r => r.status === 'Absent').length;
     const rate = Math.round((presentDays / totalDays) * 100);
 
-    // हिंदी शब्दों की साइज़ बढ़ा दी गई है (28px और 15px)
+    // हिंदी शब्दों की साइज़
     const titleImgAtt = getHindiTextImg("कौशल विकास केंद्र, कुशल युवा कार्यक्रम", 28, "800", "#2563eb");
     const addressImgAtt = getHindiTextImg("कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर - 802135", 15, "600", "#475569");
     const signSeal = getHindiTextImg("केंद्र की मुहर", 14, "800", "#0f172a");
     const signAuth = getHindiTextImg("अधिकृत हस्ताक्षर", 14, "800", "#0f172a");
 
     const element = document.createElement('div');
+    // ✅ यहाँ A4 पेज का फिक्स साइज़ डाला गया है ताकि ऊपर से जगह न छूटे
     element.style.width = '794px'; 
+    element.style.height = '1122px'; 
     element.style.background = '#ffffff';
+    element.style.padding = '20px'; 
+    element.style.boxSizing = 'border-box'; 
 
     const regNo = (l.mnssbyId && l.mnssbyId !== '-') ? l.mnssbyId : (l.receipt || "N/A");
 
     element.innerHTML = `
-    <div style="padding: 20px 30px; font-family: Arial, sans-serif; background: #fff; width: 100%; box-sizing: border-box;">
-        <div style="border: 4px solid #2563eb; padding: 20px; border-radius: 8px;">
-            
+    <!-- ✅ height: 100% से यह डार्क बॉर्डर पूरे पेज को कवर करेगा -->
+    <div style="font-family: 'Inter', Arial, sans-serif; background: #fff; width: 100%; height: 100%; box-sizing: border-box; border: 3px solid #0f172a; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+        
+        <!-- टॉप कंटेंट (हेडर, डिटेल्स और अटेंडेंस टेबल) -->
+        <div>
             <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
                 <img src="${titleImgAtt}" style="height: 34px; display: block; margin: 0 auto 8px auto;">
                 <h2 style="color: #0f172a; margin: 0 0 8px 0; font-weight: 800; font-size: 14px; letter-spacing: 1.5px;">KRITI EDIFY PVT. LTD. (KYP06020030)</h2>
@@ -3107,7 +3266,7 @@ async function downloadStudentAttendancePDF(sid) {
                 </tr>
             </table>
 
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                 <thead style="background: #0f172a; color: white;">
                     <tr>
                         <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Date</th>
@@ -3127,8 +3286,11 @@ async function downloadStudentAttendancePDF(sid) {
                     `).join('')}
                 </tbody>
             </table>
+        </div>
 
-            <table style="width: 100%; margin-top: 100px;">
+        <!-- बॉटम कंटेंट (सिग्नेचर) जो हमेशा पेज के नीचे रहेगा -->
+        <div style="padding-top: 20px;">
+            <table style="width: 100%;">
                 <tr>
                     <td style="width: 50%; text-align: left;">
                         <div style="border-top: 1.5px solid #0f172a; display: inline-block; padding-top: 8px; width: 200px; text-align: center;">
@@ -3165,6 +3327,9 @@ async function downloadStudentAttendancePDF(sid) {
         toggleDateFields(sid);
     }
 }
+
+
+
 
 // --- BACKUP & RESTORE LOGIC ---
 async function downloadCSVBackup() {
@@ -3298,6 +3463,37 @@ function backupJSON() {
     link.click();
     showToast("JSON Backup Downloaded!", "bg-success");
 }
+async function viewStudentAttDetails(sid) {
+    const student = learners.find(l => l.id === sid);
+    if(!student) return;
+    
+    document.getElementById('modalStudentName').innerText = student.name;
+    document.getElementById('modalAttContent').innerHTML = `<div class="text-center p-3"><div class="spinner-border text-info"></div></div>`;
+    
+    // पॉपअप दिखाएं
+    new bootstrap.Modal(document.getElementById('studentAttModal')).show();
+
+    // डेटाबेस से उस छात्र का डेटा लाएं
+    const { data: logs, error } = await _supabase.from('attendance_logs').select('*').eq('student_id', sid).order('attendance_date', {ascending: false});
+    
+    if(error || !logs || logs.length === 0) {
+        document.getElementById('modalAttContent').innerHTML = `<p class="text-center text-muted small fw-bold mt-2">No attendance records found.</p>`;
+        return;
+    }
+
+    let html = `<table class="table table-sm table-bordered text-center m-0" style="font-size: 11px;">
+                    <thead class="table-light"><tr><th>DATE</th><th>STATUS</th></tr></thead><tbody>`;
+    
+    logs.forEach(lg => {
+        const dateStr = new Date(lg.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
+        const badge = lg.status === 'Present' ? '<span class="badge bg-success w-100">PRESENT</span>' : '<span class="badge bg-danger w-100">ABSENT</span>';
+        html += `<tr><td class="fw-bold text-secondary align-middle">${dateStr}</td><td class="align-middle">${badge}</td></tr>`;
+    });
+    html += `</tbody></table>`;
+    
+    document.getElementById('modalAttContent').innerHTML = html;
+}
+
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
     <div class="card p-4 shadow-lg text-center" style="width: 320px; border-radius: 20px; border: none;">
