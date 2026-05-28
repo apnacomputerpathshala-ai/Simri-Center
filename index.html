@@ -122,8 +122,52 @@
     .banner-location { padding: 4px 10px; font-size: 10px; }
 }
 
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding: 0 20px 20px 20px; }
-        .mini-stat { background: white; padding: 20px; border-radius: 12px; text-align: center; border-left: 5px solid var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+/* Stats Grid - 3 Column Layout */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 15px;
+}
+
+/* iOS Style Cards */
+.mini-stat {
+    padding: 15px 5px;
+    border-radius: 20px;
+    text-align: center;
+    transition: transform 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+/* 3 Colors Logic */
+.mini-stat:nth-child(3n+1) { background: #ffffff; border: 1px solid #e2e8f0; } /* White */
+.mini-stat:nth-child(3n+2) { background: #f1f5f9; border: none; } /* Grey */
+.mini-stat:nth-child(3n) { background: #e0f2fe; border: none; } /* Light Blue */
+
+/* Text Styling */
+.mini-stat h4 {
+    font-size: 14px !important;
+    font-weight: 800 !important;
+    color: #1e293b;
+    margin-bottom: 2px !important;
+}
+.mini-stat p {
+    font-size: 8px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    color: #64748b !important;
+    line-height: 1.1;
+}
+
+/* Mobile responsive fix */
+@media (max-width: 480px) {
+    .stat-grid {
+        grid-template-columns: repeat(3, 1fr); /* Mobile par bhi 3 columns */
+        gap: 6px;
+        padding: 10px;
+    }
+}
+
 
         #filterSection { display: none; background: white; padding: 20px; border-radius: 12px; margin: 0 20px 20px 20px; border: 1px solid #e2e8f0; }
         .filter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 10px; }
@@ -2575,7 +2619,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.7`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.8`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
