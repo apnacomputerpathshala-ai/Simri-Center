@@ -900,58 +900,87 @@ label, .small, .text-muted {
            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 </div>
 </div>
-                <div class="section-title">Bank & KYP Status</div>
+                                <div class="section-title">Bank & KYP Status</div>
                 <div class="row g-3">
                     <div class="col-md-3"><label class="small fw-bold">Bank Name</label><input type="text" id="bankName" class="form-control"></div>
-<div class="col-md-3">
-    <label class="small fw-bold">Branch Name</label>
-    <input type="text" id="branchName" class="form-control" style="text-transform: uppercase;">
-</div>
                     <div class="col-md-3">
-    <label class="small fw-bold">Account No</label>
-    <input type="text" id="accNo" class="form-control" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-</div>
+                        <label class="small fw-bold">Branch Name</label>
+                        <input type="text" id="branchName" class="form-control" style="text-transform: uppercase;">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold">Account No</label>
+                        <input type="text" id="accNo" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    </div>
                     <div class="col-md-2"><label class="small fw-bold">IFSC Code</label><input type="text" id="ifsc" class="form-control" style="text-transform: uppercase;"></div>
                     <div class="col-md-2">
-    <label class="small fw-bold">Receipt No</label>
-    <input type="text" id="receipt" class="form-control" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="">
-</div>
+                        <label class="small fw-bold">Receipt No</label>
+                        <input type="text" id="receipt" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="">
+                    </div>
                     <div class="col-md-2"><label class="small fw-bold">Verification</label><select id="verify" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
                     <div class="col-md-3"><label class="small fw-bold">Allocation</label><select id="alloc" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
                     <div class="col-md-3"><label class="small fw-bold">Admission</label><select id="admis" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
                     <div class="col-md-3"><label class="small fw-bold">Payment</label><select id="pay" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-                    <div class="section-title">MNSSBY Portal & Registration Details</div>
-<div class="row g-3 mb-3">
-    <div class="col-md-3">
-        <label class="small fw-bold">MNSSBY User ID</label>
-        <input type="text" id="mnssbyId" class="form-control" placeholder="Enter ID">
-    </div>
-    <div class="col-md-3">
-        <label class="small fw-bold">Portal Password</label>
-        <input type="text" id="mnssbyPass" class="form-control" placeholder="Enter Password">
-    </div>
-    <div class="col-md-3">
-        <label class="small fw-bold">Form Status</label>
-        <select id="formStatus" class="form-select">
-            <option value="Pending">Pending</option>
-            <option value="Submitted">Submitted</option>
-        </select>
-    </div>
-    <div class="col-md-3">
-        <label class="small fw-bold">DRCC Status</label>
-        <select id="drccStatus" class="form-select">
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-        </select>
-    </div>
-</div>
+                </div> <!-- ✅ FIX 1: Yahan par Bank details wali Row ko properly close kiya gaya hai -->
 
-                    <div class="col-md-12"><label class="small fw-bold">Remark / Details</label><textarea id="remark" class="form-control" rows="1"></textarea></div>
-                </div>
+                <div class="section-title">Portal & Registration Details</div>
+                <div class="row g-3 mb-3">
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-primary">KYP (MNSSBY) ID</label>
+                        <input type="text" id="mnssbyId" class="form-control border-primary" placeholder="Enter KYP ID">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-success">DEEP User ID</label>
+                        <input type="text" id="deepId" class="form-control border-success" placeholder="Enter DEEP ID">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold">Portal Password</label>
+                        <input type="text" id="mnssbyPass" class="form-control" placeholder="Enter Password">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold">Form Status</label>
+                        <select id="formStatus" class="form-select">
+                            <option value="Pending">Pending</option>
+                            <option value="Submitted">Submitted</option>
+                        </select>
+                    </div>
+                    
+                    <!-- ✅ FIX 2: DRCC Status ko sahi Row ke andar daala gaya hai -->
+                    <div class="col-md-3">
+                        <label class="small fw-bold">DRCC Status</label>
+                        <select id="drccStatus" class="form-select">
+                            <option value="Pending">Pending</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ FIX 3: Remark section ko properly grid (col-md-9) mein set kiya hai taaki wo khali jagah bhar le -->
+                    <div class="col-md-9">
+                        <label class="small fw-bold">Remark / Batch Details</label>
+                        <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                            <select id="quickMonth" class="form-select border-secondary-subtle" style="max-width: 140px; font-size: 12px; cursor: pointer;">
+                                <option value="">Month</option>
+                                <option value="January">Jan</option><option value="February">Feb</option>
+                                <option value="March">Mar</option><option value="April">Apr</option>
+                                <option value="May">May</option><option value="June">Jun</option>
+                                <option value="July">Jul</option><option value="August">Aug</option>
+                                <option value="September">Sep</option><option value="October">Oct</option>
+                                <option value="November">Nov</option><option value="December">Dec</option>
+                            </select>
+                            
+                            <input type="text" id="quickTime" class="form-control border-secondary-subtle" placeholder="Time (08:30 AM)" style="max-width: 140px; font-size: 12px;">
+                            
+                            <button type="button" class="btn btn-warning fw-bold text-dark" style="font-size: 12px;" onclick="addBatchToRemark()">
+                                <i class="fas fa-plus"></i> Set Batch
+                            </button>
+                            
+                            <input type="text" id="remark" class="form-control border-secondary-subtle fw-bold" placeholder="Auto-fill batch or type custom remark...">
+                        </div>
+                    </div>
+                </div> <!-- ✅ Yahan ye aakhiri row close ho gayi -->
+
                 <button type="submit" class="btn btn-primary w-100 mt-4 fw-bold p-3">SAVE COMPLETE STUDENT RECORD</button>
             </form>
+
         </div>
     </div>
 
@@ -1149,16 +1178,19 @@ label, .small, .text-muted {
     
     <div class="table-responsive mt-4">
         <table class="table table-bordered bg-white m-0">
-            <thead>
-                <tr>
-                    <th>SI.No</th>
-                    <th>Candidate Name</th>
-                    <th>Father's Name</th>
-                    <th>Village</th> <th>Mobile</th>
-                    <th>Admission</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
+                    <thead>
+            <tr>
+                <th>SI.No</th>
+                <th>Candidate Name</th>
+                <th>Father's Name</th>
+                <th>Village</th> 
+                <th>Mobile</th>
+                <th>User ID</th> <!-- यह नया कॉलम है -->
+                <th>Admission</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
             <tbody id="activeStudentsTbody"></tbody>
         </table>
     </div>
@@ -1839,6 +1871,7 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
             pay: document.getElementById('pay').value,
             photo: document.getElementById('photoData').value || null,
             mnssbyId: document.getElementById('mnssbyId').value || "-",
+            deepId: document.getElementById('deepId').value || "-",
 mnssbyPass: document.getElementById('mnssbyPass').value || "-",
 formStatus: document.getElementById('formStatus').value,
 drccStatus: document.getElementById('drccStatus').value,
@@ -2264,7 +2297,7 @@ function editL(id) {
         'village', 'panchayat', 'block', 'pincode', 'school', 'board', 'learnerClass',
         'rollCode', 'rollNo', 'passYear', 'bankName', 'branchName', 'accNo', 'ifsc',
         'receipt', 'verify', 'alloc', 'admis', 'pay', 'remark', 
-        'mnssbyId', 'mnssbyPass', 'formStatus', 'drccStatus'
+        'mnssbyId', 'deepId', 'mnssbyPass', 'formStatus', 'drccStatus'
     ];
 
     fields.forEach(field => {
@@ -2551,7 +2584,7 @@ function renderActiveStudents() {
             </td>
             <td class="text-start align-middle" style="font-size: 12px;">${l.father || "-"}</td>
             <td class="align-middle" style="font-size: 12px;">${l.village || "-"}</td>
-            <td class="align-middle">
+                        <td class="align-middle">
                 <div class="d-flex align-items-center justify-content-center gap-2">
                     <span style="font-size: 12px;">${l.mobile || "-"}</span>
                     ${l.mobile ? `
@@ -2560,7 +2593,19 @@ function renderActiveStudents() {
                     </a>` : ''}
                 </div>
             </td>
+            
+            <!-- NAYA COLUMN: KYP / DEEP User ID Badges -->
+            <td class="text-center align-middle">
+                ${l.mnssbyId && l.mnssbyId !== "-" ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle shadow-sm mb-1 d-block" style="font-size: 10px;"><i class="fas fa-id-card me-1"></i> KYP: ${l.mnssbyId}</span>` : ""}
+                
+                ${l.deepId && l.deepId !== "-" ? `<span class="badge bg-success-subtle text-success border border-success-subtle shadow-sm d-block" style="font-size: 10px;"><i class="fas fa-laptop-code me-1"></i> DEEP: ${l.deepId}</span>` : ""}
+                
+                ${(!l.mnssbyId || l.mnssbyId === "-") && (!l.deepId || l.deepId === "-") ? `<span class="badge bg-light text-dark border">N/A</span>` : ""}
+            </td>
+
+            
             <td class="text-center align-middle">${courseBadge}</td>
+            
             <td class="align-middle">
                 <div class="d-flex flex-column align-items-center">
                     <div id="dateWrapper_${l.id}" class="date-picker-container">
@@ -2619,7 +2664,7 @@ async function removeAdmission(id) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.9`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.11`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -3536,6 +3581,24 @@ async function viewStudentAttDetails(sid) {
     html += `</tbody></table>`;
     
     document.getElementById('modalAttContent').innerHTML = html;
+}
+function addBatchToRemark() {
+    const month = document.getElementById('quickMonth').value;
+    const time = document.getElementById('quickTime').value;
+    const remarkField = document.getElementById('remark');
+    
+    if (month && time) {
+        remarkField.value = `${month} - ${time}`;
+        showToast("Batch Details Remark me add ho gaye!", "bg-success");
+    } else if (month) {
+        remarkField.value = month;
+        showToast("Month add ho gaya!", "bg-info");
+    } else if (time) {
+        remarkField.value = time;
+        showToast("Time add ho gaya!", "bg-info");
+    } else {
+        showToast("Kripya pehle Month ya Time select karein!", "bg-warning");
+    }
 }
 
 </script>
