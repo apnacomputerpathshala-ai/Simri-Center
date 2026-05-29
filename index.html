@@ -3559,7 +3559,6 @@ async function viewStudentAttDetails(sid) {
     document.getElementById('modalStudentName').innerText = student.name;
     document.getElementById('modalAttContent').innerHTML = `<div class="text-center p-3"><div class="spinner-border text-info"></div></div>`;
     
-    // पॉपअप दिखाएं
     new bootstrap.Modal(document.getElementById('studentAttModal')).show();
 
     // डेटाबेस से उस छात्र का डेटा लाएं
