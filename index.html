@@ -2622,6 +2622,9 @@ function renderActiveStudents() {
                     <button id="mainRepBtn_${l.id}" class="btn btn-outline-info btn-sm rounded-pill px-3 shadow-sm w-100" style="font-size: 10px;" onclick="toggleDateFields(${l.id})">
                         <i class="fas fa-calendar-alt me-1"></i> Generate Report
                     </button>
+                     <button class="btn ${l.extra_time_active ? 'btn-danger' : 'btn-success'} btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="toggleLoginAccess(${l.id}, ${l.extra_time_active || false})">
+                        <i class="fas ${l.extra_time_active ? 'fa-lock' : 'fa-unlock'} me-1"></i> ${l.extra_time_active ? 'Lock Portal' : 'Active Portal'}
+                    </button>
                     
                     <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="removeAdmission(${l.id})">
                         <i class="fas fa-user-minus me-1"></i> Remove
@@ -2660,11 +2663,34 @@ async function removeAdmission(id) {
         }
     }
 }
+// ✅ नया फंक्शन: स्टूडेंट पोर्टल को लॉक/अनलॉक करने के लिए
+async function toggleLoginAccess(studentId, currentState) {
+    const newState = !currentState; 
+    
+    const { error } = await _supabase
+        .from('students')
+        .update({ extra_time_active: newState })
+        .eq('id', studentId);
+
+    if (error) {
+        showToast("Error updating access: " + error.message, "bg-danger");
+    } else {
+        showToast(newState ? "स्टूडेंट का पोर्टल चालू (Active) हो गया!" : "पोर्टल लॉक कर दिया गया!", "bg-success");
+        
+        // लोकल डेटा अपडेट करें और बिना रीफ्रेश किए टेबल रेंडर करें
+        const index = learners.findIndex(l => l.id === studentId);
+        if (index !== -1) {
+            learners[index].extra_time_active = newState;
+        }
+        renderActiveStudents(); 
+    }
+}
+
 
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.11`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.12`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -3559,6 +3585,7 @@ async function viewStudentAttDetails(sid) {
     document.getElementById('modalStudentName').innerText = student.name;
     document.getElementById('modalAttContent').innerHTML = `<div class="text-center p-3"><div class="spinner-border text-info"></div></div>`;
     
+    // पॉपअप दिखाएं
     new bootstrap.Modal(document.getElementById('studentAttModal')).show();
 
     // डेटाबेस से उस छात्र का डेटा लाएं
