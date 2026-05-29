@@ -729,6 +729,26 @@ label, .small, .text-muted {
     box-shadow: 0 0 0 4px rgba(0,0,0,0.03) !important;
 }
 
+/* --- NEW PREMIUM LOGIN DESIGN --- */
+#loginOverlay {
+    background: #f8fafc !important; 
+}
+.login-card-custom {
+    background: white !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important;
+    padding: 40px !important;
+    width: 90% !important;
+    max-width: 400px !important;
+}
+.login-input {
+    background: #f1f5f9 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px 15px !important;
+    margin-bottom: 15px !important;
+    font-size: 14px !important;
+}
 
     </style>
 </head>
@@ -2690,7 +2710,7 @@ async function toggleLoginAccess(studentId, currentState) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.12`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.14`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -3628,18 +3648,73 @@ function addBatchToRemark() {
 }
 
 </script>
-<div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; align-items: center; justify-content: center;">
-    <div class="card p-4 shadow-lg text-center" style="width: 320px; border-radius: 20px; border: none;">
+<div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
+    <div class="login-card-custom text-center">
+        
+        <!-- सिर्फ लोगो दिखेगा -->
         <div class="mb-3">
-            <i class="fas fa-shield-alt fa-3x text-primary"></i>
+            <div style="width: 90px; height: 90px; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 3px solid #ffffff; margin: 0 auto; background: #ffffff; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <img src="logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
         </div>
-        <h5 class="fw-bold">Secure Portal</h5>
-        <p class="small text-muted">Enter your Email & Password</p>
-        <input type="email" id="adminEmailInput" class="form-control mb-2 text-center" placeholder="Email" style="border-radius: 10px;">
-        <input type="password" id="adminPassInput" class="form-control mb-3 text-center" placeholder="Password" style="border-radius: 10px;">
-        <button id="loginBtn" class="btn btn-primary w-100 fw-bold" onclick="verifyLogin()" style="border-radius: 10px;">SECURE LOGIN</button>
+        
+        <!-- टेक्स्ट और डिज़ाइन (SDC SIMRI & Kriti Edify) -->
+        <h4 class="fw-bold text-dark mb-1">Admin Portal</h4>
+        <div class="mb-4">
+            <div style="font-size: 13px; font-weight: 700; color: #475569;">SDC SIMRI (KYP06020030)</div>
+            <div style="font-size: 15px; font-weight: 800; color: #2563eb; margin-top: 2px;">Kriti Edify Pvt. Ltd.</div>
+            <span class="badge bg-warning text-dark mt-2 px-3 py-1 shadow-sm" style="border-radius: 20px; font-size: 10px; letter-spacing: 0.5px;">
+                KUSHAL YUVA PROGRAM
+            </span>
+        </div>
+        
+        <!-- इनपुट फील्ड्स -->
+        <div class="text-start">
+            <label class="small fw-bold text-muted ms-2 mb-1" style="font-size: 11px;">Email Address</label>
+            <input type="email" id="adminEmailInput" class="form-control login-input text-center fw-bold" placeholder="Email">
+            
+            <label class="small fw-bold text-muted ms-2 mb-1 mt-1" style="font-size: 11px;">Password</label>
+            
+            <!-- पासवर्ड शो/हाइड बॉक्स -->
+            <div class="position-relative" style="margin-bottom: 15px;">
+                <input type="password" id="adminPassInput" class="form-control login-input text-center fw-bold w-100" placeholder="         Password" style="margin-bottom: 0 !important; padding-right: 40px !important;">
+                <i class="fas fa-eye" id="togglePassIcon" onclick="togglePasswordVisibility()" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 16px; transition: 0.3s;"></i>
+            </div>
+        </div>
+        
+        <!-- लॉगिन बटन -->
+        <button id="loginBtn" class="btn btn-primary w-100 fw-bold py-3 mt-3 shadow-sm" 
+                onclick="verifyLogin()" style="border-radius: 12px; background: #2563eb; letter-spacing: 0.5px; transition: 0.3s;">
+            <i class="fas fa-sign-in-alt me-2"></i> SECURE LOGIN
+        </button>
+        
+        <!-- फुटर कॉपीराइट -->
+        <div class="mt-4 border-top pt-3">
+            <small class="text-muted fw-bold" style="font-size: 10px;">V 3.12 | © 2026 Surya Zone</small>
+        </div>
+        
     </div>
 </div>
+
+<!-- पासवर्ड दिखाने/छिपाने का छोटा सा स्क्रिप्ट -->
+<script>
+    function togglePasswordVisibility() {
+        const passInput = document.getElementById('adminPassInput');
+        const passIcon = document.getElementById('togglePassIcon');
+        
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            passIcon.classList.remove('fa-eye');
+            passIcon.classList.add('fa-eye-slash');
+            passIcon.style.color = '#2563eb'; // जब पासवर्ड दिखेगा तो आइकॉन का रंग थीम के नीले रंग जैसा हो जाएगा
+        } else {
+            passInput.type = 'password';
+            passIcon.classList.remove('fa-eye-slash');
+            passIcon.classList.add('fa-eye');
+            passIcon.style.color = '#94a3b8'; // छुपाने पर वापस ग्रे हो जाएगा
+        }
+    }
+</script>
 
 <div class="modal fade" id="changePassModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
