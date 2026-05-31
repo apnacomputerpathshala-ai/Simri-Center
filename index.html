@@ -2576,7 +2576,7 @@ function renderActiveStudents() {
         return;
     }
 
-    tbody.innerHTML = filteredList.map((l, index) => {
+        tbody.innerHTML = filteredList.map((l, index) => {
         const batchDetails = l.remark || "No Batch Assigned";
         
         // कोर्स का बैज तय करें (KYP है या DEEP)
@@ -2584,17 +2584,40 @@ function renderActiveStudents() {
             ? '<span class="badge bg-success shadow-sm" style="font-size: 10px;">KYP</span>' 
             : '<span class="badge bg-info shadow-sm" style="font-size: 10px;">DEEP IT</span>';
 
+        // ✅ ONLINE STATUS CHECK LOGIC (बैज का डिज़ाइन और सुंदर किया गया है)
+        let onlineBadge = '';
+        if (l.last_login) {
+            const lastLoginTime = new Date(l.last_login);
+            const diffInMinutes = (new Date() - lastLoginTime) / (1000 * 60);
+            
+            if (diffInMinutes < 15) {
+                // 15 मिनट के अंदर है तो Online
+                onlineBadge = `<span class="badge bg-success shadow-sm" style="font-size: 9px; letter-spacing: 0.5px;"><i class="fas fa-circle text-white me-1" style="font-size: 5px; vertical-align: middle;"></i>Online</span>`;
+            } else {
+                // वरना Last Seen (डिजाइन छोटा और सुंदर किया गया है)
+                const timeStr = lastLoginTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                onlineBadge = `<span class="badge bg-light text-muted border shadow-sm" style="font-size: 9px;">${timeStr}</span>`;
+            }
+        }
+
         return `
         <tr>
             <td class="text-center align-middle">${index + 1}</td> 
             <td class="text-start align-middle">
                 <div class="d-flex flex-column">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <span class="fw-bold text-primary" style="font-size: 13px;">${l.name}</span>
-                        ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
-                            ? '<i class="fas fa-check-circle verified-badge" style="font-size: 11px;"></i>' 
-                            : ''}
+                    
+                    <!-- ✅ नाम लेफ्ट में, और Online बैज + ब्लू टिक राइट में एक साथ -->
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <span class="fw-bold text-primary" style="font-size: 13px; line-height: 1.2;">${l.name}</span>
+                        
+                        <div class="d-flex align-items-center gap-1 flex-shrink-0">
+                            ${onlineBadge}
+                            ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
+                                ? '<i class="fas fa-check-circle verified-badge" style="font-size: 13px; color: #2563eb;"></i>' 
+                                : ''}
+                        </div>
                     </div>
+                    
                     <div class="mt-1">
                         <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 9px; font-weight: 800;">
                             <i class="fas fa-clock me-1"></i>${batchDetails}
@@ -2602,6 +2625,7 @@ function renderActiveStudents() {
                     </div>
                 </div>
             </td>
+
             <td class="text-start align-middle" style="font-size: 12px;">${l.father || "-"}</td>
             <td class="align-middle" style="font-size: 12px;">${l.village || "-"}</td>
                         <td class="align-middle">
@@ -2650,7 +2674,7 @@ function renderActiveStudents() {
                         <i class="fas fa-user-minus me-1"></i> Remove
                     </button>
                 </div>
-            </td>
+</td>
         </tr>`;
     }).join('');
 }
@@ -2710,7 +2734,7 @@ async function toggleLoginAccess(studentId, currentState) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.18`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.20`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -3053,10 +3077,10 @@ async function instantSaveAttendance(sid, status) {
     const student = learners.find(l => l.id === sid);
 
     try {
-        // सबसे पक्का तरीका: पहले आज की जो भी पुरानी अटेंडेंस हो उसे साफ करें
+        // पुरानी अटेंडेंस क्लियर करना
         await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date });
         
-        // नई अटेंडेंस सेव करें
+        // नई अटेंडेंस सेव करना
         const { error } = await _supabase.from('attendance_logs').insert([{ 
             student_id: sid, 
             student_name: student.name, 
@@ -3069,9 +3093,21 @@ async function instantSaveAttendance(sid, status) {
         
         const popup = document.getElementById('attSuccessPopup');
         if (popup) {
+            // ✅ टाइम और DOB निकालने का लॉजिक
+            const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+            const dobText = student.dob ? student.dob : "N/A";
+
             document.getElementById('popImg').src = student.photo || 'https://via.placeholder.com/100';
             document.getElementById('popName').innerText = student.name + ` (${course})`;
-            document.getElementById('popAadhar').innerText = "Aadhar: " + (student.aadhar || "N/A");
+            
+            // ✅ आधार, DOB और Time को एक साथ सेट करना
+            document.getElementById('popAadhar').innerHTML = `
+                Aadhar: ${student.aadhar || "N/A"} <br>
+                <span class="text-secondary fw-bold">DOB: ${dobText}</span> <br>
+                <span class="text-primary fw-bold mt-1 d-block" style="font-size: 12px;">
+                    <i class="fas fa-clock"></i> Time: ${currentTime}
+                </span>`;
+
             popup.classList.add('show');
         }
     } catch (err) { 
