@@ -728,7 +728,6 @@ label, .small, .text-muted {
     border-color: #c7c7cc !important;
     box-shadow: 0 0 0 4px rgba(0,0,0,0.03) !important;
 }
-
 /* --- NEW PREMIUM LOGIN DESIGN --- */
 #loginOverlay {
     background: #f8fafc !important; 
@@ -749,6 +748,7 @@ label, .small, .text-muted {
     margin-bottom: 15px !important;
     font-size: 14px !important;
 }
+
 
     </style>
 </head>
@@ -2710,11 +2710,11 @@ async function toggleLoginAccess(studentId, currentState) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.16`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.18`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
-    el.innerHTML = `V ${currentVersion} ©Kriti Edify Pvt. Ltd.`;
+    el.innerHTML = `V ${currentVersion} @ Kriti Edify Pvt. Ltd.`;
 });
 
 // --- सुधारा गया PWA UPDATE LOGIC ---
@@ -3051,12 +3051,12 @@ async function instantSaveAttendance(sid, status) {
     const courseElement = document.getElementById('attCourse');
     const course = courseElement ? courseElement.value : 'KYP'; 
     const student = learners.find(l => l.id === sid);
-    
-    // Debugging के लिए: देखें कि छात्र मिला या नहीं
-    console.log("Saving attendance for:", student ? student.name : "Student not found");
 
     try {
-        await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date, course_type: course });
+        // सबसे पक्का तरीका: पहले आज की जो भी पुरानी अटेंडेंस हो उसे साफ करें
+        await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date });
+        
+        // नई अटेंडेंस सेव करें
         const { error } = await _supabase.from('attendance_logs').insert([{ 
             student_id: sid, 
             student_name: student.name, 
@@ -3067,42 +3067,38 @@ async function instantSaveAttendance(sid, status) {
         
         if (error) throw error;
         
-        // Debugging के लिए: देखें कि क्या पॉपअप वाले एलिमेंट्स मौजूद हैं
         const popup = document.getElementById('attSuccessPopup');
         if (popup) {
             document.getElementById('popImg').src = student.photo || 'https://via.placeholder.com/100';
             document.getElementById('popName').innerText = student.name + ` (${course})`;
             document.getElementById('popAadhar').innerText = "Aadhar: " + (student.aadhar || "N/A");
             popup.classList.add('show');
-            console.log("Popup triggered successfully");
-        } else {
-            console.error("Popup element not found in HTML!");
         }
     } catch (err) { 
         console.error("Error:", err);
         showToast("Sync Failed!", "bg-danger"); 
     }
 }
+
+
 // गलती से चढ़ी अटेंडेंस को हटाने का फंक्शन
 async function deleteAttendance(sid) {
     const date = document.getElementById('attDate').value;
-    const courseElement = document.getElementById('attCourse');
-    const course = courseElement ? courseElement.value : 'KYP';
     
     if(!confirm("क्या आप इस छात्र की आज की अटेंडेंस हटाना (Undo) चाहते हैं?")) return;
 
     try {
-        // डेटाबेस से उस दिन और उस कोर्स की अटेंडेंस डिलीट करें
+        // पक्का तरीका: सिर्फ .match() का उपयोग करें, इससे Supabase कभी एरर नहीं देगा
         const { error } = await _supabase
             .from('attendance_logs')
             .delete()
-            .match({ student_id: sid, attendance_date: date, course_type: course });
+            .match({ student_id: sid, attendance_date: date });
         
         if (error) throw error;
         
         showToast("अटेंडेंस हटा दी गई!", "bg-success");
         
-        // स्क्रीन पर से 'Present' या 'Absent' का सिलेक्शन हटा दें (UI Update)
+        // UI से टिक हटा दें
         const pRadio = document.getElementById(`p-${sid}`);
         const aRadio = document.getElementById(`a-${sid}`);
         if(pRadio) pRadio.checked = false;
@@ -3114,6 +3110,8 @@ async function deleteAttendance(sid) {
     }
 }
 
+
+
 function closeAttPopup() {
     document.getElementById('attSuccessPopup').classList.remove('show');
 }
@@ -3123,25 +3121,35 @@ async function fetchBatchReport() {
     const month = document.getElementById('repMonth').value;
     const time = (document.getElementById('repTime').value || "").toLowerCase();
     const courseElement = document.getElementById('attCourse');
-    const course = courseElement ? courseElement.value : 'KYP'; // KYP या DEEP
+    const course = courseElement ? courseElement.value : 'KYP'; 
     
     const resDiv = document.getElementById('reportResult');
     if(!month) return showToast("Select Month!", "bg-warning");
     
     resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
     
-    // सिर्फ उसी कोर्स के बच्चे छांटें जो अटेंडेंस टैब में चुना गया है
     let batchStudents = learners.filter(l => {
         let isValidCourse = (course === 'KYP') ? (l.admis === 'Yes') : (l.deep_admis === 'Yes');
         return isValidCourse && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time);
     });
     
-    const { data: logs } = await _supabase.from('attendance_logs').select('*');
+    if (batchStudents.length === 0) {
+        resDiv.innerHTML = `<p class="text-center p-4 fw-bold text-muted">No Data Found for ${course} Batch.</p>`;
+        return;
+    }
+
+    const batchStudentIds = batchStudents.map(s => s.id);
+    const { data: logs, error } = await _supabase
+        .from('attendance_logs')
+        .select('*')
+        .in('student_id', batchStudentIds)
+        .limit(5000); // 1000 लिमिट को बायपास करने के लिए
 
     let html = `<div class="row g-3 mt-2">`;
     batchStudents.forEach(s => {
-        // पुराने रिकॉर्ड्स (जिनमें course_type नहीं था) उन्हें डिफ़ॉल्ट 'KYP' माना जाएगा
-        const sLogs = logs ? logs.filter(lg => lg.student_id === s.id && (lg.course_type === course || (!lg.course_type && course === 'KYP'))) : [];
+        // Modal जैसा पक्का लॉजिक: सिर्फ student_id मैच करें 
+        const sLogs = logs ? logs.filter(lg => String(lg.student_id) === String(s.id)) : [];
+        
         const pres = sLogs.filter(lg => lg.status === 'Present').length;
         const total = sLogs.length;
         const rate = total > 0 ? Math.round((pres/total)*100) : 0;
@@ -3170,7 +3178,7 @@ async function fetchBatchReport() {
                 </div>
             </div>`;
     });
-    resDiv.innerHTML = batchStudents.length ? html + `</div>` : `<p class="text-center p-4 fw-bold text-muted">No Data Found for ${course} Batch.</p>`;
+    resDiv.innerHTML = html + `</div>`;
 }
 
 async function exportBatchExcel() {
@@ -3183,7 +3191,6 @@ async function exportBatchExcel() {
 
     showToast("Generating Calendar Excel...", "bg-info");
     
-    // 1. Batch के छात्रों को फ़िल्टर करें (KYP या DEEP)
     let batchStudents = learners.filter(l => {
         let isValidCourse = (course === 'KYP') ? (l.admis === 'Yes') : (l.deep_admis === 'Yes');
         return isValidCourse && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time);
@@ -3191,10 +3198,16 @@ async function exportBatchExcel() {
     
     if (batchStudents.length === 0) return showToast("No students in this batch!", "bg-warning");
 
-    const { data: logs } = await _supabase.from('attendance_logs').select('*').order('attendance_date', {ascending: true});
-
     const batchStudentIds = batchStudents.map(s => s.id);
-    const batchLogs = logs ? logs.filter(lg => batchStudentIds.includes(lg.student_id) && (lg.course_type === course || (!lg.course_type && course === 'KYP'))) : [];
+    const { data: logs } = await _supabase
+        .from('attendance_logs')
+        .select('*')
+        .in('student_id', batchStudentIds)
+        .order('attendance_date', {ascending: true})
+        .limit(5000);
+
+    // Modal वाला पक्का लॉजिक: सिर्फ student_id चेक करें
+    const batchLogs = logs ? logs.filter(lg => batchStudentIds.includes(lg.student_id)) : [];
 
     const uniqueDates = [...new Set(batchLogs.map(lg => lg.attendance_date))].sort();
 
@@ -3207,7 +3220,7 @@ async function exportBatchExcel() {
     let csv = headers.join(",") + "\n";
     
     batchStudents.forEach(s => {
-        const sLogs = batchLogs.filter(lg => lg.student_id === s.id);
+        const sLogs = batchLogs.filter(lg => String(lg.student_id) === String(s.id));
         const presCount = sLogs.filter(lg => lg.status === 'Present').length;
         const absCount = sLogs.filter(lg => lg.status === 'Absent').length;
         const total = sLogs.length;
@@ -3677,7 +3690,7 @@ function addBatchToRemark() {
             
             <!-- पासवर्ड शो/हाइड बॉक्स -->
             <div class="position-relative" style="margin-bottom: 15px;">
-                <input type="password" id="adminPassInput" class="form-control login-input text-center fw-bold w-100" placeholder="         Password" style="margin-bottom: 0 !important; padding-right: 40px !important;">
+                <input type="password" id="adminPassInput" class="form-control login-input text-center fw-bold w-100" placeholder="        Password" style="margin-bottom: 0 !important; padding-right: 40px !important;">
                 <i class="fas fa-eye" id="togglePassIcon" onclick="togglePasswordVisibility()" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8; font-size: 16px; transition: 0.3s;"></i>
             </div>
         </div>
@@ -3690,8 +3703,11 @@ function addBatchToRemark() {
         
         <!-- फुटर कॉपीराइट -->
         <div class="mt-4 border-top pt-3">
-            <small class="text-muted fw-bold" style="font-size: 10px;"><div class="m-0 mt-2 banner-location">
-                <i class="fas fa-map-marker-alt text-warning me-1"></i>कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर 802135</small>
+            <small class="text-muted fw-bold" style="font-size: 10px;">
+                <div class="m-0 mt-2 banner-location">
+                    <i class="fas fa-map-marker-alt text-warning me-1"></i>कारुबीर बाबा मंदिर के समीप, बकुलहा पट्टी, सिमरी, बक्सर 802135
+                </div>
+            </small>
         </div>
         
     </div>
@@ -3707,15 +3723,16 @@ function addBatchToRemark() {
             passInput.type = 'text';
             passIcon.classList.remove('fa-eye');
             passIcon.classList.add('fa-eye-slash');
-            passIcon.style.color = '#2563eb'; // जब पासवर्ड दिखेगा तो आइकॉन का रंग थीम के नीले रंग जैसा हो जाएगा
+            passIcon.style.color = '#2563eb'; 
         } else {
             passInput.type = 'password';
             passIcon.classList.remove('fa-eye-slash');
             passIcon.classList.add('fa-eye');
-            passIcon.style.color = '#94a3b8'; // छुपाने पर वापस ग्रे हो जाएगा
+            passIcon.style.color = '#94a3b8'; 
         }
     }
 </script>
+
 
 <div class="modal fade" id="changePassModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
