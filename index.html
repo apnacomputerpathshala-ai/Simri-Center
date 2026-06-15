@@ -217,22 +217,32 @@
         .custom-toast { position: fixed; top: 20px; right: 20px; z-index: 2000; padding: 12px 20px; border-radius: 8px; color: white; }
 
         .section-title { font-size: 12px; font-weight: 800; color: var(--primary); border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-top: 15px; margin-bottom: 10px; text-transform: uppercase; }
-/* --- FRESH ATTENDANCE & POPUP DESIGN --- */
-.att-group { display: flex; gap: 8px; justify-content: center; align-items: center; }
+/* --- PREMIUM 3D ATTENDANCE BUTTONS --- */
+.att-group { 
+    display: flex; gap: 8px; justify-content: center; align-items: center; 
+    background: #f8fafc; padding: 6px 10px; border-radius: 30px; border: 1px solid #e2e8f0; 
+}
 .att-label {
     width: 38px; height: 38px; border-radius: 50%; display: flex;
     align-items: center; justify-content: center; cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 2px solid #e2e8f0; background: #f8fafc; font-size: 14px; margin: 0;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #ffffff; font-size: 15px; margin: 0;
+    border: 2px solid #e2e8f0; color: #94a3b8;
 }
-.btn-check:checked + .label-p { background: #10b981; color: white; border-color: #10b981; transform: scale(1.1); }
-.btn-check:checked + .label-a { background: #ef4444; color: white; border-color: #ef4444; transform: scale(1.1); }
+.label-in:hover { color: #10b981; border-color: #10b981; }
+.label-out:hover { color: #f59e0b; border-color: #f59e0b; }
+.label-a:hover { color: #ef4444; border-color: #ef4444; }
+
+.btn-check:checked + .label-in { background: #10b981; color: white; border-color: #10b981; transform: scale(1.15); box-shadow: 0 4px 10px rgba(16,185,129,0.3); }
+.btn-check:checked + .label-out { background: #f59e0b; color: white; border-color: #f59e0b; transform: scale(1.15); box-shadow: 0 4px 10px rgba(245,158,11,0.3); }
+.btn-check:checked + .label-a { background: #ef4444; color: white; border-color: #ef4444; transform: scale(1.15); box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
 
 .btn-undo-att { 
-    background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; 
+    background: #e2e8f0; color: #64748b; border: none; 
     width: 30px; height: 30px; border-radius: 50%; font-size: 12px; transition: 0.3s;
 }
-.btn-undo-att:hover { background: #fee2e2; color: #ef4444; border-color: #fecaca; }
+.btn-undo-att:hover { background: #fee2e2; color: #ef4444; transform: rotate(15deg); }
+
 
 .att-success-card {
     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
@@ -863,32 +873,29 @@ label, .small, .text-muted {
             <form id="dataEntryForm">
                 <input type="hidden" id="editId">
                 
-                <div class="section-title">Personal Details</div>
+                                <div class="section-title">Personal Details</div>
                 <div class="row g-3">
                     <div class="col-md-1"><label class="small fw-bold">SI.No</label><input type="number" id="siNo" class="form-control"></div>
                     <div class="col-md-3"><label class="small fw-bold">Candidate Name</label><input type="text" id="name" class="form-control" required style="text-transform: uppercase;"></div>
                     <div class="col-md-3"><label class="small fw-bold">Father's Name</label><input type="text" id="father" class="form-control" style="text-transform: uppercase;"></div>
+                    <div class="col-md-3"><label class="small fw-bold">Mother's Name</label><input type="text" id="mother" class="form-control" style="text-transform: uppercase;"></div>
                     <div class="col-md-2"><label class="small fw-bold">Date of Birth</label><input type="date" id="dob" class="form-control"></div>
+                    
                     <div class="col-md-2"><label class="small fw-bold">Gender</label><select id="gender" class="form-select"><option value="Male">Male</option><option value="Female">Female</option></select></div>
-                    <div class="col-md-1"><label class="small fw-bold">Category</label><select id="category" class="form-select"><option value="GEN">GEN</option><option value="BC">BC</option><option value="EBC">EBC</option><option value="SC">SC</option><option value="ST">ST</option></select></div>
+                    <div class="col-md-2"><label class="small fw-bold">Category</label><select id="category" class="form-select"><option value="GEN">GEN</option><option value="BC">BC</option><option value="EBC">EBC</option><option value="SC">SC</option><option value="ST">ST</option></select></div>
                     <div class="col-md-3">
-    <label class="small fw-bold">Aadhar No</label>
-    <input type="text" id="aadhar" class="form-control" maxlength="14" minlength="14" 
-           placeholder="XXXX XXXX XXXX"
-           oninput="formatAadhar(this)" required>
-</div>
-
-<div class="col-md-3">
-    <label class="small fw-bold">Mobile No</label>
-    <input type="text" id="mobile" class="form-control" maxlength="10" minlength="10" 
-           pattern="[0-9]{10}" title="कृपया 10 अंकों का सही मोबाइल नंबर डालें"
-           oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
-</div>
-
-<div class="col-md-3">
-    <label class="small fw-bold">Candidate Photo</label>
-    <input type="file" id="candidatePhoto" class="form-control" accept="image/*" onchange="previewImage(this)">
-    <input type="hidden" id="photoData"> </div>
+                        <label class="small fw-bold">Aadhar No</label>
+                        <input type="text" id="aadhar" class="form-control" maxlength="14" minlength="14" placeholder="XXXX XXXX XXXX" oninput="formatAadhar(this)" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold">Mobile No</label>
+                        <input type="text" id="mobile" class="form-control" maxlength="10" minlength="10" pattern="[0-9]{10}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="small fw-bold">Candidate Photo</label>
+                        <input type="file" id="candidatePhoto" class="form-control" accept="image/*" onchange="previewImage(this)">
+                        <input type="hidden" id="photoData"> 
+                    </div>
                 </div>
 
                 <div class="section-title">Address & Education</div>
@@ -972,6 +979,37 @@ label, .small, .text-muted {
                             <option value="Completed">Completed</option>
                         </select>
                     </div>
+                    <div class="col-md-3">
+    <label class="small fw-bold text-success">Course Applied</label>
+    <select id="course_applied" class="form-select border-success fw-bold text-primary">
+        <option value="KYP">KYP Course</option>
+        <option value="DEEP IT Basic">DEEP IT Basic</option>
+        <option value="Advance Excel">Advance Excel</option>
+        <option value="AI Course">AI Course</option>
+    </select>
+</div>
+
+                    <div class="col-md-3">
+                        <label class="small fw-bold">SDC Simri Student?</label>
+                        <select id="is_kyp_student" class="form-select">
+                            <option value="NO">No</option>
+                            <option value="OTHER_CENTER">Other Center</option>
+                            <option value="OUR_CENTER">Yes (SDC Simri)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small fw-bold text-danger">Transaction ID (UTR)</label>
+                        <input type="text" id="txn_id" class="form-control border-danger" placeholder="UTR / Pending">
+                    </div>
+<div class="col-md-3">
+    <label class="small fw-bold">Total Fee</label>
+    <input type="number" id="fee_total" class="form-control" placeholder="Total Amount">
+</div>
+<div class="col-md-3">
+    <label class="small fw-bold">Paid Fee</label>
+    <input type="number" id="fee_paid" class="form-control" placeholder="Paid Amount">
+</div>
+
 
                     <!-- ✅ FIX 3: Remark section ko properly grid (col-md-9) mein set kiya hai taaki wo khali jagah bhar le -->
                     <div class="col-md-9">
@@ -1198,18 +1236,19 @@ label, .small, .text-muted {
     
     <div class="table-responsive mt-4">
         <table class="table table-bordered bg-white m-0">
-                    <thead>
+        <thead>
             <tr>
                 <th>SI.No</th>
                 <th>Candidate Name</th>
                 <th>Father's Name</th>
                 <th>Village</th> 
                 <th>Mobile</th>
-                <th>User ID</th> <!-- यह नया कॉलम है -->
-                <th>Admission</th>
-                <th>Action</th>
+                <th>User ID</th> 
+                <th>Course</th>
+                <th>Payment</th> <th>Action</th>
             </tr>
         </thead>
+
 
             <tbody id="activeStudentsTbody"></tbody>
         </table>
@@ -1321,6 +1360,19 @@ label, .small, .text-muted {
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
                 <div class="p-3 border-bottom" style="background: #f8fafc;">
                     <h6 class="m-0 fw-bold text-dark text-center"><i class="fas fa-mobile-alt me-2 text-primary"></i>APP SETTINGS</h6>
+                           <!-- RECYCLE BIN CARD -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mt-4">
+                <div class="p-3 border-bottom bg-danger bg-opacity-10">
+                    <h6 class="m-0 fw-bold text-danger text-center"><i class="fas fa-trash-restore me-2"></i>RECYCLE BIN</h6>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <p class="small text-muted mb-3">यहाँ से आप डिलीट (Hide) किये गए छात्रों का डेटा वापस ला सकते हैं या हमेशा के लिए डिलीट कर सकते हैं।</p>
+                    <button class="btn btn-outline-danger w-100 fw-bold rounded-3 p-2 shadow-sm" onclick="openRecycleBinModal()">
+                        <i class="fas fa-trash-alt me-2"></i> OPEN RECYCLE BIN
+                    </button>
+                </div>
+            </div>
+     
                 </div>
                 <div class="card-body p-3">
                     <div class="d-grid gap-2">
@@ -1694,13 +1746,12 @@ function switchTab(tab) {
 
 // --- SECURE SUPABASE AUTH & ROLE LOGIC ---
 async function checkAuth() {
-    // 1. क्लाउड से चेक करें कि कोई लॉगिन है या नहीं
     const { data: { session } } = await _supabase.auth.getSession();
     const overlay = document.getElementById('loginOverlay');
     
     if (session) {
         if(overlay) overlay.style.display = 'none';
-        applyPermissions(); // जो रोल सेव है, उसके हिसाब से परमिशन लगाएगा
+        applyPermissions(session.user.email); // सीधा ईमेल भेजें
     } else {
         if(overlay) overlay.style.display = 'flex';
     }
@@ -1718,7 +1769,6 @@ async function verifyLogin() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Checking...';
     btn.disabled = true;
 
-    // 2. Supabase से असली ऑथेंटिकेशन
     const { data, error } = await _supabase.auth.signInWithPassword({
         email: email,
         password: password,
@@ -1729,25 +1779,23 @@ async function verifyLogin() {
         btn.innerHTML = 'SECURE LOGIN';
         btn.disabled = false;
     } else {
-        // 3. Admin aur Staff ki pehchan karna
-        const mainAdminEmail = "apnacomputerpathshala@gmail.com"; 
-
-        if (email === mainAdminEmail || email.includes('admin')) {
-            localStorage.setItem('user_role', 'admin');
-            showToast("Welcome Admin!", "bg-success");
-        } else {
-            localStorage.setItem('user_role', 'staff');
-            showToast("Welcome Staff!", "bg-info");
-        }
-
+        showToast("Welcome to Admin Portal!", "bg-success");
         document.getElementById('loginOverlay').style.display = 'none';
-        applyPermissions(); // तुरंत पाबंदियां (Restrictions) लागू करेगा
+        
+        applyPermissions(email); // लोकल स्टोरेज की जगह सीधे ईमेल पास करें
         await loadDataFromSupabase(); 
     }
 }
 
-function applyPermissions() {
-    const role = localStorage.getItem('user_role');
+function applyPermissions(email) {
+    const mainAdminEmail = "apnacomputerpathshala@gmail.com"; 
+    let role = 'staff';
+
+    // ईमेल के आधार पर एडमिन चेक करें
+    if (email === mainAdminEmail || email.includes('admin')) {
+        role = 'admin';
+    }
+
     const existingStyle = document.getElementById("staffRestrictions");
     if (existingStyle) existingStyle.remove();
 
@@ -1755,7 +1803,7 @@ function applyPermissions() {
         const style = document.createElement('style');
         style.id = "staffRestrictions";
         style.innerHTML = `
-            /* स्टाफ के लिए डिलीट, एडिट, सेटिंग्स और पासवर्ड चेंज बटन छिपा दें */
+            /* स्टाफ के लिए सेंसिटिव बटन्स छिपा दें */
             .btn-outline-primary, .btn-outline-danger, .btn-warning { display: none !important; }
             #settingsTab, #btn-settings, [onclick*="changePassModal"] { display: none !important; }
             .btn-outline-warning.btn-sm { display: none !important; }
@@ -1861,10 +1909,11 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Syncing to cloud...';
 
-        const data = {
+                const data = {
             siNo: parseInt(document.getElementById('siNo').value) || 0,
             name: document.getElementById('name').value.toUpperCase(),
             father: document.getElementById('father').value.toUpperCase() || "-",
+            mother: document.getElementById('mother') ? document.getElementById('mother').value.toUpperCase() : "-",
             dob: document.getElementById('dob').value || null,
             gender: document.getElementById('gender').value,
             category: document.getElementById('category').value,
@@ -1873,7 +1922,7 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
             village: document.getElementById('village').value || "-",
             panchayat: document.getElementById('panchayat').value || "-",
             block: document.getElementById('block').value || "-",
-                pincode: document.getElementById('pincode').value || "-",
+            pincode: document.getElementById('pincode').value || "-",
             school: document.getElementById('school').value || "-",
             board: document.getElementById('board').value || "-",
             learnerClass: document.getElementById('learnerClass').value || "-",
@@ -1892,10 +1941,16 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
             photo: document.getElementById('photoData').value || null,
             mnssbyId: document.getElementById('mnssbyId').value || "-",
             deepId: document.getElementById('deepId').value || "-",
-mnssbyPass: document.getElementById('mnssbyPass').value || "-",
-formStatus: document.getElementById('formStatus').value,
-drccStatus: document.getElementById('drccStatus').value,
-            remark: document.getElementById('remark').value || "-"
+            mnssbyPass: document.getElementById('mnssbyPass').value || "-",
+            formStatus: document.getElementById('formStatus').value,
+            drccStatus: document.getElementById('drccStatus').value,
+            course_applied: document.getElementById('course_applied') ? document.getElementById('course_applied').value : "-",
+            is_kyp_student: document.getElementById('is_kyp_student') ? document.getElementById('is_kyp_student').value : "NO",
+            txn_id: document.getElementById('txn_id') ? document.getElementById('txn_id').value : "-",
+            remark: document.getElementById('remark').value || "-",
+            fee_total: parseInt(document.getElementById('fee_total').value) || 0,
+fee_paid: parseInt(document.getElementById('fee_paid').value) || 0,
+
         };
 
         let result;
@@ -1910,6 +1965,7 @@ drccStatus: document.getElementById('drccStatus').value,
         showToast(editIdVal ? "Record Updated!" : "Record Saved Successfully!", "bg-success");
         this.reset();
         document.getElementById('editId').value = '';
+     document.getElementById('photoData').value = '';   
         await loadDataFromSupabase(); 
         switchTab('records');
 
@@ -2312,19 +2368,19 @@ function editL(id) {
     const l = learners.find(x => x.id === id);
     if(!l) return;
     
-    const fields = [
-        'siNo', 'name', 'father', 'dob', 'gender', 'category', 'aadhar', 'mobile',
+        const fields = [
+        'siNo', 'name', 'father', 'mother', 'dob', 'gender', 'category', 'aadhar', 'mobile',
         'village', 'panchayat', 'block', 'pincode', 'school', 'board', 'learnerClass',
         'rollCode', 'rollNo', 'passYear', 'bankName', 'branchName', 'accNo', 'ifsc',
-        'receipt', 'verify', 'alloc', 'admis', 'pay', 'remark', 
-        'mnssbyId', 'deepId', 'mnssbyPass', 'formStatus', 'drccStatus'
+        'receipt', 'verify', 'alloc', 'admis', 'pay', 'course_applied', 'is_kyp_student', 'txn_id','remark', 
+        'mnssbyId', 'deepId', 'mnssbyPass', 'formStatus', 'drccStatus','fee_total', 'fee_paid'
     ];
 
     fields.forEach(field => {
         const el = document.getElementById(field);
         if(el) el.value = l[field] || (el.tagName === 'SELECT' ? (l[field] || el.options[0].value) : "");
     });
-    
+   document.getElementById('photoData').value = l.photo || ""; 
     document.getElementById('editId').value = l.id;
     switchTab('reg');
 }
@@ -2549,22 +2605,18 @@ function renderActiveStudents() {
 
     // Filtering logic
     const filteredList = learners.filter(l => {
-        
-        // 1. कोर्स के हिसाब से फ़िल्टर
         let matchesCourse = false;
         if (selectedCourse === 'KYP') {
-            matchesCourse = (l.admis === 'Yes'); // सिर्फ KYP
+            matchesCourse = (l.admis === 'Yes'); 
         } else if (selectedCourse === 'DEEP') {
-            matchesCourse = (l.deep_admis === 'Yes'); // सिर्फ DEEP
+            matchesCourse = (l.deep_admis === 'Yes'); 
         } else {
-            matchesCourse = (l.admis === 'Yes' || l.deep_admis === 'Yes'); // दोनों
+            matchesCourse = (l.admis === 'Yes' || l.deep_admis === 'Yes'); 
         }
         
-        // 2. महीने के हिसाब से फ़िल्टर
         const matchesMonth = (selectedMonth === "") || 
                              (l.remark && l.remark.toLowerCase().includes(selectedMonth.toLowerCase()));
         
-        // 3. बैच या टाइम के हिसाब से फ़िल्टर
         const matchesBatch = (batchSearch === "") || 
                              (l.remark && l.remark.toLowerCase().includes(batchSearch));
         
@@ -2572,29 +2624,27 @@ function renderActiveStudents() {
     });
 
     if (filteredList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted fw-bold">No records found for this selection.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center p-4 text-muted fw-bold">No records found for this selection.</td></tr>`;
         return;
     }
 
-        tbody.innerHTML = filteredList.map((l, index) => {
+    tbody.innerHTML = filteredList.map((l, index) => {
         const batchDetails = l.remark || "No Batch Assigned";
         
-        // कोर्स का बैज तय करें (KYP है या DEEP)
+        // कोर्स का बैज तय करें
         const courseBadge = l.admis === 'Yes' 
             ? '<span class="badge bg-success shadow-sm" style="font-size: 10px;">KYP</span>' 
             : '<span class="badge bg-info shadow-sm" style="font-size: 10px;">DEEP IT</span>';
 
-        // ✅ ONLINE STATUS CHECK LOGIC (बैज का डिज़ाइन और सुंदर किया गया है)
+        // ONLINE STATUS
         let onlineBadge = '';
         if (l.last_login) {
             const lastLoginTime = new Date(l.last_login);
             const diffInMinutes = (new Date() - lastLoginTime) / (1000 * 60);
             
             if (diffInMinutes < 15) {
-                // 15 मिनट के अंदर है तो Online
                 onlineBadge = `<span class="badge bg-success shadow-sm" style="font-size: 9px; letter-spacing: 0.5px;"><i class="fas fa-circle text-white me-1" style="font-size: 5px; vertical-align: middle;"></i>Online</span>`;
             } else {
-                // वरना Last Seen (डिजाइन छोटा और सुंदर किया गया है)
                 const timeStr = lastLoginTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                 onlineBadge = `<span class="badge bg-light text-muted border shadow-sm" style="font-size: 9px;">${timeStr}</span>`;
             }
@@ -2605,19 +2655,13 @@ function renderActiveStudents() {
             <td class="text-center align-middle">${index + 1}</td> 
             <td class="text-start align-middle">
                 <div class="d-flex flex-column">
-                    
-                    <!-- ✅ नाम लेफ्ट में, और Online बैज + ब्लू टिक राइट में एक साथ -->
                     <div class="d-flex align-items-center justify-content-between gap-2">
                         <span class="fw-bold text-primary" style="font-size: 13px; line-height: 1.2;">${l.name}</span>
-                        
                         <div class="d-flex align-items-center gap-1 flex-shrink-0">
                             ${onlineBadge}
-                            ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 
-                                ? '<i class="fas fa-check-circle verified-badge" style="font-size: 13px; color: #2563eb;"></i>' 
-                                : ''}
+                            ${l.aadhar && l.aadhar.replace(/\s/g, '').length >= 12 ? '<i class="fas fa-check-circle verified-badge" style="font-size: 13px; color: #2563eb;"></i>' : ''}
                         </div>
                     </div>
-                    
                     <div class="mt-1">
                         <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 9px; font-weight: 800;">
                             <i class="fas fa-clock me-1"></i>${batchDetails}
@@ -2628,28 +2672,56 @@ function renderActiveStudents() {
 
             <td class="text-start align-middle" style="font-size: 12px;">${l.father || "-"}</td>
             <td class="align-middle" style="font-size: 12px;">${l.village || "-"}</td>
-                        <td class="align-middle">
+            <td class="align-middle">
                 <div class="d-flex align-items-center justify-content-center gap-2">
                     <span style="font-size: 12px;">${l.mobile || "-"}</span>
-                    ${l.mobile ? `
-                    <a href="tel:${l.mobile}" class="btn-call shadow-sm" style="width: 28px; height: 28px; font-size: 12px;">
-                        <i class="fas fa-phone-alt"></i>
-                    </a>` : ''}
+                    ${l.mobile ? `<a href="tel:${l.mobile}" class="btn-call shadow-sm" style="width: 28px; height: 28px; font-size: 12px;"><i class="fas fa-phone-alt"></i></a>` : ''}
                 </div>
             </td>
             
-            <!-- NAYA COLUMN: KYP / DEEP User ID Badges -->
             <td class="text-center align-middle">
                 ${l.mnssbyId && l.mnssbyId !== "-" ? `<span class="badge bg-primary-subtle text-primary border border-primary-subtle shadow-sm mb-1 d-block" style="font-size: 10px;"><i class="fas fa-id-card me-1"></i> KYP: ${l.mnssbyId}</span>` : ""}
-                
                 ${l.deepId && l.deepId !== "-" ? `<span class="badge bg-success-subtle text-success border border-success-subtle shadow-sm d-block" style="font-size: 10px;"><i class="fas fa-laptop-code me-1"></i> DEEP: ${l.deepId}</span>` : ""}
-                
                 ${(!l.mnssbyId || l.mnssbyId === "-") && (!l.deepId || l.deepId === "-") ? `<span class="badge bg-light text-dark border">N/A</span>` : ""}
             </td>
 
-            
             <td class="text-center align-middle">${courseBadge}</td>
-            
+<td class="align-middle text-center" style="min-width: 120px;">
+    <!-- 1. Fee Details -->
+    <div class="p-1 border rounded bg-light mb-2 text-start shadow-sm" style="font-size: 9px; line-height: 1.3;">
+        ${(() => {
+            const total = parseInt(l.fee_total) || 0;
+            const paid = parseInt(l.fee_paid) || 0;
+            const due = total - paid;
+            const statusColor = due <= 0 && total > 0 ? "text-success" : (due === total ? "text-danger" : "text-warning");
+            return `
+            <div class="text-muted">Total: <b class="text-dark">₹${total}</b></div>
+            <div class="text-success">Paid: <b>₹${paid}</b> <i class="fas fa-pen text-primary ms-1" style="cursor:pointer;" onclick="updateFeePaid(${l.id}, ${total}, ${paid})" title="Edit Amount"></i></div>
+            <div class="${statusColor}">Due: <b>₹${due}</b></div>
+            `;
+        })()}
+    </div>
+    
+    <!-- 2. UTR Number (सुंदर लाल बैज में पेमेंट के ऊपर) -->
+    ${l.txn_id && l.txn_id !== '-' && l.txn_id !== 'Pending (Verification)' ? 
+        `<div class="badge bg-danger-subtle text-danger border border-danger-subtle mb-1 d-block text-wrap shadow-sm" style="font-size: 9px;"><i class="fas fa-receipt me-1"></i> UTR: ${l.txn_id}</div>` 
+    : ''}
+
+    <!-- 3. SDC Simri Student Status (नीले बैज में) -->
+    <div class="badge bg-primary-subtle text-primary border border-primary-subtle mb-2 d-block text-wrap shadow-sm" style="font-size: 9px;">
+        <i class="fas fa-building me-1"></i> SDC: ${l.is_kyp_student === 'OUR_CENTER' ? 'Yes (Simri)' : (l.is_kyp_student === 'OTHER_CENTER' ? 'Other Center' : 'No')}
+    </div>
+    
+    <!-- 4. Admin Payment Yes/No Dropdown -->
+    <select class="form-select form-select-sm fw-bold shadow-sm ${l.pay === 'Yes' ? 'border-success text-success bg-success-subtle' : 'border-danger text-danger bg-danger-subtle'}" 
+            onchange="quickUpdatePayment(${l.id}, this.value)" 
+            style="font-size: 10px; padding: 2px 5px; height: auto;">
+        <option value="No" ${l.pay !== 'Yes' ? 'selected' : ''}>⏳ Pending</option>
+        <option value="Yes" ${l.pay === 'Yes' ? 'selected' : ''}>✅ Verified</option>
+    </select>
+</td>
+
+
             <td class="align-middle">
                 <div class="d-flex flex-column align-items-center">
                     <div id="dateWrapper_${l.id}" class="date-picker-container">
@@ -2659,22 +2731,22 @@ function renderActiveStudents() {
                             <input type="date" id="toDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
                         </div>
                         <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" style="font-size: 10px; border-radius: 8px;" onclick="downloadStudentAttendancePDF(${l.id})">
-                            <i class="fas fa-file-download me-1"></i> Download PDF
+                            <i class="fas fa-file-download me-1"></i> PDF
                         </button>
                     </div>
 
                     <button id="mainRepBtn_${l.id}" class="btn btn-outline-info btn-sm rounded-pill px-3 shadow-sm w-100" style="font-size: 10px;" onclick="toggleDateFields(${l.id})">
-                        <i class="fas fa-calendar-alt me-1"></i> Generate Report
+                        <i class="fas fa-calendar-alt me-1"></i> Report
                     </button>
                      <button class="btn ${l.extra_time_active ? 'btn-danger' : 'btn-success'} btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="toggleLoginAccess(${l.id}, ${l.extra_time_active || false})">
-                        <i class="fas ${l.extra_time_active ? 'fa-lock' : 'fa-unlock'} me-1"></i> ${l.extra_time_active ? 'Lock Portal' : 'Active Portal'}
+                        <i class="fas ${l.extra_time_active ? 'fa-lock' : 'fa-unlock'} me-1"></i> ${l.extra_time_active ? 'Lock' : 'Unlock'}
                     </button>
                     
                     <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="removeAdmission(${l.id})">
                         <i class="fas fa-user-minus me-1"></i> Remove
                     </button>
                 </div>
-</td>
+            </td>
         </tr>`;
     }).join('');
 }
@@ -2734,7 +2806,7 @@ async function toggleLoginAccess(studentId, currentState) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.20`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.23`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -3018,13 +3090,12 @@ async function admitToDeep(id) {
 async function loadAttendanceList() {
     const tbody = document.getElementById('attendanceTbody');
     const date = document.getElementById('attDate').value;
-    const course = document.getElementById('attCourse').value; // 'KYP' ya 'DEEP'
+    const course = document.getElementById('attCourse').value; 
     
     if(!date) return;
 
     const { data: logs } = await _supabase.from('attendance_logs').select('*').eq('attendance_date', date);
 
-    // Filter students based on course
     let filtered = learners.filter(l => {
         if(course === 'KYP') return l.admis === 'Yes';
         if(course === 'DEEP') return l.deep_admis === 'Yes';
@@ -3033,11 +3104,21 @@ async function loadAttendanceList() {
 
     tbody.innerHTML = filtered.map((l, i) => {
         const studentLog = logs ? logs.find(log => log.student_id === l.id && (log.course_type === course || (!log.course_type && course === 'KYP'))) : null;
+        
+        // चेक करें कि IN और OUT लगा है या नहीं
+        const isInMarked = studentLog && studentLog.status === 'Present' && studentLog.remarks && studentLog.remarks.includes('In:');
+        const isOutMarked = studentLog && studentLog.status === 'Present' && studentLog.remarks && studentLog.remarks.includes('Out:');
+        
+        let timeBadge = '';
+        if(studentLog && studentLog.status === 'Present' && studentLog.remarks) {
+            timeBadge = `<div class="mt-1 badge bg-light text-dark border shadow-sm" style="font-size:9px; letter-spacing:0.5px;">
+                            ${studentLog.remarks}
+                         </div>`;
+        }
+
         return `
         <tr>
             <td class="text-center align-middle">${i + 1}</td>
-            
-            <!-- ✅ नाम और बैच (Month & Time) एक साथ (मोबाइल में भी दिखेगा) -->
             <td class="text-start align-middle">
                 <div class="fw-bold" style="font-size: 13px; color: #0f172a;">${l.name}</div>
                 <div class="mt-1">
@@ -3046,76 +3127,91 @@ async function loadAttendanceList() {
                     </span>
                 </div>
             </td>
-            
-            <!-- लैपटॉप स्क्रीन के लिए एक्स्ट्रा कॉलम (मोबाइल पर हाईड रहेगा) -->
             <td class="text-start d-none d-md-table-cell align-middle">
                 <span class="badge bg-light text-dark">${l.remark || "-"}</span>
             </td>
-            
-            <td class="align-middle">
-                <div class="att-group">
-                    <input type="radio" class="btn-check" name="att-${l.id}" id="p-${l.id}" value="Present" ${studentLog?.status === 'Present' ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'Present')">
-                    <label class="att-label label-p" for="p-${l.id}"><i class="fas fa-check"></i></label>
+            <td class="align-middle text-center">
+                <div class="att-group mb-1">
+                    <input type="radio" class="btn-check" name="att-${l.id}" id="in-${l.id}" value="IN" ${isInMarked ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'IN')">
+                    <label class="att-label label-in" for="in-${l.id}" title="Mark IN"><i class="fas fa-sign-in-alt"></i></label>
+                    
+                    <input type="radio" class="btn-check" name="att-${l.id}" id="out-${l.id}" value="OUT" ${isOutMarked ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'OUT')">
+                    <label class="att-label label-out" for="out-${l.id}" title="Mark OUT"><i class="fas fa-sign-out-alt"></i></label>
                     
                     <input type="radio" class="btn-check" name="att-${l.id}" id="a-${l.id}" value="Absent" ${studentLog?.status === 'Absent' ? 'checked' : ''} onclick="instantSaveAttendance(${l.id}, 'Absent')">
-                    <label class="att-label label-a" for="a-${l.id}"><i class="fas fa-times"></i></label>
+                    <label class="att-label label-a" for="a-${l.id}" title="Mark Absent"><i class="fas fa-times"></i></label>
 
-                    <!-- ✅ आपका सुंदर डिलीट/Undo आइकॉन -->
-                    <button class="btn-undo-att" onclick="deleteAttendance(${l.id})" title="Clear Attendance">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    <button class="btn-undo-att ms-1" onclick="deleteAttendance(${l.id})" title="Clear Attendance"><i class="fas fa-trash-alt"></i></button>
                 </div>
+                ${timeBadge}
             </td>
         </tr>`;
     }).join('') || '<tr><td colspan="4" class="p-4 text-center text-muted fw-bold">No students found for this course.</td></tr>';
 }
 
-async function instantSaveAttendance(sid, status) {
+async function instantSaveAttendance(sid, action) {
     const date = document.getElementById('attDate').value;
     const courseElement = document.getElementById('attCourse');
     const course = courseElement ? courseElement.value : 'KYP'; 
     const student = learners.find(l => l.id === sid);
+    const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
     try {
-        // पुरानी अटेंडेंस क्लियर करना
+        // डेटाबेस से आज का पुराना रिकॉर्ड निकालें
+        const { data: existingLogs } = await _supabase.from('attendance_logs').select('*').match({ student_id: sid, attendance_date: date });
+        const existingLog = existingLogs && existingLogs.length > 0 ? existingLogs[0] : null;
+
+        let status = 'Absent';
+        let remarks = '';
+        let popupText = '';
+
+        if (action === 'IN') {
+            status = 'Present';
+            remarks = `In: ${currentTime}`;
+            popupText = `<span class="text-success"><i class="fas fa-sign-in-alt"></i> IN TIME: ${currentTime}</span>`;
+        } else if (action === 'OUT') {
+            status = 'Present';
+            // अगर IN पहले से लगा है तो उसे रखें
+            let oldIn = existingLog && existingLog.remarks && existingLog.remarks.includes('In:') 
+                        ? existingLog.remarks.split('|')[0].trim() : 'In: --';
+            remarks = `${oldIn} | Out: ${currentTime}`;
+            popupText = `<span class="text-warning"><i class="fas fa-sign-out-alt"></i> OUT TIME: ${currentTime}</span>`;
+        } else {
+            status = 'Absent';
+            remarks = '';
+            popupText = `<span class="text-danger"><i class="fas fa-times"></i> MARKED ABSENT</span>`;
+        }
+
+        // पुराना डिलीट करके नया डालें
         await _supabase.from('attendance_logs').delete().match({ student_id: sid, attendance_date: date });
-        
-        // नई अटेंडेंस सेव करना
         const { error } = await _supabase.from('attendance_logs').insert([{ 
-            student_id: sid, 
-            student_name: student.name, 
-            attendance_date: date, 
-            status: status,
-            course_type: course 
+            student_id: sid, student_name: student.name, attendance_date: date, 
+            status: status, course_type: course, remarks: remarks 
         }]);
         
         if (error) throw error;
         
+        // POPUP
         const popup = document.getElementById('attSuccessPopup');
         if (popup) {
-            // ✅ टाइम और DOB निकालने का लॉजिक
-            const currentTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-            const dobText = student.dob ? student.dob : "N/A";
-
             document.getElementById('popImg').src = student.photo || 'https://via.placeholder.com/100';
             document.getElementById('popName').innerText = student.name + ` (${course})`;
-            
-            // ✅ आधार, DOB और Time को एक साथ सेट करना
             document.getElementById('popAadhar').innerHTML = `
                 Aadhar: ${student.aadhar || "N/A"} <br>
-                <span class="text-secondary fw-bold">DOB: ${dobText}</span> <br>
-                <span class="text-primary fw-bold mt-1 d-block" style="font-size: 12px;">
-                    <i class="fas fa-clock"></i> Time: ${currentTime}
-                </span>`;
-
+                <span class="fw-bold mt-1 d-block" style="font-size: 13px;">${popupText}</span>`;
             popup.classList.add('show');
         }
+        
+        loadAttendanceList(); 
     } catch (err) { 
-        console.error("Error:", err);
-        showToast("Sync Failed!", "bg-danger"); 
+        console.error("DB Error:", err);
+        if (err.message && err.message.includes("remarks")) {
+            alert("⚠️ डेटाबेस एरर: आपके Supabase में 'remarks' कॉलम नहीं है। कृपया Supabase खोलें और attendance_logs टेबल में 'remarks' नाम का (text) कॉलम जोड़ें!");
+        } else {
+            showToast("Sync Failed! इंटरनेट चेक करें।", "bg-danger"); 
+        }
     }
 }
-
 
 // गलती से चढ़ी अटेंडेंस को हटाने का फंक्शन
 async function deleteAttendance(sid) {
@@ -3242,11 +3338,10 @@ async function exportBatchExcel() {
         .order('attendance_date', {ascending: true})
         .limit(5000);
 
-    // Modal वाला पक्का लॉजिक: सिर्फ student_id चेक करें
     const batchLogs = logs ? logs.filter(lg => batchStudentIds.includes(lg.student_id)) : [];
-
     const uniqueDates = [...new Set(batchLogs.map(lg => lg.attendance_date))].sort();
 
+    // 1. एक्सेल की हेडिंग (तारीख) बनाने का सही लूप
     let headers = ["Candidate Name", "Mobile No", "Total Present", "Total Absent", "Attendance Rate %"];
     uniqueDates.forEach(date => {
         const dateObj = new Date(date);
@@ -3255,6 +3350,7 @@ async function exportBatchExcel() {
     
     let csv = headers.join(",") + "\n";
     
+    // 2. बच्चों का डेटा और उनका IN/OUT टाइम भरने का सही लूप
     batchStudents.forEach(s => {
         const sLogs = batchLogs.filter(lg => String(lg.student_id) === String(s.id));
         const presCount = sLogs.filter(lg => lg.status === 'Present').length;
@@ -3267,7 +3363,12 @@ async function exportBatchExcel() {
         uniqueDates.forEach(date => {
             const logForDate = sLogs.find(lg => lg.attendance_date === date);
             if (logForDate) {
-                rowData.push(logForDate.status === 'Present' ? '"P"' : '"A"');
+                let statusText = logForDate.status === 'Present' ? 'P' : 'A';
+                // टाइम जोड़ने का सही लॉजिक
+                if (logForDate.remarks) {
+                    statusText += ` [${logForDate.remarks}]`; 
+                }
+                rowData.push(`"${statusText}"`);
             } else {
                 rowData.push('"-"'); 
             }
@@ -3282,6 +3383,8 @@ async function exportBatchExcel() {
     link.click();
     showToast("Calendar Excel Downloaded!", "bg-success");
 }
+
+
 
 // --- ADMISSION PORTAL FUNCTIONS ---
 
@@ -3457,7 +3560,7 @@ async function downloadStudentAttendancePDF(sid) {
                         <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                                <tbody>
                     ${logs.map(r => `
                         <tr>
                             <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #475569;">
@@ -3465,10 +3568,13 @@ async function downloadStudentAttendancePDF(sid) {
                             </td>
                             <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: ${r.status === 'Present' ? '#16a34a' : '#dc2626'};">
                                 ${r.status.toUpperCase()}
+                                <!-- यह लाइन PDF में Time दिखाएगी -->
+                                ${r.remarks ? `<br><span style="font-size:10px; color:#64748b;">${r.remarks}</span>` : ''}
                             </td>
                         </tr>
                     `).join('')}
                 </tbody>
+
             </table>
         </div>
 
@@ -3511,9 +3617,6 @@ async function downloadStudentAttendancePDF(sid) {
         toggleDateFields(sid);
     }
 }
-
-
-
 
 // --- BACKUP & RESTORE LOGIC ---
 async function downloadCSVBackup() {
@@ -3668,11 +3771,16 @@ async function viewStudentAttDetails(sid) {
     let html = `<table class="table table-sm table-bordered text-center m-0" style="font-size: 11px;">
                     <thead class="table-light"><tr><th>DATE</th><th>STATUS</th></tr></thead><tbody>`;
     
-    logs.forEach(lg => {
+        logs.forEach(lg => {
         const dateStr = new Date(lg.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'});
         const badge = lg.status === 'Present' ? '<span class="badge bg-success w-100">PRESENT</span>' : '<span class="badge bg-danger w-100">ABSENT</span>';
-        html += `<tr><td class="fw-bold text-secondary align-middle">${dateStr}</td><td class="align-middle">${badge}</td></tr>`;
+        
+        // यह लाइन Modal में Time दिखाएगी
+        const timeLog = lg.remarks ? `<div class="mt-1 text-muted fw-bold" style="font-size:9px; white-space:nowrap;">${lg.remarks}</div>` : '';
+        
+        html += `<tr><td class="fw-bold text-secondary align-middle">${dateStr}</td><td class="align-middle">${badge}${timeLog}</td></tr>`;
     });
+
     html += `</tbody></table>`;
     
     document.getElementById('modalAttContent').innerHTML = html;
@@ -3695,6 +3803,125 @@ function addBatchToRemark() {
         showToast("Kripya pehle Month ya Time select karein!", "bg-warning");
     }
 }
+// Active Tab से तुरंत Payment Yes/No करने का फंक्शन
+async function quickUpdatePayment(id, status) {
+    try {
+        const { error } = await _supabase.from('students').update({ pay: status }).eq('id', id);
+        
+        if (error) throw error;
+        
+        showToast("पेमेंट स्टेटस सफलतापूर्वक अपडेट हो गया!", "bg-success");
+        
+        // लोकल डेटा को भी अपडेट करें ताकि रिफ्रेश न करना पड़े
+        const index = learners.findIndex(l => l.id === id);
+        if (index !== -1) {
+            learners[index].pay = status;
+        }
+        
+        renderActiveStudents(); // Active टेबल रिफ्रेश करें
+        renderTable();          // Main रिकॉर्ड टेबल रिफ्रेश करें
+        updateStats();          // ऊपर के डैशबोर्ड नंबर्स रिफ्रेश करें
+        
+    } catch (err) {
+        console.error(err);
+        showToast("एरर! पेमेंट अपडेट नहीं हुआ।", "bg-danger");
+    }
+}
+// एडमिन द्वारा सीधे पेमेंट अपडेट करने का फंक्शन
+async function updateFeePaid(id, total, currentPaid) {
+    let newPaidStr = prompt(`Total Fee: ₹${total}\nCurrently Paid: ₹${currentPaid}\n\nछात्र ने अब तक कुल कितना पैसा जमा कर दिया है? (New Total Paid Amount):`, currentPaid);
+    
+    if (newPaidStr !== null && newPaidStr.trim() !== "") {
+        let newPaid = parseInt(newPaidStr);
+        if (isNaN(newPaid)) {
+            alert("कृपया सही संख्या (Number) डालें!");
+            return;
+        }
+        
+        let newPayStatus = (newPaid >= total && total > 0) ? 'Yes' : 'No';
+        
+        try {
+            const { error } = await _supabase.from('students').update({ 
+                fee_paid: newPaid,
+                pay: newPayStatus 
+            }).eq('id', id);
+            
+            if (error) throw error;
+            
+            showToast("पेमेंट रिकॉर्ड अपडेट हो गया!", "bg-success");
+            
+            const index = learners.findIndex(x => x.id === id);
+            if(index !== -1) {
+                learners[index].fee_paid = newPaid;
+                learners[index].pay = newPayStatus;
+            }
+            renderActiveStudents(); 
+            updateStats();
+            
+        } catch (err) {
+            showToast("एरर! अपडेट नहीं हुआ।", "bg-danger");
+        }
+    }
+}
+// रिसाइकिल बिन खोलना और डिलीट डेटा लोड करना
+async function openRecycleBinModal() {
+    const tbody = document.getElementById('recycleBinTbody');
+    tbody.innerHTML = `<tr><td colspan="4" class="p-4"><i class="fas fa-spinner fa-spin text-danger"></i> Loading...</td></tr>`;
+    
+    new bootstrap.Modal(document.getElementById('recycleBinModal')).show();
+
+    // is_active: false वाले डेटा को डेटाबेस से मंगाना
+    const { data, error } = await _supabase.from('students').select('id, name, mobile, course_applied').eq('is_active', false);
+    
+    if (error || !data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-muted fw-bold">Recycle Bin खाली है।</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = data.map(s => `
+        <tr>
+            <td class="text-start fw-bold text-dark align-middle">${s.name}</td>
+            <td class="align-middle">${s.mobile || '-'}</td>
+            <td class="align-middle">${s.course_applied || '-'}</td>
+            <td class="align-middle">
+                <button class="btn btn-sm btn-success fw-bold shadow-sm me-1" onclick="restoreFromBin(${s.id})" title="Restore Data">
+                    <i class="fas fa-undo"></i> Restore
+                </button>
+                <button class="btn btn-sm btn-danger fw-bold shadow-sm" onclick="permanentDelete(${s.id})" title="Permanent Delete">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// डेटा वापस लाना (Restore)
+async function restoreFromBin(id) {
+    if(!confirm("क्या आप इस छात्र का डेटा वापस (Restore) लाना चाहते हैं?")) return;
+    
+    const { error } = await _supabase.from('students').update({ is_active: true }).eq('id', id);
+    if (!error) {
+        showToast("डेटा सफलतापूर्वक वापस आ गया!", "bg-success");
+        await loadDataFromSupabase(); // मुख्य टेबल रीफ्रेश करें
+        openRecycleBinModal(); // रिसाइकिल बिन को भी रीफ्रेश करें
+    } else {
+        showToast("एरर: " + error.message, "bg-danger");
+    }
+}
+
+// हमेशा के लिए डिलीट करना (Permanent Delete)
+async function permanentDelete(id) {
+    if(!confirm("चेतावनी! क्या आप इसे हमेशा के लिए डिलीट करना चाहते हैं? यह वापस नहीं आएगा।")) return;
+    
+    const { error } = await _supabase.from('students').delete().eq('id', id);
+    if (!error) {
+        showToast("डेटा हमेशा के लिए डिलीट हो गया!", "bg-success");
+        openRecycleBinModal(); // रिसाइकिल बिन को रीफ्रेश करें
+    } else {
+        showToast("डिलीट फेल: " + error.message, "bg-danger");
+    }
+}
+
 
 </script>
 <div id="loginOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; align-items: center; justify-content: center; background: #f8fafc;">
@@ -3817,5 +4044,58 @@ function addBatchToRemark() {
     <button class="btn btn-dark popup-close-btn" onclick="closeAttPopup()">DONE / CLOSE</button>
 </div>
 </div>
+<div class="modal fade" id="recycleBinModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 15px;">
+            <div class="modal-header bg-danger text-white border-0">
+                <h6 class="modal-title fw-bold"><i class="fas fa-trash-restore me-2"></i> Recycle Bin</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-3 bg-light">
+                <div class="table-responsive bg-white shadow-sm rounded-3">
+                    <table class="table table-hover m-0 text-center" style="font-size: 12px;">
+                        <thead class="table-dark">
+                            <tr><th>Name</th><th>Mobile</th><th>Course</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="recycleBinTbody">
+                            <!-- Deleted data yahan aayega -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- SECURITY SCRIPT: Block F12, Right Click, and Inspect Element -->
+<script>
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+
+document.onkeydown = function(e) {
+    // Block F12
+    if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+        return false;
+    }
+    // Block Ctrl+Shift+I (Inspect)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.keyCode === 73)) {
+        e.preventDefault();
+        return false;
+    }
+    // Block Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j' || e.keyCode === 74)) {
+        e.preventDefault();
+        return false;
+    }
+    // Block Ctrl+U (View Source)
+    if (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.keyCode === 85)) {
+        e.preventDefault();
+        return false;
+    }
+};
+</script>
+
+
 </body>
 </html>
