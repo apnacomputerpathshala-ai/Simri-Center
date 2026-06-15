@@ -1752,38 +1752,9 @@ async function checkAuth() {
     if (session) {
         if(overlay) overlay.style.display = 'none';
         applyPermissions(session.user.email); // सीधा ईमेल भेजें
+        await loadDataFromSupabase(); // 👈 डेटा लाने के लिए यह लाइन बहुत ज़रूरी है
     } else {
         if(overlay) overlay.style.display = 'flex';
-    }
-}
-
-async function verifyLogin() {
-    const email = document.getElementById('adminEmailInput').value.toLowerCase().trim();
-    const password = document.getElementById('adminPassInput').value;
-    
-    if(!email || !password) {
-        return showToast("कृपया Email और Password दोनों डालें!", "bg-warning");
-    }
-
-    const btn = document.getElementById('loginBtn');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Checking...';
-    btn.disabled = true;
-
-    const { data, error } = await _supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-    });
-
-    if (error) {
-        showToast("Login Failed: गलत ईमेल या पासवर्ड", "bg-danger");
-        btn.innerHTML = 'SECURE LOGIN';
-        btn.disabled = false;
-    } else {
-        showToast("Welcome to Admin Portal!", "bg-success");
-        document.getElementById('loginOverlay').style.display = 'none';
-        
-        applyPermissions(email); // लोकल स्टोरेज की जगह सीधे ईमेल पास करें
-        await loadDataFromSupabase(); 
     }
 }
 
@@ -1791,8 +1762,8 @@ function applyPermissions(email) {
     const mainAdminEmail = "apnacomputerpathshala@gmail.com"; 
     let role = 'staff';
 
-    // ईमेल के आधार पर एडमिन चेक करें
-    if (email === mainAdminEmail || email.includes('admin')) {
+    // 🚨 ईमेल के होने की जांच करना बहुत जरूरी है ताकि ऐप क्रैश न हो (email && जोड़ा गया है)
+    if (email && (email === mainAdminEmail || email.includes('admin'))) {
         role = 'admin';
     }
 
@@ -1812,6 +1783,7 @@ function applyPermissions(email) {
     }
 }
 
+
 async function adminLogout() {
     await _supabase.auth.signOut(); // क्लाउड से लॉगआउट
     localStorage.removeItem('user_role');
@@ -1823,8 +1795,38 @@ function saveBothPasswords() {
     showToast("सुरक्षा कारणों से, पासवर्ड अब Supabase Dashboard से बदलें!", "bg-info");
 }
 
-// Page load par auth check karein
-checkAuth();
+// 👇 यह है लॉगिन फंक्शन जो डिलीट हो गया था
+async function verifyLogin() {
+    const email = document.getElementById('adminEmailInput').value.toLowerCase().trim();
+    const password = document.getElementById('adminPassInput').value;
+    
+    if(!email || !password) {
+        return showToast("कृपया Email और Password दोनों डालें!", "bg-warning");
+    }
+
+    const btn = document.getElementById('loginBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Checking...';
+    btn.disabled = true;
+
+    const { data, error } = await _supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+    });
+
+    if (error) {
+        showToast("Login Failed: गलत ईमेल या पासवर्ड", "bg-danger");
+        btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> SECURE LOGIN';
+        btn.disabled = false;
+    } else {
+        showToast("Welcome to Admin Portal!", "bg-success");
+        document.getElementById('loginOverlay').style.display = 'none';
+        
+        applyPermissions(email); // परमिशन सेट करें
+        await loadDataFromSupabase(); // डेटा लोड करें
+    }
+}
+
+// 👇 यह है सही साइडबार फंक्शन
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const wrapper = document.getElementById('mainWrapper');
@@ -1841,6 +1843,7 @@ function toggleSidebar() {
         icon.className = sidebar.classList.contains('hidden') ? "fas fa-arrow-right" : "fas fa-arrow-left";
     }
 }
+
 
 // यह फंक्शन साइडबार की चौड़ाई को नापकर डैशबोर्ड को सही जगह सेट करता है
 function adjustSidebarWidth() {
@@ -2549,11 +2552,10 @@ async function loadDataFromSupabase() {
 
 // पेज लोड होते ही डेटा लाने की प्रक्रिया
 window.addEventListener('DOMContentLoaded', async () => {
-    checkAuth(); 
-    applyPermissions(); 
-    await loadDataFromSupabase(); 
+    // पुरानी क्रैश करने वाली लाइनें हटा दी गई हैं
+    await checkAuth(); 
 
-    // Refresh ke baad wahi tab kholne ke liye (Close karne pe Dashboard khulega)
+    // Refresh के बाद वही टैब खोलने के लिए 
     const savedTab = sessionStorage.getItem('activeTab');
     if (savedTab && document.getElementById('btn-' + savedTab)) {
         switchTab(savedTab);
@@ -2561,6 +2563,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         switchTab('stats');
     }
 });
+
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -2806,7 +2809,7 @@ async function toggleLoginAccess(studentId, currentState) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.23`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.24`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -3510,76 +3513,69 @@ async function downloadStudentAttendancePDF(sid) {
     const signAuth = getHindiTextImg("अधिकृत हस्ताक्षर", 14, "800", "#0f172a");
 
     const element = document.createElement('div');
-    // ✅ यहाँ A4 पेज का फिक्स साइज़ डाला गया है ताकि ऊपर से जगह न छूटे
-    element.style.width = '794px'; 
-    element.style.height = '1122px'; 
+    // ✅ FIX 1: Width 100% कर दिया ताकि साइड से बिल्कुल न कटे
+    element.style.width = '100%'; 
     element.style.background = '#ffffff';
-    element.style.padding = '20px'; 
+    element.style.padding = '10px'; 
     element.style.boxSizing = 'border-box'; 
 
     const regNo = (l.mnssbyId && l.mnssbyId !== '-') ? l.mnssbyId : (l.receipt || "N/A");
 
     element.innerHTML = `
-    <!-- ✅ height: 100% से यह डार्क बॉर्डर पूरे पेज को कवर करेगा -->
-    <div style="font-family: 'Inter', Arial, sans-serif; background: #fff; width: 100%; height: 100%; box-sizing: border-box; border: 3px solid #0f172a; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+    <!-- ✅ FIX 2: HTML वाला बॉर्डर हटा दिया गया है, अब असली PDF बॉर्डर बनेगा -->
+    <div style="font-family: 'Inter', Arial, sans-serif; background: #fff; width: 100%; box-sizing: border-box;">
         
-        <!-- टॉप कंटेंट (हेडर, डिटेल्स और अटेंडेंस टेबल) -->
-        <div>
-            <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
-                <img src="${titleImgAtt}" style="height: 34px; display: block; margin: 0 auto 8px auto;">
-                <h2 style="color: #0f172a; margin: 0 0 8px 0; font-weight: 800; font-size: 14px; letter-spacing: 1.5px;">KRITI EDIFY PVT. LTD. (KYP06020030)</h2>
-                <img src="${addressImgAtt}" style="height: 16px; display: block; margin: 0 auto 15px auto;">
-                
-                <h4 style="margin: 8px 0 5px 0; color: #0f172a; background: #f1f5f9; display: inline-block; padding: 5px 15px; border-radius: 8px;">Attendance Summary Report</h4>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px; font-weight: bold;">Period: ${new Date(fromDate).toLocaleDateString('en-GB')} to ${new Date(toDate).toLocaleDateString('en-GB')}</p>
-            </div>
+        <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
+            <img src="${titleImgAtt}" style="height: 34px; display: block; margin: 0 auto 8px auto;">
+            <h2 style="color: #0f172a; margin: 0 0 8px 0; font-weight: 800; font-size: 14px; letter-spacing: 1.5px;">KRITI EDIFY PVT. LTD. (KYP06020030)</h2>
+            <img src="${addressImgAtt}" style="height: 16px; display: block; margin: 0 auto 15px auto;">
             
-            <table style="width: 100%; margin-bottom: 20px; background: #f8fafc; border-radius: 8px;">
-                <tr>
-                    <td style="padding: 15px; width: 50%; vertical-align: middle;">
-                        <h4 style="margin:0 0 8px 0; color: #0f172a; text-transform: uppercase; font-size: 18px;">${l.name}</h4>
-                        <div style="color: #475569; font-weight: bold; font-size: 13px; margin-bottom: 4px;">
-                            SI.No: <span style="color:#2563eb">${l.siNo || "-"}</span>
-                        </div>
-                        <div style="color: #475569; font-weight: bold; font-size: 13px;">
-                            Reg No: <span style="color:#2563eb">${regNo}</span>
-                        </div>
-                    </td>
-                    <td style="padding: 15px; width: 50%; text-align: right; vertical-align: middle;">
-                        <span style="color: #16a34a; font-weight: bold; font-size: 16px; margin-right: 15px;">Present: ${presentDays}</span>
-                        <span style="color: #dc2626; font-weight: bold; font-size: 16px; margin-right: 15px;">Absent: ${absentDays}</span>
-                        <span style="background: #2563eb; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 16px;">Score: ${rate}%</span>
-                    </td>
-                </tr>
-            </table>
-
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-                <thead style="background: #0f172a; color: white;">
-                    <tr>
-                        <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Date</th>
-                        <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Status</th>
-                    </tr>
-                </thead>
-                                <tbody>
-                    ${logs.map(r => `
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #475569;">
-                                ${new Date(r.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
-                            </td>
-                            <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: ${r.status === 'Present' ? '#16a34a' : '#dc2626'};">
-                                ${r.status.toUpperCase()}
-                                <!-- यह लाइन PDF में Time दिखाएगी -->
-                                ${r.remarks ? `<br><span style="font-size:10px; color:#64748b;">${r.remarks}</span>` : ''}
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-
-            </table>
+            <h4 style="margin: 8px 0 5px 0; color: #0f172a; background: #f1f5f9; display: inline-block; padding: 5px 15px; border-radius: 8px;">Attendance Summary Report</h4>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 14px; font-weight: bold;">Period: ${new Date(fromDate).toLocaleDateString('en-GB')} to ${new Date(toDate).toLocaleDateString('en-GB')}</p>
         </div>
+        
+        <table style="width: 100%; margin-bottom: 20px; background: #f8fafc; border-radius: 8px; page-break-inside: avoid;">
+            <tr>
+                <td style="padding: 15px; width: 50%; vertical-align: middle;">
+                    <h4 style="margin:0 0 8px 0; color: #0f172a; text-transform: uppercase; font-size: 18px;">${l.name}</h4>
+                    <div style="color: #475569; font-weight: bold; font-size: 13px; margin-bottom: 4px;">
+                        SI.No: <span style="color:#2563eb">${l.siNo || "-"}</span>
+                    </div>
+                    <div style="color: #475569; font-weight: bold; font-size: 13px;">
+                        Reg No: <span style="color:#2563eb">${regNo}</span>
+                    </div>
+                </td>
+                <td style="padding: 15px; width: 50%; text-align: right; vertical-align: middle;">
+                    <span style="color: #16a34a; font-weight: bold; font-size: 16px; margin-right: 15px;">Present: ${presentDays}</span>
+                    <span style="color: #dc2626; font-weight: bold; font-size: 16px; margin-right: 15px;">Absent: ${absentDays}</span>
+                    <span style="background: #2563eb; color: #fff; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 16px;">Score: ${rate}%</span>
+                </td>
+            </tr>
+        </table>
 
-        <!-- बॉटम कंटेंट (सिग्नेचर) जो हमेशा पेज के नीचे रहेगा -->
-        <div style="padding-top: 20px;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead style="background: #0f172a; color: white;">
+                <tr>
+                    <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Date</th>
+                    <th style="padding: 12px; border: 1px solid #cbd5e1; text-align: center; width: 50%;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${logs.map(r => `
+                    <tr style="page-break-inside: avoid;">
+                        <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: #475569;">
+                            ${new Date(r.attendance_date).toLocaleDateString('en-GB', {day:'2-digit', month:'short', year:'numeric'})}
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #cbd5e1; text-align: center; font-weight: bold; color: ${r.status === 'Present' ? '#16a34a' : '#dc2626'};">
+                            ${r.status.toUpperCase()}
+                            ${r.remarks ? `<br><span style="font-size:10px; color:#64748b;">${r.remarks}</span>` : ''}
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+
+        <div style="padding-top: 20px; margin-top: 30px; page-break-inside: avoid;">
             <table style="width: 100%;">
                 <tr>
                     <td style="width: 50%; text-align: left;">
@@ -3599,16 +3595,31 @@ async function downloadStudentAttendancePDF(sid) {
         </div>
     </div>`;
 
+    // ✅ FIX 3: मार्जिन सेट किया गया है ताकि कंटेंट अंदर रहे
     const opt = {
-        margin: 0, 
+        margin: [0.4, 0.4, 0.4, 0.4], 
         filename: `${l.name.replace(/\s+/g, '_')}_Attendance_Report.pdf`,
         image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2, useCORS: true, windowWidth: 794 }, 
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        html2canvas: { scale: 2, useCORS: true }, // यहाँ से windowWidth हटा दिया
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
     };
 
     try {
-        await html2pdf().set(opt).from(element).save();
+        // ✅ FIX 4: यहाँ हर पेज पर jsPDF के ज़रिए असली बॉर्डर बनाया जा रहा है
+        await html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
+            var totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                // डार्क ब्लू/ब्लैक कलर (0f172a -> RGB: 15, 23, 42)
+                pdf.setDrawColor(15, 23, 42); 
+                pdf.setLineWidth(0.04); // बॉर्डर की मोटाई
+                
+                // आयत (Rectangle) बनाएँ: X, Y, Width, Height (A4 = 8.27 x 11.69 inches)
+                // 0.2 इंच मार्जिन पर बाहर की तरफ बॉर्डर बनेगा
+                pdf.rect(0.2, 0.2, 8.27 - 0.4, 11.69 - 0.4); 
+            }
+        }).save();
         showToast("Report Downloaded Successfully!", "bg-success");
     } catch (err) {
         showToast("Download Failed!", "bg-danger");
@@ -4066,7 +4077,6 @@ async function permanentDelete(id) {
         </div>
     </div>
 </div>
-<!-- SECURITY SCRIPT: Block F12, Right Click, and Inspect Element -->
 <script>
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
@@ -4095,7 +4105,6 @@ document.onkeydown = function(e) {
     }
 };
 </script>
-
 
 </body>
 </html>
