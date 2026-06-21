@@ -863,7 +863,24 @@ label, .small, .text-muted {
         <!-- ये रहे आपके 3 नए कार्ड्स -->
         <div class="mini-stat" style="border-left-color: #3b82f6;"><h4><span id="stAdmission">0</span></h4><p class="small m-0 text-primary fw-bold">ADMISSION DONE</p></div>
         <div class="mini-stat" style="border-left-color: #10b981;"><h4><span id="stPayment">0</span></h4><p class="small m-0 text-success fw-bold">PAYMENT DONE</p></div>
-        <div class="mini-stat" style="border-left-color: #06b6d4;"><h4><span id="stDeep">0</span></h4><p class="small m-0 text-info fw-bold">DEEP IT CLASSES</p></div>
+           <div class="mini-stat" style="border-left-color: #06b6d4;"><h4><span id="stDeep">0</span></h4><p class="small m-0 text-info fw-bold">KYP & DEEP ADMITTED</p></div>
+    </div>
+
+    <!-- नया SECTION: Consolidated Portal -->
+    <div class="mt-4 px-3">
+        <h6 class="fw-bold text-secondary mb-2" style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+            <i class="fas fa-globe text-primary me-2"></i> Admitted & Pending Students
+        </h6>
+    </div>
+    <div class="stat-grid" style="grid-template-columns: repeat(2, 1fr);">
+        <div class="mini-stat" style="background: #fdf4ff; border: 1px solid #f0abfc;">
+            <h4 class="text-dark"><span id="stOnlineTotal">0</span></h4>
+            <p class="small m-0 text-muted fw-bold">TOTAL PENDING FORMS</p>
+        </div>
+        <div class="mini-stat" style="background: #f0fdf4; border: 1px solid #86efac;">
+            <h4 class="text-success"><span id="stDeepTotal">0</span></h4>
+            <p class="small m-0 text-success fw-bold">DEEP IT CLASSES</p>
+        </div>
     </div>
 </div>
 
@@ -943,11 +960,13 @@ label, .small, .text-muted {
                         <label class="small fw-bold">Receipt No</label>
                         <input type="text" id="receipt" class="form-control" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="">
                     </div>
-                    <div class="col-md-2"><label class="small fw-bold">Verification</label><select id="verify" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-                    <div class="col-md-3"><label class="small fw-bold">Allocation</label><select id="alloc" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-                    <div class="col-md-3"><label class="small fw-bold">Admission</label><select id="admis" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-                    <div class="col-md-3"><label class="small fw-bold">Payment</label><select id="pay" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-                </div> <!-- ✅ FIX 1: Yahan par Bank details wali Row ko properly close kiya gaya hai -->
+                   <div class="col-md-2"><label class="small fw-bold">Verification</label><select id="verify" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+<div class="col-md-2"><label class="small fw-bold">Allocation</label><select id="alloc" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+<div class="col-md-3"><label class="small fw-bold text-primary">KYP Admis.</label><select id="admis" class="form-select border-primary"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+<div class="col-md-3"><label class="small fw-bold text-info">DEEP Admis.</label><select id="deep_admis" class="form-select border-info"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+<div class="col-md-2"><label class="small fw-bold">Payment</label><select id="pay" class="form-select"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+</div>
+<!-- ✅ FIX 1: Yahan par Bank details wali Row ko properly close kiya gaya hai -->
 
                 <div class="section-title">Portal & Registration Details</div>
                 <div class="row g-3 mb-3">
@@ -979,15 +998,19 @@ label, .small, .text-muted {
                             <option value="Completed">Completed</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                 <div class="col-md-3">
     <label class="small fw-bold text-success">Course Applied</label>
-    <select id="course_applied" class="form-select border-success fw-bold text-primary">
-        <option value="KYP">KYP Course</option>
+       <select id="course_applied" class="form-select border-success fw-bold text-primary">
+        <option value="-">-- Select Course --</option>
+        <option value="KYP Course">KYP Course</option>
         <option value="DEEP IT Basic">DEEP IT Basic</option>
         <option value="Advance Excel">Advance Excel</option>
-        <option value="AI Course">AI Course</option>
+        <option value="AI Course Only">AI Course Only</option>
+        <option value="KYP + DEEP (Both)">KYP + DEEP (Both)</option>
     </select>
+
 </div>
+
 
                     <div class="col-md-3">
                         <label class="small fw-bold">SDC Simri Student?</label>
@@ -1172,9 +1195,10 @@ label, .small, .text-muted {
 <div id="deepTab" class="tab-content">
     <div class="card border-0 shadow-sm p-3 mb-3 text-white rounded-4" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <h6 class="m-0" style="font-weight: 700; font-size: 14px;"><i class="fas fa-laptop-code me-2 text-warning"></i> DEEP BASIC IT ADMISSION</h6>
-            <span class="badge bg-white text-info shadow-sm" style="font-size: 11px;">Pending KYP Students</span>
+            <h6 class="m-0" style="font-weight: 700; font-size: 14px;"><i class="fas fa-laptop-code me-2 text-warning"></i> DEEP COURSES ADMISSION</h6>
+            <span class="badge bg-white text-info shadow-sm" style="font-size: 11px;">Pending DEEP, EXCEL & AI Students</span>
         </div>
+
     </div>
     
     <div class="table-responsive shadow-sm rounded-4">
@@ -1203,9 +1227,13 @@ label, .small, .text-muted {
             <div class="col-md-4 col-12 mb-2 mb-md-0">
                 <label class="small fw-bold text-muted mb-1">Course Type</label>
                 <select id="activeCourseFilter" class="form-select form-select-sm shadow-sm" onchange="renderActiveStudents()" style="border-radius: 10px;">
+                    <option value="ALL">All Courses</option>
                     <option value="KYP">KYP Batch</option>
                     <option value="DEEP">DEEP IT Batch</option>
+                    <option value="EXCEL">Advance Excel</option>
+                    <option value="AI">AI Course</option>
                 </select>
+
             </div>
             
             <div class="col-md-4 col-6">
@@ -1408,10 +1436,13 @@ label, .small, .text-muted {
             </div>
             <div class="col-md-3 col-6">
                 <label class="small fw-bold opacity-75">Course</label>
-                <select id="attCourse" class="form-select form-select-sm" onchange="loadAttendanceList()">
+                              <select id="attCourse" class="form-select form-select-sm" onchange="loadAttendanceList()">
                     <option value="KYP">KYP Batch</option>
                     <option value="DEEP">DEEP IT Batch</option>
+                    <option value="EXCEL">Advance Excel</option>
+                    <option value="AI">AI Course</option>
                 </select>
+
             </div>
             <div class="col-md-3 col-6">
                 <label class="small fw-bold opacity-75">Batch Month</label>
@@ -1683,65 +1714,65 @@ function formatAadhar(input) {
     let formatted = value.match(/.{1,4}/g)?.join(' ') || value;
     input.value = formatted;
 }
+// 1. मेनू पर क्लिक करने वाला फंक्शन
 function handleNavClick(tabName) {
     switchTab(tabName);
+    
+    // ✅ FIX: क्लिक करते ही मेनू को वापस अंदर (Hide) कर देगा 
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
         const icon = document.getElementById('toggleIcon');
-        sidebar.classList.remove('active');
-        icon.className = "fas fa-bars";
+        const overlay = document.getElementById('sidebarOverlay'); 
+        
+        // साइडबार को 'active' क्लास से हटाकर छिपाएं
+        if (sidebar) sidebar.classList.remove('active');
+        if (icon) icon.className = "fas fa-bars";
+        if (overlay) overlay.classList.remove('active'); 
     }
 }
+
+// 2. टैब बदलने वाला फंक्शन
 function switchTab(tab) {
-    // सिर्फ जब तक टैब खुला है तब तक याद रखने के लिए
     sessionStorage.setItem('activeTab', tab); 
 
-
-    // Mobile Sidebar handle karne ke liye
+    // ✅ FIX BACKUP: अगर ऊपर वाला कोड फेल हो, तो यह भी पर्दा और मेनू हटाएगा
     if (window.innerWidth <= 768) {
         const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
         const icon = document.getElementById('toggleIcon');
-        if(sidebar && sidebar.classList.contains('active')) {
-            sidebar.classList.remove('active');
-            if(icon) icon.className = "fas fa-bars";
-        }
-        // Sidebar overlay agar hai toh use bhi hata dein
-        const overlay = document.querySelector('.sidebar-overlay');
-        if(overlay) overlay.classList.remove('active');
+        
+        if (sidebar) sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        if (icon) icon.className = "fas fa-bars";
     }
 
-    // Content areas switch karein
+    // सभी टैब्स को छिपाकर सिर्फ चुने हुए टैब को दिखाना
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     const targetTab = document.getElementById(tab + 'Tab');
-    if(targetTab) targetTab.classList.add('active');
+    if (targetTab) targetTab.classList.add('active');
     
-    // Navigation items active class update karein
+    // साइडबार मेनू में एक्टिव रंग (नीला) लगाना
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     const targetBtn = document.getElementById('btn-' + tab);
-    if(targetBtn) targetBtn.classList.add('active');
+    if (targetBtn) targetBtn.classList.add('active');
     
-    // 👇 बैनर वाला सही लॉजिक (यह इसी फंक्शन के अंदर होना चाहिए)
+    // बैनर सिर्फ डैशबोर्ड (stats) पर दिखेगा
     const banner = document.getElementById('premiumAddressBanner');
-    if(banner) {
+    if (banner) {
         banner.style.display = (tab === 'stats') ? 'block' : 'none';
     }
 
-    // --- Tab wise data load logic ---
-    if(tab === 'records') renderTable(learners);
-    
-    if(tab === 'attendance') {
+    // --- डेटा लोड करने का लॉजिक ---
+    if (tab === 'records') renderTable(learners.filter(l => l.remark !== "Self Registered"));
+    else if (tab === 'admission') renderAdmissionTable();
+    else if (tab === 'active') renderActiveStudents();
+    else if (tab === 'deep') renderDeepTable();
+    else if (tab === 'attendance') {
         loadAttendanceList();
-        updateReportDropdown(); 
+        if (typeof updateReportDropdown === 'function') updateReportDropdown(); 
     }
 
-    if(tab === 'active') {
-        renderActiveStudents();
-    }
-    
-    if(tab === 'admission') renderAdmissionTable();
-        if(tab === 'deep') renderDeepTable();
-
-    updateStats();
+    if (typeof updateStats === 'function') updateStats();
 }
 
 // --- SECURE SUPABASE AUTH & ROLE LOGIC ---
@@ -1818,7 +1849,7 @@ async function verifyLogin() {
         btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> SECURE LOGIN';
         btn.disabled = false;
     } else {
-        showToast("Welcome to Admin Portal!", "bg-success");
+        showToast("Welcome to Portal!", "bg-success");
         document.getElementById('loginOverlay').style.display = 'none';
         
         applyPermissions(email); // परमिशन सेट करें
@@ -1939,8 +1970,10 @@ document.getElementById('dataEntryForm').addEventListener('submit', async functi
             receipt: document.getElementById('receipt').value || "-",
             verify: document.getElementById('verify').value,
             alloc: document.getElementById('alloc').value,
-            admis: document.getElementById('admis').value,
+                        admis: document.getElementById('admis').value,
+            deep_admis: document.getElementById('deep_admis') ? document.getElementById('deep_admis').value : "No", 
             pay: document.getElementById('pay').value,
+
             photo: document.getElementById('photoData').value || null,
             mnssbyId: document.getElementById('mnssbyId').value || "-",
             deepId: document.getElementById('deepId').value || "-",
@@ -2016,8 +2049,6 @@ function applyFilters() {
     const fAadhar = document.getElementById('fAadhar').value;
     const fDateFrom = document.getElementById('fDateFrom').value;
     const fDateTo = document.getElementById('fDateTo').value;
-    
-    // नए फ़िल्टर्स की वैल्यूज़
     const fClass = (document.getElementById('fClass').value || "").toLowerCase();
     const fRemark = (document.getElementById('fRemark').value || "").toLowerCase();
     const fGender = document.getElementById('fGender').value;
@@ -2030,11 +2061,12 @@ function applyFilters() {
     const selSchools = Array.from(document.querySelectorAll('.s-check:checked')).map(c => c.value);
 
     const filtered = learners.filter(l => {
-        // Aadhar Last 4 Digits Match
+        // ✅ NAYA LOGIC: ऑनलाइन पेंडिंग बच्चों को मुख्य लिस्ट से छिपाएं
+        if (l.remark === "Self Registered") return false;
+
         const aadharDigits = (l.aadhar || "").replace(/\s/g, '');
         const aadharMatch = !fAadhar || aadharDigits.endsWith(fAadhar);
 
-        // Date Range Match
         let dateMatch = true;
         if (fDateFrom && fDateTo && l.dob) {
             dateMatch = (l.dob >= fDateFrom && l.dob <= fDateTo);
@@ -2043,8 +2075,7 @@ function applyFilters() {
         return (l.name || "").toLowerCase().includes(fName) &&
                (l.learnerClass || "").toLowerCase().includes(fClass) &&
                (l.remark || "").toLowerCase().includes(fRemark) &&
-               aadharMatch &&
-               dateMatch &&
+               aadharMatch && dateMatch &&
                (selVillages.length === 0 || selVillages.includes(l.village)) &&
                (selSchools.length === 0 || selSchools.includes(l.school)) &&
                (fGender === "" || l.gender === fGender) &&
@@ -2070,7 +2101,10 @@ function resetAllFilters() {
     document.getElementById('fAlloc').value = '';
     document.getElementById('fAdmis').value = '';
     document.getElementById('fPay').value = '';
-    renderTable(learners);
+    
+    // ✅ NAYA LOGIC
+    renderTable(learners.filter(l => l.remark !== "Self Registered"));
+
 }
 
 function renderTable(dataToRender) {
@@ -2370,23 +2404,30 @@ async function printL(id) {
 function editL(id) {
     const l = learners.find(x => x.id === id);
     if(!l) return;
-    
         const fields = [
         'siNo', 'name', 'father', 'mother', 'dob', 'gender', 'category', 'aadhar', 'mobile',
         'village', 'panchayat', 'block', 'pincode', 'school', 'board', 'learnerClass',
         'rollCode', 'rollNo', 'passYear', 'bankName', 'branchName', 'accNo', 'ifsc',
-        'receipt', 'verify', 'alloc', 'admis', 'pay', 'course_applied', 'is_kyp_student', 'txn_id','remark', 
+        'receipt', 'verify', 'alloc', 'admis', 'deep_admis', 'pay', 'course_applied', 'is_kyp_student', 'txn_id','remark', 
         'mnssbyId', 'deepId', 'mnssbyPass', 'formStatus', 'drccStatus','fee_total', 'fee_paid'
     ];
 
+
     fields.forEach(field => {
         const el = document.getElementById(field);
-        if(el) el.value = l[field] || (el.tagName === 'SELECT' ? (l[field] || el.options[0].value) : "");
+        if(el) {
+            if (field === 'remark' && l[field] === 'Self Registered') {
+                el.value = ""; 
+            } else {
+                el.value = l[field] || (el.tagName === 'SELECT' ? (l[field] || el.options[0].value) : "");
+            }
+        }
     });
-   document.getElementById('photoData').value = l.photo || ""; 
+    document.getElementById('photoData').value = l.photo || ""; 
     document.getElementById('editId').value = l.id;
     switchTab('reg');
 }
+
 // LINE 580 KE PAAS WALE DELETE FUNCTION KO ISSE REPLACE KAREIN
 async function deleteL(id) {
     if (!id) {
@@ -2394,11 +2435,10 @@ async function deleteL(id) {
         return;
     }
     
-    // अब डेटा हमेशा के लिए डिलीट नहीं होगा, छुप जाएगा
     const confirmName = prompt("डेटा को रिसाइकिल बिन (Hide) में डालने के लिए 'DELETE' टाइप करें:");
     
-    if (confirmName === "DELETE") {
-        // .delete() की जगह .update({ is_active: false }) का उपयोग
+    // NAYA LOGIC: अब अगर कोई छोटे अक्षरों में (delete) भी लिखेगा तो काम करेगा
+    if (confirmName && confirmName.trim().toUpperCase() === "DELETE") {
         const { error } = await _supabase
             .from('students')
             .update({ is_active: false })
@@ -2406,29 +2446,45 @@ async function deleteL(id) {
 
         if (error) {
             showToast("Delete Failed: " + error.message, "bg-danger");
+            alert("Database Error: क्या आपने Supabase में 'is_active' नाम का कॉलम बनाया है?");
         } else {
-            showToast("डेटा हटा दिया गया (Soft Delete)!", "bg-success");
-            await loadDataFromSupabase();
+            showToast("डेटा रिसाइकिल बिन में चला गया!", "bg-success");
+            await loadDataFromSupabase(); // टेबल को रिफ्रेश करेगा
         }
     } else if (confirmName !== null) {
         showToast("डिलीट रद्द कर दिया गया।", "bg-warning");
     }
 }
-
 function updateStats() {
-    if (!learners) return; // अगर डेटा नहीं है तो रुक जाओ
-    
-    // पुराने काउंटर्स
-    document.getElementById('stTotal').innerText = learners.length || 0;
-    document.getElementById('stVerified').innerText = learners.filter(l => l.verify === 'Yes').length || 0;
-    document.getElementById('stAlloc').innerText = learners.filter(l => l.alloc === 'Yes').length || 0;
-    document.getElementById('stPending').innerText = learners.filter(l => l.verify === 'No').length || 0;
+    if (!learners) return;
 
-    // नए काउंटर्स का लॉजिक
-    document.getElementById('stAdmission').innerText = learners.filter(l => l.admis === 'Yes').length || 0;
-    document.getElementById('stPayment').innerText = learners.filter(l => l.pay === 'Yes').length || 0;
-    document.getElementById('stDeep').innerText = learners.filter(l => l.deep_admis === 'Yes').length || 0;
+    // 1. PENDING CARDS: सिर्फ वो बच्चे जो पूरी तरह से पेंडिंग हैं (KYP हो या DEEP)
+    const pending = learners.filter(l => l.verify === 'No' && l.admis === 'No' && l.deep_admis === 'No');
+    if (document.getElementById('stOnlineTotal')) {
+        document.getElementById('stOnlineTotal').innerText = pending.length;
+    }
+
+    // 2. ADMITTED CARD (KYP + DEEP)
+    const admitted = learners.filter(l => l.admis === 'Yes' || l.deep_admis === 'Yes');
+    if (document.getElementById('stDeepTotal')) {
+        document.getElementById('stDeepTotal').innerText = admitted.length;
+    }
+
+    // 3. MAIN CARDS: सिर्फ KYP छात्र जो पेंडिंग नहीं हैं
+    const isKyp = (course) => !course || course === '-' || course.toUpperCase().includes('KYP');
+    const topQueue = learners.filter(l => l.remark !== "Self Registered" && isKyp(l.course_applied));
+
+    if (document.getElementById('stTotal')) {
+        document.getElementById('stTotal').innerText = topQueue.length;
+        document.getElementById('stVerified').innerText = topQueue.filter(l => l.verify === 'Yes').length;
+        document.getElementById('stAlloc').innerText = topQueue.filter(l => l.alloc === 'Yes').length;
+        document.getElementById('stPending').innerText = topQueue.filter(l => l.verify === 'No').length;
+        document.getElementById('stAdmission').innerText = topQueue.filter(l => l.admis === 'Yes').length;
+        document.getElementById('stPayment').innerText = topQueue.filter(l => l.pay === 'Yes').length;
+document.getElementById('stDeep').innerText = topQueue.filter(l => l.deep_admis === 'Yes').length;
+    }
 }
+
 
 // 1. SIRF ADMITTED STUDENTS KA BACKUP
 function exportActiveOnlyCSV() {
@@ -2532,21 +2588,22 @@ async function loadDataFromSupabase() {
         const { data, error } = await _supabase
             .from('students')
             .select('*')
-            .eq('is_active', true) // <-- सिर्फ एक्टिव (बिना डिलीट किया) डेटा लाएगा
+            .eq('is_active', true) 
             .order('name', { ascending: true });
 
         if (error) throw error;
 
         if (data) {
             learners = data;
-            renderTable(learners);
+            
+            // ✅ NAYA LOGIC
+            renderTable(learners.filter(l => l.remark !== "Self Registered"));
+
             updateStats();
             updateFilterOptions(); 
-            console.log("Data successfully loaded from Cloud.");
         }
     } catch (err) {
         console.error("Error loading data:", err.message);
-        showToast("डेटा लोड नहीं हो पाया!", "bg-danger");
     }
 }
 
@@ -2606,20 +2663,27 @@ function renderActiveStudents() {
     const selectedMonth = document.getElementById('activeMonthFilter').value;
     const batchSearch = (document.getElementById('activeBatchFilter').value || "").toLowerCase();
 
-    // Filtering logic
+    // ✅ STRICT Filtering Logic (हर कोर्स के लिए सटीक लिस्ट)
     const filteredList = learners.filter(l => {
         let matchesCourse = false;
-        if (selectedCourse === 'KYP') {
-            matchesCourse = (l.admis === 'Yes'); 
-        } else if (selectedCourse === 'DEEP') {
-            matchesCourse = (l.deep_admis === 'Yes'); 
-        } else {
+        const cName = (l.course_applied || "").toUpperCase();
+
+        // कोर्स के अनुसार सिर्फ उन्हीं बच्चों को दिखाएं जिनका उस कोर्स में एडमिशन (Yes) हो गया है
+        if (selectedCourse === 'ALL' || selectedCourse === "") {
             matchesCourse = (l.admis === 'Yes' || l.deep_admis === 'Yes'); 
+        } else if (selectedCourse === 'KYP') {
+            matchesCourse = (cName.includes('KYP COURSE') || cName === '-' || cName.includes('KYP + DEEP')) && l.admis === 'Yes';
+        } else if (selectedCourse === 'DEEP') {
+            matchesCourse = (cName.includes('DEEP') || cName.includes('KYP + DEEP')) && l.deep_admis === 'Yes';
+        } else if (selectedCourse === 'EXCEL') {
+            matchesCourse = cName.includes('EXCEL') && l.deep_admis === 'Yes';
+        } else if (selectedCourse === 'AI') {
+            matchesCourse = cName.includes('AI') && l.deep_admis === 'Yes';
         }
         
         const matchesMonth = (selectedMonth === "") || 
                              (l.remark && l.remark.toLowerCase().includes(selectedMonth.toLowerCase()));
-        
+
         const matchesBatch = (batchSearch === "") || 
                              (l.remark && l.remark.toLowerCase().includes(batchSearch));
         
@@ -2634,10 +2698,22 @@ function renderActiveStudents() {
     tbody.innerHTML = filteredList.map((l, index) => {
         const batchDetails = l.remark || "No Batch Assigned";
         
-        // कोर्स का बैज तय करें
-        const courseBadge = l.admis === 'Yes' 
-            ? '<span class="badge bg-success shadow-sm" style="font-size: 10px;">KYP</span>' 
-            : '<span class="badge bg-info shadow-sm" style="font-size: 10px;">DEEP IT</span>';
+        // कोर्स का बैज तय करें (NAYA SMART LOGIC)
+        let courseBadge = '';
+        const courseStr = (l.course_applied || "").toUpperCase();
+
+        if (courseStr.includes('KYP') && courseStr.includes('DEEP')) {
+            courseBadge = '<span class="badge bg-success shadow-sm mb-1 d-block" style="font-size: 9px;">KYP</span><span class="badge bg-info shadow-sm d-block" style="font-size: 9px;">DEEP IT</span>';
+        } else if (courseStr.includes('EXCEL')) {
+            courseBadge = '<span class="badge bg-warning text-dark shadow-sm" style="font-size: 10px;"><i class="fas fa-file-excel"></i> ADV. EXCEL</span>';
+        } else if (courseStr.includes('AI')) {
+            courseBadge = '<span class="badge bg-danger shadow-sm" style="font-size: 10px;"><i class="fas fa-brain"></i> AI COURSE</span>';
+        } else if (courseStr.includes('DEEP')) {
+            courseBadge = '<span class="badge bg-info shadow-sm" style="font-size: 10px;">DEEP IT</span>';
+        } else {
+            courseBadge = '<span class="badge bg-success shadow-sm" style="font-size: 10px;">KYP</span>';
+        }
+
 
         // ONLINE STATUS
         let onlineBadge = '';
@@ -2689,67 +2765,74 @@ function renderActiveStudents() {
             </td>
 
             <td class="text-center align-middle">${courseBadge}</td>
-<td class="align-middle text-center" style="min-width: 120px;">
-    <!-- 1. Fee Details -->
-    <div class="p-1 border rounded bg-light mb-2 text-start shadow-sm" style="font-size: 9px; line-height: 1.3;">
+<td class="align-middle text-center" style="min-width: 140px;">
+    <!-- ✅ Clean Course Fee Card -->
+    <div class="border rounded-3 bg-white shadow-sm mx-auto mb-2 text-start" style="font-size: 10.5px; line-height: 1.5; width: max-content; padding: 8px 12px;">
         ${(() => {
+            const cNameStr = (l.course_applied || "").toUpperCase();
             const total = parseInt(l.fee_total) || 0;
             const paid = parseInt(l.fee_paid) || 0;
             const due = total - paid;
-            const statusColor = due <= 0 && total > 0 ? "text-success" : (due === total ? "text-danger" : "text-warning");
+            const statusColor = due <= 0 && total > 0 ? "text-success" : (due === total ? "text-danger" : "text-dark");
+            
+            // कोर्स के अनुसार फीस का नाम
+            let feeTypeLabel = "Course Fee";
+            if (cNameStr.includes("KYP COURSE") || cNameStr === "-" || cNameStr === "") feeTypeLabel = "KYP Security Money";
+            else if (cNameStr.includes("KYP") && cNameStr.includes("DEEP")) feeTypeLabel = "KYP+DEEP Fee";
+            else if (cNameStr.includes("EXCEL")) feeTypeLabel = "Advance Excel Fee";
+            else if (cNameStr.includes("AI")) feeTypeLabel = "AI Course Fee";
+            else if (cNameStr.includes("DEEP")) feeTypeLabel = "DEEP IT Fee";
+
             return `
-            <div class="text-muted">Total: <b class="text-dark">₹${total}</b></div>
-            <div class="text-success">Paid: <b>₹${paid}</b> <i class="fas fa-pen text-primary ms-1" style="cursor:pointer;" onclick="updateFeePaid(${l.id}, ${total}, ${paid})" title="Edit Amount"></i></div>
-            <div class="${statusColor}">Due: <b>₹${due}</b></div>
+            <div class="text-muted fw-bold border-bottom pb-1 mb-1 text-center" style="font-size: 8.5px; text-transform: uppercase; color: #64748b;">
+                💳 ${feeTypeLabel}
+            </div>
+            <div class="text-muted mb-1">Total: <b class="text-dark">₹${total}</b></div>
+            <div class="text-success mb-1">Paid: <b>₹${paid}</b></div>
+            <div class="${statusColor} fw-bold">Due: <b>₹${due}</b></div>
             `;
         })()}
     </div>
     
-    <!-- 2. UTR Number (सुंदर लाल बैज में पेमेंट के ऊपर) -->
-    ${l.txn_id && l.txn_id !== '-' && l.txn_id !== 'Pending (Verification)' ? 
-        `<div class="badge bg-danger-subtle text-danger border border-danger-subtle mb-1 d-block text-wrap shadow-sm" style="font-size: 9px;"><i class="fas fa-receipt me-1"></i> UTR: ${l.txn_id}</div>` 
+    <!-- UTR Badge -->
+    ${l.txn_id && l.txn_id !== '-' && l.txn_id !== 'Pending (Verification)' && l.txn_id !== 'CASH at Center' ? 
+        `<div class="badge bg-danger-subtle text-danger border border-danger-subtle mb-2 d-block mx-auto text-wrap shadow-sm" style="font-size: 9px; max-width: 120px;"><i class="fas fa-receipt me-1"></i> UTR: Done ✅</div>` 
     : ''}
 
-    <!-- 3. SDC Simri Student Status (नीले बैज में) -->
-    <div class="badge bg-primary-subtle text-primary border border-primary-subtle mb-2 d-block text-wrap shadow-sm" style="font-size: 9px;">
-        <i class="fas fa-building me-1"></i> SDC: ${l.is_kyp_student === 'OUR_CENTER' ? 'Yes (Simri)' : (l.is_kyp_student === 'OTHER_CENTER' ? 'Other Center' : 'No')}
-    </div>
-    
-    <!-- 4. Admin Payment Yes/No Dropdown -->
-    <select class="form-select form-select-sm fw-bold shadow-sm ${l.pay === 'Yes' ? 'border-success text-success bg-success-subtle' : 'border-danger text-danger bg-danger-subtle'}" 
-            onchange="quickUpdatePayment(${l.id}, this.value)" 
-            style="font-size: 10px; padding: 2px 5px; height: auto;">
-        <option value="No" ${l.pay !== 'Yes' ? 'selected' : ''}>⏳ Pending</option>
-        <option value="Yes" ${l.pay === 'Yes' ? 'selected' : ''}>✅ Verified</option>
-    </select>
+    <!-- ✅ Beautiful Action Button for Payment Modal -->
+    <button class="btn ${l.pay === 'Yes' ? 'btn-success' : 'btn-warning text-dark'} btn-sm rounded-pill shadow-sm mx-auto d-flex align-items-center justify-content-center w-100" 
+            style="font-size: 10px; font-weight: 800; max-width: 120px; padding: 5px 10px; transition: 0.2s;" 
+            onclick="openAdminPaymentModal(${l.id})">
+        ${l.pay === 'Yes' ? '<i class="fas fa-check-circle me-1"></i> Pay Verified' : '<i class="fas fa-exclamation-circle me-1"></i> Verify Payment'}
+    </button>
 </td>
 
 
-            <td class="align-middle">
-                <div class="d-flex flex-column align-items-center">
-                    <div id="dateWrapper_${l.id}" class="date-picker-container">
-                        <label class="fw-bold mb-1" style="font-size: 10px; color: #1e293b;">Select Date Range:</label>
-                        <div class="d-flex gap-1 mb-2">
-                            <input type="date" id="fromDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
-                            <input type="date" id="toDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
-                        </div>
-                        <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" style="font-size: 10px; border-radius: 8px;" onclick="downloadStudentAttendancePDF(${l.id})">
-                            <i class="fas fa-file-download me-1"></i> PDF
-                        </button>
-                    </div>
+<td class="align-middle" style="min-width: 110px;">
+    <div class="d-flex flex-column align-items-center gap-2">
+        <div id="dateWrapper_${l.id}" class="date-picker-container w-100">
+            <label class="fw-bold mb-1" style="font-size: 10px; color: #1e293b;">Select Date Range:</label>
+            <div class="d-flex gap-1 mb-2">
+                <input type="date" id="fromDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
+                <input type="date" id="toDate_${l.id}" class="form-control form-control-sm" style="font-size: 10px; border-radius: 8px;">
+            </div>
+            <button class="btn btn-success btn-sm w-100 fw-bold shadow-sm" style="font-size: 10px; border-radius: 8px;" onclick="downloadStudentAttendancePDF(${l.id})">
+                <i class="fas fa-file-download me-1"></i> PDF
+            </button>
+        </div>
 
-                    <button id="mainRepBtn_${l.id}" class="btn btn-outline-info btn-sm rounded-pill px-3 shadow-sm w-100" style="font-size: 10px;" onclick="toggleDateFields(${l.id})">
-                        <i class="fas fa-calendar-alt me-1"></i> Report
-                    </button>
-                     <button class="btn ${l.extra_time_active ? 'btn-danger' : 'btn-success'} btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="toggleLoginAccess(${l.id}, ${l.extra_time_active || false})">
-                        <i class="fas ${l.extra_time_active ? 'fa-lock' : 'fa-unlock'} me-1"></i> ${l.extra_time_active ? 'Lock' : 'Unlock'}
-                    </button>
-                    
-                    <button class="btn btn-outline-warning btn-sm rounded-pill px-3 shadow-sm mt-1 w-100" style="font-size: 10px;" onclick="removeAdmission(${l.id})">
-                        <i class="fas fa-user-minus me-1"></i> Remove
-                    </button>
-                </div>
-            </td>
+        <button id="mainRepBtn_${l.id}" class="btn btn-outline-info btn-sm rounded-pill px-3 shadow-sm w-100 fw-bold" style="font-size: 10.5px;" onclick="toggleDateFields(${l.id})">
+            <i class="fas fa-calendar-alt me-1"></i> Report
+        </button>
+         <button class="btn ${l.extra_time_active ? 'btn-danger' : 'btn-success'} btn-sm rounded-pill px-3 shadow-sm w-100 fw-bold" style="font-size: 10.5px;" onclick="toggleLoginAccess(${l.id}, ${l.extra_time_active || false})">
+            <i class="fas ${l.extra_time_active ? 'fa-lock' : 'fa-unlock'} me-1"></i> ${l.extra_time_active ? 'Lock' : 'Unlock'}
+        </button>
+        <button class="btn btn-outline-warning text-dark btn-sm rounded-pill px-3 shadow-sm w-100 fw-bold" style="font-size: 10.5px;" onclick="removeAdmission(${l.id})">
+            <i class="fas fa-user-minus me-1"></i> Remove
+        </button>
+    </div>
+</td>
+
         </tr>`;
     }).join('');
 }
@@ -2809,7 +2892,7 @@ async function toggleLoginAccess(studentId, currentState) {
 // --- छोटा वर्जन जनरेटर (Short Version) ---
 const today = new Date();
 
-const currentVersion = `3.24`; // अगली बार इसे 2.3.2 कर दें 
+const currentVersion = `3.26`; // अगली बार इसे 2.3.2 कर दें 
 
 // साइडबार और फुटर में वर्जन अपडेट करना
 document.querySelectorAll('.sidebar-footer, footer').forEach(el => {
@@ -3042,22 +3125,33 @@ async function fetchStudentReport() {
             </div>`;
     }
 }
-// ==========================================
-// DEEP IT CLASSES LOGIC
-// ==========================================
+// 2. DEEP IT ADMISSION LOGIC
 function renderDeepTable() {
     const tbody = document.getElementById('deepTbody');
-    const list = learners.filter(l => l.admis !== 'Yes' && l.deep_admis !== 'Yes');
     
-    if(list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted fw-bold">Sabhi pending students ka admission ho chuka hai.</td></tr>';
+    // ✅ STRICT LOGIC: यहाँ सिर्फ DEEP, EXCEL, AI या (KYP+DEEP) वाले पेंडिंग बच्चे ही आएँगे।
+    // "KYP Course" वाले बच्चे यहाँ नहीं दिखेंगे (वो सिर्फ KYP Admission Portal टैब में दिखेंगे)
+    const list = learners.filter(l => {
+        const cName = (l.course_applied || "").toUpperCase();
+        return l.deep_admis !== 'Yes' && 
+               cName !== "" && 
+               cName !== "-" && 
+               cName !== "KYP COURSE"; 
+    });
+
+        if(list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-muted fw-bold">सभी पेंडिंग छात्रों (DEEP/Excel/AI) का एडमिशन हो चुका है।</td></tr>';
         return;
     }
+
 
     tbody.innerHTML = list.map((l, index) => `
         <tr>
             <td class="text-center align-middle">${index + 1}</td>
-            <td class="text-start fw-bold text-dark align-middle">${l.name}</td>
+            <td class="text-start fw-bold text-dark align-middle">
+                ${l.name}<br>
+                <span class="badge bg-info-subtle text-info border border-info-subtle mt-1" style="font-size: 9px;">${l.course_applied}</span>
+            </td>
             <td class="text-center align-middle">${l.mobile}</td>
             <td class="text-center align-middle">
                 <div class="d-flex gap-1 justify-content-center">
@@ -3065,8 +3159,6 @@ function renderDeepTable() {
                         <option value="">Month</option>
                         <option value="January">Jan</option><option value="February">Feb</option><option value="March">Mar</option>
                         <option value="April">Apr</option><option value="May">May</option><option value="June">Jun</option>
-                        <option value="July">Jul</option><option value="August">Aug</option><option value="September">Sep</option>
-                        <option value="October">Oct</option><option value="November">Nov</option><option value="December">Dec</option>
                     </select>
                     <input type="text" id="deepTime_${l.id}" class="form-control form-control-sm" placeholder="08:30 AM" style="width: 85px; font-size: 11px;">
                 </div>
@@ -3083,7 +3175,8 @@ async function admitToDeep(id) {
     if (!month || !time) { showToast("Batch Month aur Time bharein!", "bg-warning"); return; }
     
     const batchDetails = `${month} - ${time}`;
-    if(confirm(`Is student ko 'DEEP Basic IT' (${batchDetails}) mein add karein?`)) {
+        if(confirm(`क्या आप इस छात्र को उसके चुने गए कोर्स बैच (${batchDetails}) में ऐड करना चाहते हैं?`)) {
+
         const { error } = await _supabase.from('students').update({ deep_admis: 'Yes', remark: batchDetails }).eq('id', id);
         if(!error) { showToast("Success!", "bg-success"); await loadDataFromSupabase(); renderDeepTable(); }
         else showToast("Error!", "bg-danger");
@@ -3099,11 +3192,15 @@ async function loadAttendanceList() {
 
     const { data: logs } = await _supabase.from('attendance_logs').select('*').eq('attendance_date', date);
 
-    let filtered = learners.filter(l => {
-        if(course === 'KYP') return l.admis === 'Yes';
-        if(course === 'DEEP') return l.deep_admis === 'Yes';
+        let filtered = learners.filter(l => {
+        const cName = (l.course_applied || "").toUpperCase();
+        if(course === 'KYP') return (cName.includes('KYP') || cName === '-') && l.admis === 'Yes';
+        if(course === 'DEEP') return cName.includes('DEEP') && l.deep_admis === 'Yes';
+        if(course === 'EXCEL') return cName.includes('EXCEL') && (l.admis === 'Yes' || l.deep_admis === 'Yes');
+        if(course === 'AI') return cName.includes('AI') && (l.admis === 'Yes' || l.deep_admis === 'Yes');
         return false;
     });
+
 
     tbody.innerHTML = filtered.map((l, i) => {
         const studentLog = logs ? logs.find(log => log.student_id === l.id && (log.course_type === course || (!log.course_type && course === 'KYP'))) : null;
@@ -3263,11 +3360,18 @@ async function fetchBatchReport() {
     
     resDiv.innerHTML = `<div class="text-center p-4"><div class="spinner-border text-info"></div></div>`;
     
-    let batchStudents = learners.filter(l => {
-        let isValidCourse = (course === 'KYP') ? (l.admis === 'Yes') : (l.deep_admis === 'Yes');
+        let batchStudents = learners.filter(l => {
+        const cName = (l.course_applied || "").toUpperCase();
+        let isValidCourse = false;
+        
+        if(course === 'KYP') isValidCourse = (cName.includes('KYP') || cName === '-') && l.admis === 'Yes';
+        else if(course === 'DEEP') isValidCourse = cName.includes('DEEP') && l.deep_admis === 'Yes';
+        else if(course === 'EXCEL') isValidCourse = cName.includes('EXCEL') && (l.admis === 'Yes' || l.deep_admis === 'Yes');
+        else if(course === 'AI') isValidCourse = cName.includes('AI') && (l.admis === 'Yes' || l.deep_admis === 'Yes');
+
         return isValidCourse && (l.remark || "").toLowerCase().includes(month.toLowerCase()) && (l.remark || "").toLowerCase().includes(time);
     });
-    
+
     if (batchStudents.length === 0) {
         resDiv.innerHTML = `<p class="text-center p-4 fw-bold text-muted">No Data Found for ${course} Batch.</p>`;
         return;
@@ -3386,55 +3490,50 @@ async function exportBatchExcel() {
     link.click();
     showToast("Calendar Excel Downloaded!", "bg-success");
 }
-
-
-
-// --- ADMISSION PORTAL FUNCTIONS ---
-
-// 1. Admission Table Render karein (Sirf Pending Verification wale dikhayenge)
+// 1. KYP ADMISSION PORTAL LOGIC (Pending Verification)
 function renderAdmissionTable() {
     const tbody = document.getElementById('admissionTbody');
     
-    // Filter: Sirf wahi jinka verification 'No' hai aur admission pending hai
-    const list = learners.filter(l => l.verify === 'No');
+    // NAYA LOGIC: यह लिस्ट ऊपर के "PENDING" कार्ड की गिनती से 100% मैच करेगी
+    const list = learners.filter(l => {
+        const course = l.course_applied || '-';
+        const isKyp = course === '-' || course.toUpperCase().includes('KYP');
+        return l.verify === 'No' && isKyp && l.remark !== "Self Registered";
+    });
     
     document.getElementById('pendingAdmissionCount').innerText = list.length;
 
     if(list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted">Sabhi ka verification poora hai!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-muted">सभी KYP छात्रों का वेरिफिकेशन पूरा हो चुका है!</td></tr>`;
         return;
     }
 
-    tbody.innerHTML = list.map((l, index) => `
+    tbody.innerHTML = list.map((l, index) => {
+        const deepBadge = (l.deep_admis === 'Yes') 
+            ? `<br><span class="badge bg-info mt-1" style="font-size: 9px;"><i class="fas fa-check-circle"></i> DEEP Admitted</span>` 
+            : '';
+        
+        return `
         <tr>
-            <td class="text-center">${index + 1}</td>
-            <td class="text-start fw-bold text-primary">${l.name}</td>
-            <td class="text-center">
-                <span class="badge bg-light text-dark border">${l.mnssbyId || 'N/A'}</span>
+            <td class="text-center align-middle">${index + 1}</td>
+            <td class="text-start fw-bold text-primary align-middle">
+                ${l.name}
+                ${deepBadge}
             </td>
-            <td class="text-center">
-                <span class="badge bg-light text-danger border">${l.mnssbyPass || 'N/A'}</span>
-            </td>
-            <td class="text-center">
-                <span class="badge ${l.formStatus === 'Submitted' ? 'bg-success' : 'bg-warning'}">
-                    ${l.formStatus || 'Pending'}
-                </span>
-            </td>
-            <td class="text-center">
-                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Verification Pending</span>
-            </td>
-            <td class="text-center">
+            <td class="text-center align-middle"><span class="badge bg-light text-dark border">${l.mnssbyId || 'N/A'}</span></td>
+            <td class="text-center align-middle"><span class="badge bg-light text-danger border">${l.mnssbyPass || 'N/A'}</span></td>
+            <td class="text-center align-middle"><span class="badge ${l.formStatus === 'Submitted' ? 'bg-success' : 'bg-warning'}">${l.formStatus || 'Pending'}</span></td>
+            <td class="text-center align-middle"><span class="badge bg-danger-subtle text-danger border border-danger-subtle">Verification Pending</span></td>
+            <td class="text-center align-middle">
                 <div class="d-flex gap-2 justify-content-center">
-                    <button class="btn btn-sm btn-dark px-3" onclick="openOfficialPortal('${l.mnssbyId}', '${l.mnssbyPass}')">
-                        <i class="fas fa-sign-in-alt me-1"></i> Login
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary" onclick="editL(${l.id})">
-                        <i class="fas fa-edit"></i>
-                    </button>
+                    <button class="btn btn-sm btn-dark px-3" onclick="openOfficialPortal('${l.mnssbyId}', '${l.mnssbyPass}')"><i class="fas fa-sign-in-alt me-1"></i> Login</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editL(${l.id})"><i class="fas fa-edit"></i></button>
                 </div>
             </td>
-        </tr>`).join('');
+        </tr>`
+    }).join('');
 }
+
 
 // 2. Official Portal Open karne ka function (Fix for ERR_CONNECTION_RESET)
 async function openOfficialPortal(user, pass) {
@@ -3838,53 +3937,122 @@ async function quickUpdatePayment(id, status) {
         showToast("एरर! पेमेंट अपडेट नहीं हुआ।", "bg-danger");
     }
 }
-// एडमिन द्वारा सीधे पेमेंट अपडेट करने का फंक्शन
-async function updateFeePaid(id, total, currentPaid) {
-    let newPaidStr = prompt(`Total Fee: ₹${total}\nCurrently Paid: ₹${currentPaid}\n\nछात्र ने अब तक कुल कितना पैसा जमा कर दिया है? (New Total Paid Amount):`, currentPaid);
+// ✅ Advanced Admin Payment Modal Logic
+let currentPaymentEditId = null;
+
+function openAdminPaymentModal(id) {
+    const l = learners.find(x => x.id === id);
+    if (!l) return;
     
-    if (newPaidStr !== null && newPaidStr.trim() !== "") {
-        let newPaid = parseInt(newPaidStr);
-        if (isNaN(newPaid)) {
-            alert("कृपया सही संख्या (Number) डालें!");
-            return;
+    currentPaymentEditId = id;
+    
+    // स्टूडेंट का नाम सेट करें
+    document.getElementById('payModalStudentName').innerText = l.name;
+    
+    // कोर्स के अनुसार फीस का नाम (Label) सेट करें
+    const cNameStr = (l.course_applied || "").toUpperCase();
+    let feeTypeLabel = "Course Fee";
+    
+    if (cNameStr.includes("KYP COURSE") || cNameStr === "-" || cNameStr === "") feeTypeLabel = "KYP Security Money";
+    else if (cNameStr.includes("KYP") && cNameStr.includes("DEEP")) feeTypeLabel = "KYP + DEEP Fee";
+    else if (cNameStr.includes("EXCEL")) feeTypeLabel = "Advance Excel Fee";
+    else if (cNameStr.includes("AI")) feeTypeLabel = "AI Course Fee";
+    else if (cNameStr.includes("DEEP")) feeTypeLabel = "DEEP IT Fee";
+    
+    document.getElementById('payModalCourseType').innerText = feeTypeLabel;
+
+    // अमाउंट, UTR और स्टेटस भरें
+    const total = parseInt(l.fee_total) || 0;
+    const paid = parseInt(l.fee_paid) || 0;
+    
+    document.getElementById('payModalTotal').value = total;
+    document.getElementById('payModalPaid').value = paid;
+    document.getElementById('payModalUtr').value = l.txn_id === '-' ? '' : l.txn_id;
+    document.getElementById('payModalStatus').value = l.pay || 'No';
+
+    calculateDueInModal();
+
+    // मॉडल खोलें
+    new bootstrap.Modal(document.getElementById('adminPaymentModal')).show();
+}
+
+function calculateDueInModal() {
+    const total = parseInt(document.getElementById('payModalTotal').value) || 0;
+    const paid = parseInt(document.getElementById('payModalPaid').value) || 0;
+    let due = total - paid;
+    if (due < 0) due = 0; // Due माइनस में न जाए
+    document.getElementById('payModalDue').innerText = due;
+}
+
+async function saveAdminPayment() {
+    if (!currentPaymentEditId) return;
+    
+    const total = parseInt(document.getElementById('payModalTotal').value) || 0;
+    const paid = parseInt(document.getElementById('payModalPaid').value) || 0;
+    let utr = document.getElementById('payModalUtr').value.trim() || '-';
+    let payStatus = document.getElementById('payModalStatus').value;
+    
+    if (total < 0 || paid < 0) {
+        alert("अमाउंट (Amount) गलत है, कृपया सही संख्या डालें!");
+        return;
+    }
+    
+    try {
+        showToast("पेमेंट सेव हो रहा है...", "bg-info");
+        
+        const { error } = await _supabase.from('students').update({ 
+            fee_total: total,
+            fee_paid: paid,
+            txn_id: utr,
+            pay: payStatus 
+        }).eq('id', currentPaymentEditId);
+        
+        if (error) throw error;
+        
+        showToast("पेमेंट सफलतापूर्वक अपडेट हो गया!", "bg-success");
+        
+        // लोकल डेटा को तुरंत अपडेट करें (बिना रिफ्रेश के दिखाने के लिए)
+        const index = learners.findIndex(x => x.id === currentPaymentEditId);
+        if(index !== -1) {
+            learners[index].fee_total = total;
+            learners[index].fee_paid = paid;
+            learners[index].txn_id = utr;
+            learners[index].pay = payStatus;
         }
         
-        let newPayStatus = (newPaid >= total && total > 0) ? 'Yes' : 'No';
+        renderActiveStudents(); 
+        updateStats();
         
-        try {
-            const { error } = await _supabase.from('students').update({ 
-                fee_paid: newPaid,
-                pay: newPayStatus 
-            }).eq('id', id);
-            
-            if (error) throw error;
-            
-            showToast("पेमेंट रिकॉर्ड अपडेट हो गया!", "bg-success");
-            
-            const index = learners.findIndex(x => x.id === id);
-            if(index !== -1) {
-                learners[index].fee_paid = newPaid;
-                learners[index].pay = newPayStatus;
-            }
-            renderActiveStudents(); 
-            updateStats();
-            
-        } catch (err) {
-            showToast("एरर! अपडेट नहीं हुआ।", "bg-danger");
-        }
+        // मॉडल बंद करें
+        bootstrap.Modal.getInstance(document.getElementById('adminPaymentModal')).hide();
+        
+    } catch (err) {
+        console.error(err);
+        showToast("एरर! पेमेंट अपडेट नहीं हुआ।", "bg-danger");
     }
 }
+
+
 // रिसाइकिल बिन खोलना और डिलीट डेटा लोड करना
 async function openRecycleBinModal() {
     const tbody = document.getElementById('recycleBinTbody');
     tbody.innerHTML = `<tr><td colspan="4" class="p-4"><i class="fas fa-spinner fa-spin text-danger"></i> Loading...</td></tr>`;
     
-    new bootstrap.Modal(document.getElementById('recycleBinModal')).show();
+    // Modal को सुरक्षित तरीके से खोलना
+    const modalEl = document.getElementById('recycleBinModal');
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl);
+    modal.show();
 
     // is_active: false वाले डेटा को डेटाबेस से मंगाना
     const { data, error } = await _supabase.from('students').select('id, name, mobile, course_applied').eq('is_active', false);
     
-    if (error || !data || data.length === 0) {
+    if (error) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-danger fw-bold">Error: ${error.message}</td></tr>`;
+        return;
+    }
+
+    if (!data || data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-muted fw-bold">Recycle Bin खाली है।</td></tr>`;
         return;
     }
@@ -4029,20 +4197,54 @@ async function permanentDelete(id) {
         </div>
     </div>
 </div>
-<div class="modal fade" id="studentAttModal" tabindex="-1" aria-hidden="true">
+<!-- ✅ Advanced Admin Payment Management Modal -->
+<div class="modal fade" id="adminPaymentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content" style="border-radius: 20px;">
-            <div class="modal-header bg-info text-white" style="border-radius: 20px 20px 0 0; padding: 12px 20px;">
-                <h6 class="modal-title fw-bold"><i class="fas fa-calendar-check me-2"></i> Monthly Report</h6>
+        <div class="modal-content" style="border-radius: 20px; overflow: hidden; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+            <div class="modal-header text-white border-0" style="padding: 15px 20px; background: linear-gradient(135deg, #10b981, #059669);">
+                <h6 class="modal-title fw-bold m-0"><i class="fas fa-wallet me-2"></i> Edit Payment Details</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-3">
-                <h6 id="modalStudentName" class="fw-bold text-center text-dark mb-3 text-uppercase"></h6>
-                <div id="modalAttContent" style="max-height: 300px; overflow-y: auto; scrollbar-width: thin;">
+            <div class="modal-body p-4 bg-light">
+                <div class="text-center mb-3">
+                    <h6 id="payModalStudentName" class="fw-bold text-dark m-0 text-uppercase" style="letter-spacing: 0.5px;">Student Name</h6>
+                    <span id="payModalCourseType" class="badge bg-primary-subtle text-primary border border-primary-subtle mt-2" style="font-size: 10px;">KYP Security Money</span>
+                </div>
+                
+                <div class="bg-white p-3 rounded-3 shadow-sm border mb-3 text-start">
+                    <label class="small fw-bold text-muted mb-1">Total Fee / Security (₹)</label>
+                    <input type="number" id="payModalTotal" class="form-control fw-bold text-dark mb-2" style="border-radius: 8px; background: #f8fafc;" oninput="calculateDueInModal()">
+                    
+                    <label class="small fw-bold text-success mb-1">Amount Paid (₹)</label>
+                    <div class="input-group mb-2 shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                        <span class="input-group-text bg-success text-white border-success"><i class="fas fa-rupee-sign"></i></span>
+                        <input type="number" id="payModalPaid" class="form-control fw-bold text-success border-success" oninput="calculateDueInModal()" style="font-size: 14px;">
                     </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-2 border-top">
+                        <span class="small fw-bold text-danger">Remaining Due:</span>
+                        <h6 class="m-0 fw-bold text-danger">₹<span id="payModalDue">0</span></h6>
+                    </div>
+
+                    <label class="small fw-bold text-muted mb-1">Transaction/UTR ID</label>
+                    <input type="text" id="payModalUtr" class="form-control fw-bold text-dark mb-2" style="border-radius: 8px; background: #f8fafc;" placeholder="Enter UTR if any">
+
+                    <label class="small fw-bold text-primary mb-1">Payment Status</label>
+                    <select id="payModalStatus" class="form-select fw-bold border-primary text-primary shadow-sm" style="border-radius: 8px; cursor: pointer;">
+                        <option value="No">⏳ Pending (Unverified)</option>
+                        <option value="Yes">✅ Verified (Done)</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-success w-100 fw-bold rounded-pill shadow-sm p-2" onclick="saveAdminPayment()" style="background: linear-gradient(135deg, #10b981, #059669); border: none;">
+                    <i class="fas fa-save me-1"></i> SAVE & UPDATE
+                </button>
             </div>
         </div>
     </div>
+</div>
+
+
 </div>
 
 <div id="attSuccessPopup" class="att-success-card">
@@ -4077,6 +4279,7 @@ async function permanentDelete(id) {
         </div>
     </div>
 </div>
+<!-- SECURITY SCRIPT: Block F12, Right Click, and Inspect Element -->
 <script>
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
